@@ -47,7 +47,7 @@ def main():
     ordered_matches = interleave_matches(tournaments)
     match_start = datetime.now() + NEXT_MATCH_START
     for i, match in enumerate(ordered_matches[:10]):
-        print("%s. %s VS %s - %s" % (i + 1, match["player1_name"], match["player2_name"], match_start.strftime("%I:%M:%S %p")))
+        print("%s. %s VS %s - %s" % (i + 1, match["player1_name"], match["player2_name"], match_start.strftime("%I:%M %p")))
         match_start += MATCH_DELAY
 
 
