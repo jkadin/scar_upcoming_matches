@@ -2,6 +2,7 @@ import os
 import sys
 from itertools import chain, zip_longest
 from datetime import datetime, timedelta
+from operator import itemgetter
 
 from dotenv import load_dotenv
 import challonge
@@ -14,9 +15,23 @@ load_dotenv()
 NEXT_MATCH_START = timedelta(minutes=1)
 MATCH_DELAY = timedelta(minutes=3)
 
+def most_recent_match_time(tournament):
+    most_recent_match_time = datetime.min
+    for m in tournament["matches"]:
+        if m["state"] != "complete":
+            continue
+        match_time = m["updated_at"].replace(tzinfo=None)
+        if match_time > most_recent_match_time:
+            most_recent_match_time = match_time
+    return most_recent_match_time
+
 
 def interleave_matches(tournaments):
-    matches_list = [t["matches"] for t in tournaments.values()]
+    least_recent_tournaments = []
+
+    matches_list = [t["matches"] for t in sorted(tournaments.values(), key=most_recent_match_time)]
+    for i, ml in enumerate(matches_list):
+        matches_list[i] = sorted([m for m in ml if m["state"] == "open"], key=itemgetter("suggested_play_order"))
     interleaved_with_fill = zip_longest(*matches_list)
     list_of_tuples = chain.from_iterable(interleaved_with_fill)
     remove_fill = [x for x in list_of_tuples if x is not None]
@@ -34,7 +49,7 @@ def main():
 
     for t in tournaments:
         # Populate matches
-        matches = challonge.matches.index(t, state="open")
+        matches = challonge.matches.index(t, state="all")
         # Populate participants
         participants = challonge.participants.index(t)
         participants = {p["id"]: p for p in participants}
@@ -47,7 +62,8 @@ def main():
     ordered_matches = interleave_matches(tournaments)
     match_start = datetime.now() + NEXT_MATCH_START
     for i, match in enumerate(ordered_matches[:10]):
-        print("%s. %s VS %s - %s" % (i + 1, match["player1_name"], match["player2_name"], match_start.strftime("%I:%M %p")))
+        tournament_name = tournaments.get(match["tournament_id"], {}).get("name")
+        print("%s. %s VS %s - %s, %s" % (i + 1, match["player1_name"], match["player2_name"], match_start.strftime("%I:%M %p"), tournament_name))
         match_start += MATCH_DELAY
 
 
