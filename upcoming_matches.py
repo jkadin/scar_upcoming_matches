@@ -38,6 +38,22 @@ def interleave_matches(tournaments):
     return remove_fill
 
 
+def create_svg_from_output(output):
+    svg = []
+    svg.append(r'<svg id="root" xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" xmlns:xlink="http://www.w3.org/1999/xlink">')
+    svg.append(r'<rect x="0" y="0" width="1920" height="1080" stroke="red" stroke-width="3px" fill="white"/>')
+    svg.append(r'<text x="0" y="6%" dominant-baseline="middle" text-anchor="middle" font-size="55" >')
+    for i, line in enumerate(output):
+        if i == 0:
+            svg.append(r'<tspan x="50%">' + line + r'</tspan>')
+        else:
+            svg.append(r'<tspan x="50%" dy="1.9em">' + line + r'</tspan>')
+    svg.append(r'</text>')
+    svg.append(r'</svg>')
+    svg = "\n".join(svg)
+    return svg
+
+
 def main():
     challonge.set_credentials(os.getenv("CHALLONGE_USERNAME"), os.getenv("CHALLONGE_API_KEY"))
     
@@ -61,10 +77,17 @@ def main():
     # Create combined match list
     ordered_matches = interleave_matches(tournaments)
     match_start = datetime.now() + NEXT_MATCH_START
+    output = []
     for i, match in enumerate(ordered_matches[:10]):
         tournament_name = tournaments.get(match["tournament_id"], {}).get("name")
-        print("%s. %s VS %s - %s, %s" % (i + 1, match["player1_name"], match["player2_name"], match_start.strftime("%I:%M %p"), tournament_name))
+        output.append("%s. %s vs %s - %s (%s)" % (i + 1, match["player1_name"], match["player2_name"], match_start.strftime("%I:%M %p"), tournament_name))
         match_start += MATCH_DELAY
+
+    svg = create_svg_from_output(output)
+    with open("current_matches.svg", mode="w") as f:
+        f.write(svg)
+    
+    print("Current open match list written to 'current_matches.svg'")
 
 
 if __name__ == "__main__":
