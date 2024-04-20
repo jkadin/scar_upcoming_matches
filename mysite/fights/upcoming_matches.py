@@ -68,12 +68,12 @@ def create_svg_from_output(output):
     return svg
 
 
-def get_tournaments():
+def get_tournaments(tournament_urls):
+    print(tournament_urls)
     challonge.set_credentials(
         os.getenv("CHALLONGE_USERNAME"), os.getenv("CHALLONGE_API_KEY")
     )
 
-    tournament_urls = ["BOTSFIGHTCLUB", "nphnb1kf"]
     tournament_list = []
 
     for tournament_url in tournament_urls:
