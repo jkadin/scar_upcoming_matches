@@ -8,7 +8,6 @@ def index(request):
     tournaments = get_tournaments(t)
     ordered_matches = interleave_matches(tournaments)
     output_matches = output(tournaments, ordered_matches)
-    print(output_matches)
 
     return render(
         request,
