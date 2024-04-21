@@ -104,7 +104,11 @@ def get_tournaments(tournament_urls):
 
 
 def main():
-    tournaments = get_tournaments()
+    tournament_ids = [
+        "4vljhp3k",
+        "r5vq4p1l"
+    ]
+    tournaments = get_tournaments(tournament_ids)
 
     # Create combined match list
     ordered_matches = interleave_matches(tournaments)
