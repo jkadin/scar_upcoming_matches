@@ -68,17 +68,22 @@ def create_svg_from_output(output):
     return svg
 
 
-def main():
+def get_tournaments(tournament_urls):
+    print(tournament_urls)
     challonge.set_credentials(
         os.getenv("CHALLONGE_USERNAME"), os.getenv("CHALLONGE_API_KEY")
     )
 
-    tournaments = challonge.tournaments.index(state="in_progress")
-    if not tournaments:
+    tournament_list = []
+
+    for tournament_url in tournament_urls:
+        tournament_list.append(
+            challonge.tournaments.show(tournament=f"/{tournament_url}")
+        )
+    if not tournament_list:
         print("No in-progress tournaments found.")
         sys.exit()
-    tournaments = {t["id"]: t for t in tournaments}
-
+    tournaments = {t.get("id"): t for t in tournament_list}
     for t in tournaments:
         # Populate matches
         matches = challonge.matches.index(t, state="all")
@@ -86,13 +91,20 @@ def main():
         participants = challonge.participants.index(t)
         participants = {p["id"]: p for p in participants}
         for y, match in enumerate(matches):
+            tournament_name = tournaments.get(match["tournament_id"], {}).get("name")
             matches[y]["player1_name"] = participants.get(match["player1_id"], {}).get(
                 "name", "???"
             )
             matches[y]["player2_name"] = participants.get(match["player2_id"], {}).get(
                 "name", "???"
             )
+            matches[y]["tournament_name"] = tournament_name
         tournaments[t]["matches"] = matches
+    return tournaments
+
+
+def main():
+    tournaments = get_tournaments()
 
     # Create combined match list
     ordered_matches = interleave_matches(tournaments)

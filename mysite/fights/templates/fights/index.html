@@ -1,0 +1,13 @@
+<div hx-get="/fights" hx-trigger="every 30s" hx-swap="innerHTML" {% include './htmx_generic.html' %}>
+
+    <font size="+7">
+        {% for match in matches %}
+        <br>
+        {{forloop.counter}}.
+        {{match.player1_name}} vs {{match.player2_name}}
+        - {{match_start}}
+        ({{match.tournament_name}})
+        {% endfor %}
+    </font>
+    <br>
+</div>
