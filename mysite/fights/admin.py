@@ -1,3 +1,6 @@
 from django.contrib import admin
-from .models import Urls
-admin.site.register(Urls)
+from .models import Url, Match
+
+
+admin.site.register(Url)
+admin.site.register(Match)
