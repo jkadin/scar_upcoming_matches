@@ -30,7 +30,6 @@ def most_recent_match_time(tournament):
 
 
 def interleave_matches(tournaments):
-    least_recent_tournaments = []
 
     matches_list = [
         t["matches"] for t in sorted(tournaments.values(), key=most_recent_match_time)
@@ -69,7 +68,6 @@ def create_svg_from_output(output):
 
 
 def get_tournaments(tournament_urls):
-    print(tournament_urls)
     challonge.set_credentials(
         os.getenv("CHALLONGE_USERNAME"), os.getenv("CHALLONGE_API_KEY")
     )
@@ -103,36 +101,32 @@ def get_tournaments(tournament_urls):
     return tournaments
 
 
+def output(tournaments, ordered_matches):
+    match_start = datetime.now() + NEXT_MATCH_START
+    output_match = []
+    for i, match in enumerate(ordered_matches[:10]):
+        tournament_name = tournaments.get(match["tournament_id"], {}).get("name")
+        output_match.append(
+            {
+                "index": i + 1,
+                "player1_name": match["player1_name"],
+                "player2_name": match["player2_name"],
+                "match_start": match_start.strftime("%I:%M %p"),
+                "tournament_name": tournament_name,
+            }
+        )
+        match_start += MATCH_DELAY
+    return output_match
+
+
 def main():
-    tournament_ids = [
-        "4vljhp3k",
-        "r5vq4p1l"
-    ]
+    tournament_ids = ["4vljhp3k", "r5vq4p1l"]
     tournaments = get_tournaments(tournament_ids)
 
     # Create combined match list
     ordered_matches = interleave_matches(tournaments)
-    match_start = datetime.now() + NEXT_MATCH_START
-    output = []
-    for i, match in enumerate(ordered_matches[:10]):
-        tournament_name = tournaments.get(match["tournament_id"], {}).get("name")
-        output.append(
-            "%s. %s vs %s - %s (%s)"
-            % (
-                i + 1,
-                match["player1_name"],
-                match["player2_name"],
-                match_start.strftime("%I:%M %p"),
-                tournament_name,
-            )
-        )
-        match_start += MATCH_DELAY
-
-    svg = create_svg_from_output(output)
-    with open("current_matches.svg", mode="w") as f:
-        f.write(svg)
-
-    print("Current open match list written to 'current_matches.svg'")
+    match_output = output(tournaments, ordered_matches)
+    print(match_output)
 
 
 if __name__ == "__main__":
