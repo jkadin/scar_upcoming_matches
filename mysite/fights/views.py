@@ -22,19 +22,23 @@ def update_database():
         t1 = Tournament(t.get("id"), t.get("name"), t.get("state"))
         t1.save()
         for match in challonge.matches.index(t1.tournament_id, state="all"):
-            print(match.get("id"))
             m1 = Match(
                 player1_id=match.get("player1_id"),
                 player2_id=match.get("player2_id"),
                 tournament_id=match.get("tournament_id"),
                 match_id=match.get("id"),
             )
-            print(m1.match_id)
             try:
                 m1.save()
             except:
-                Match.delete(pk=m1.match_id)
-        participants = challonge.participants.index(t1.tournament_id)
+                pass
+        for participant in challonge.participants.index(t1.tournament_id):
+            p1 = Participant(
+                participant.get("id"),
+                participant.get("name"),
+                participant.get("tournament_id"),
+            )
+            p1.save()
 
 
 def index(request):
