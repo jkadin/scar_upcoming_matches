@@ -9,9 +9,9 @@ class Url(models.Model):
 
 
 class Match(models.Model):
-    player1_id = models.CharField(max_length=100)
-    player2_id = models.CharField(max_length=100)
-    tournament_name = models.CharField(max_length=100)
+    player1_id = models.CharField(max_length=100, null=True)
+    player2_id = models.CharField(max_length=100, null=True)
+    tournament_id = models.CharField(max_length=100)
     match_id = models.CharField(
         max_length=100, primary_key=True, default="Not Assigned"
     )

@@ -73,7 +73,6 @@ def get_tournaments(tournament_urls):
     )
 
     tournament_list = []
-
     for tournament_url in tournament_urls:
         tournament_list.append(
             challonge.tournaments.show(tournament=f"/{tournament_url}")
