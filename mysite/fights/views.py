@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.db import IntegrityError
 from .upcoming_matches import get_tournaments, interleave_matches, output
 from .models import Url, Tournament, Match, Participant
 import challonge
@@ -28,10 +29,12 @@ def update_database():
                 tournament_id=match.get("tournament_id"),
                 match_id=match.get("id"),
             )
+            print(match.get("id"), match.get("identifier"))
             try:
                 m1.save()
-            except:
-                pass
+            except IntegrityError:
+                print("id", match.get("identifier"))
+
         for participant in challonge.participants.index(t1.tournament_id):
             p1 = Participant(
                 participant.get("id"),
