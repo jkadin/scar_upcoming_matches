@@ -13,6 +13,8 @@ class Match(models.Model):
     player2_id = models.CharField(max_length=100, null=True)
     tournament_id = models.CharField(max_length=100)
     match_id = models.CharField(max_length=100, primary_key=True)
+    match_state = models.CharField(max_length=100, null=True)
+    updated_at = models.DateTimeField(null=True)
 
     def __str__(self) -> str:
         return self.match_id

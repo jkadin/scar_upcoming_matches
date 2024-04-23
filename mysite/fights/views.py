@@ -1,11 +1,41 @@
 from django.shortcuts import render
-from .upcoming_matches import get_tournaments, interleave_matches, output
+from .upcoming_matches import output
 from .models import Url, Tournament, Match, Participant
 import challonge
 from dotenv import load_dotenv
 import os
+from datetime import datetime
+from operator import itemgetter
+from itertools import chain, zip_longest
 
 load_dotenv()
+
+
+def most_recent_match_time(tournament):
+    most_recent_match_time = datetime.min
+    for m in tournament["matches"]:
+        if m["match_state"] != "complete":
+            continue
+        match_time = m["updated_at"].replace(tzinfo=None)
+        if match_time > most_recent_match_time:
+            most_recent_match_time = match_time
+    return most_recent_match_time
+
+
+def interleave_matches(tournaments):
+
+    matches_list = [
+        t["matches"] for t in sorted(tournaments.values(), key=most_recent_match_time)
+    ]
+    for i, ml in enumerate(matches_list):
+        matches_list[i] = sorted(
+            [m for m in ml if m["match_state"] == "open"],
+            key=itemgetter("suggested_play_order"),
+        )
+    interleaved_with_fill = zip_longest(*matches_list)
+    list_of_tuples = chain.from_iterable(interleaved_with_fill)
+    remove_fill = [x for x in list_of_tuples if x is not None]
+    return remove_fill
 
 
 def update_database():
@@ -27,6 +57,8 @@ def update_database():
                 player2_id=match.get("player2_id"),
                 tournament_id=match.get("tournament_id"),
                 match_id=match.get("id"),
+                match_state=match.get("state"),
+                updated_at=match.get("updated_at"),
             )
             m1.save()
 
@@ -39,6 +71,29 @@ def update_database():
             p1.save()
 
 
+def get_tournaments():
+
+    tournament_list = Tournament.objects.filter(tournament_state="underway").values()
+    tournaments = {t.get("id"): t for t in tournament_list}
+    for t in tournaments:
+        # Populate matches
+        matches = Match.objects.all().values()
+        # Populate participants
+        participants = Participant.objects.filter(tournament_id=t).values()
+        participants = {p["id"]: p for p in participants}
+        for y, match in enumerate(matches):
+            tournament_name = tournaments.get(match["tournament_id"], {}).get("name")
+            matches[y]["player1_name"] = participants.get(match["player1_id"], {}).get(
+                "name", "???"
+            )
+            matches[y]["player2_name"] = participants.get(match["player2_id"], {}).get(
+                "name", "???"
+            )
+            matches[y]["tournament_name"] = tournament_name
+        tournaments[t]["matches"] = matches
+    return tournaments
+
+
 def index(request):
     t = Url.objects.all()
     if not t:
@@ -47,7 +102,7 @@ def index(request):
             "fights/no_tournaments.html",
         )
 
-    tournaments = get_tournaments(t)
+    tournaments = get_tournaments()
     ordered_matches = interleave_matches(tournaments)
     output_matches = output(tournaments, ordered_matches)
 
