@@ -12,9 +12,7 @@ class Match(models.Model):
     player1_id = models.CharField(max_length=100, null=True)
     player2_id = models.CharField(max_length=100, null=True)
     tournament_id = models.CharField(max_length=100)
-    match_id = models.CharField(
-        max_length=100, primary_key=True, default="Not Assigned"
-    )
+    match_id = models.CharField(max_length=100, primary_key=True)
 
     def __str__(self) -> str:
         return self.match_id
