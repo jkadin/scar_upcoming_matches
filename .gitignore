@@ -3,3 +3,4 @@ current_matches.svg
 .venv
 db.sqlite3
 __pycache__
+mysite/pyproject.toml

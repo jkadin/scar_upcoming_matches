@@ -23,7 +23,6 @@ def most_recent_match_time(tournament):
 
 
 def interleave_matches(tournaments):
-
     matches_list = [
         t["matches"] for t in sorted(tournaments.values(), key=most_recent_match_time)
     ]
@@ -72,7 +71,6 @@ def update_database():
 
 
 def get_tournaments():
-
     tournament_list = Tournament.objects.filter(tournament_state="underway").values()
     tournaments = {t.get("id"): t for t in tournament_list}
     for t in tournaments:
