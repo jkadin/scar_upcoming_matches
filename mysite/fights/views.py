@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from operator import itemgetter
 from itertools import chain, zip_longest
 
+
 load_dotenv()
 NEXT_MATCH_START = timedelta(minutes=1)
 MATCH_DELAY = timedelta(minutes=3)
@@ -91,13 +92,10 @@ def output(tournaments, ordered_matches):
 
 def get_tournaments():
     tournament_list = Tournament.objects.filter(tournament_state="underway").values()
-    tournaments = {t.get("id"): t for t in tournament_list}
+    tournaments = {t.get("tournament_id"): t for t in tournament_list}
     for t in tournaments:
         # Populate matches
-        matches = Match.objects.all().values()
-        # Populate participants
-        participants = Participant.objects.filter(tournament_id=t).values()
-        participants = {p["id"]: p for p in participants}
+        matches = Match.objects.filter(tournament_id=t).values()
         for y, match in enumerate(matches):
             tournament_name = Tournament.objects.get(
                 tournament_id=match.get("tournament_id")
@@ -106,13 +104,13 @@ def get_tournaments():
                 matches[y]["player1_name"] = Participant.objects.get(
                     participant_id=match.get("player1_id")
                 )
-            except:
+            except Participant.DoesNotExist:
                 matches[y]["player1_name"] = "Unassigned"
             try:
                 matches[y]["player2_name"] = Participant.objects.get(
                     participant_id=match.get("player2_id")
                 )
-            except:
+            except Participant.DoesNotExist:
                 matches[y]["player2_name"] = "Unassigned"
 
             matches[y]["tournament_name"] = tournament_name
