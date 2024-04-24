@@ -125,7 +125,9 @@ def main():
     # Create combined match list
     ordered_matches = interleave_matches(tournaments)
     match_output = output(tournaments, ordered_matches)
-    print(match_output)
+    for match in match_output:
+        print(match)
+        print()
 
 
 if __name__ == "__main__":
