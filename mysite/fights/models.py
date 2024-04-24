@@ -15,6 +15,7 @@ class Match(models.Model):
     match_id = models.CharField(max_length=100, primary_key=True)
     match_state = models.CharField(max_length=100, null=True)
     updated_at = models.DateTimeField(null=True)
+    suggested_play_order = models.CharField(max_length=100, null=True)
 
     def __str__(self) -> str:
         return self.match_id

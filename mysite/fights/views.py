@@ -1,14 +1,15 @@
 from django.shortcuts import render
-from .upcoming_matches import output
 from .models import Url, Tournament, Match, Participant
 import challonge
 from dotenv import load_dotenv
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from operator import itemgetter
 from itertools import chain, zip_longest
 
 load_dotenv()
+NEXT_MATCH_START = timedelta(minutes=1)
+MATCH_DELAY = timedelta(minutes=3)
 
 
 def most_recent_match_time(tournament):
@@ -58,6 +59,7 @@ def update_database():
                 match_id=match.get("id"),
                 match_state=match.get("state"),
                 updated_at=match.get("updated_at"),
+                suggested_play_order=match.get("suggested_play_order"),
             )
             m1.save()
 
@@ -70,6 +72,23 @@ def update_database():
             p1.save()
 
 
+def output(tournaments, ordered_matches):
+    match_start = datetime.now() + NEXT_MATCH_START
+    output_match = []
+    for i, match in enumerate(ordered_matches[:10]):
+        output_match.append(
+            {
+                "index": i + 1,
+                "player1_name": match["player1_name"],
+                "player2_name": match["player2_name"],
+                "match_start": match_start.strftime("%I:%M %p"),
+                "tournament_name": match["tournament_name"],
+            }
+        )
+        match_start += MATCH_DELAY
+    return output_match
+
+
 def get_tournaments():
     tournament_list = Tournament.objects.filter(tournament_state="underway").values()
     tournaments = {t.get("id"): t for t in tournament_list}
@@ -80,13 +99,22 @@ def get_tournaments():
         participants = Participant.objects.filter(tournament_id=t).values()
         participants = {p["id"]: p for p in participants}
         for y, match in enumerate(matches):
-            tournament_name = tournaments.get(match["tournament_id"], {}).get("name")
-            matches[y]["player1_name"] = participants.get(match["player1_id"], {}).get(
-                "name", "???"
+            tournament_name = Tournament.objects.get(
+                tournament_id=match.get("tournament_id")
             )
-            matches[y]["player2_name"] = participants.get(match["player2_id"], {}).get(
-                "name", "???"
-            )
+            try:
+                matches[y]["player1_name"] = Participant.objects.get(
+                    participant_id=match.get("player1_id")
+                )
+            except:
+                matches[y]["player1_name"] = "Unassigned"
+            try:
+                matches[y]["player2_name"] = Participant.objects.get(
+                    participant_id=match.get("player2_id")
+                )
+            except:
+                matches[y]["player2_name"] = "Unassigned"
+
             matches[y]["tournament_name"] = tournament_name
         tournaments[t]["matches"] = matches
     return tournaments
