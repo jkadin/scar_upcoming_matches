@@ -45,11 +45,3 @@ def update_database():
                 participant.get("tournament_id"),
             )
             p1.save()
-
-
-def main():
-    update_database()
-
-
-if __name__ == "__name__":
-    main()
