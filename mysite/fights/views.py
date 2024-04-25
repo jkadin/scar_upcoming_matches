@@ -58,12 +58,8 @@ def get_tournaments():
     tournament_list = Tournament.objects.filter(tournament_state="underway").values()
     tournaments = {t.get("tournament_id"): t for t in tournament_list}
     for t in tournaments:
-        # Populate matches
         matches = Match.objects.filter(tournament_id=t).values()
         for y, match in enumerate(matches):
-            tournament_name = Tournament.objects.get(
-                tournament_id=match.get("tournament_id")
-            )
             try:
                 matches[y]["player1_name"] = Participant.objects.get(
                     participant_id=match.get("player1_id")
@@ -77,7 +73,9 @@ def get_tournaments():
             except Participant.DoesNotExist:
                 matches[y]["player2_name"] = "Unassigned"
 
-            matches[y]["tournament_name"] = tournament_name
+            matches[y]["tournament_name"] = Tournament.objects.get(
+                tournament_id=match.get("tournament_id")
+            )
         tournaments[t]["matches"] = matches
     return tournaments
 
@@ -98,8 +96,6 @@ def index(request):
         request,
         "fights/index.html",
         {
-            "matches": ordered_matches,
-            "tournaments": tournaments,
             "output_matches": output_matches,
         },
     )
