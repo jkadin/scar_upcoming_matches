@@ -1,8 +1,6 @@
 from django.shortcuts import render
 from .models import Url, Tournament, Match, Participant
-import challonge
 from dotenv import load_dotenv
-import os
 from datetime import datetime, timedelta
 from operator import itemgetter
 from itertools import chain, zip_longest
@@ -37,40 +35,6 @@ def interleave_matches(tournaments):
     list_of_tuples = chain.from_iterable(interleaved_with_fill)
     remove_fill = [x for x in list_of_tuples if x is not None]
     return remove_fill
-
-
-def update_database():
-    challonge.set_credentials(
-        os.getenv("CHALLONGE_USERNAME"), os.getenv("CHALLONGE_API_KEY")
-    )
-    t = Url.objects.all()
-    tournament_list = []
-    for tournament_url in t:
-        tournament_list.append(
-            challonge.tournaments.show(tournament=f"/{tournament_url}")
-        )
-    for t in tournament_list:
-        t1 = Tournament(t.get("id"), t.get("name"), t.get("state"))
-        t1.save()
-        for match in challonge.matches.index(t1.tournament_id, state="all"):
-            m1 = Match(
-                player1_id=match.get("player1_id"),
-                player2_id=match.get("player2_id"),
-                tournament_id=match.get("tournament_id"),
-                match_id=match.get("id"),
-                match_state=match.get("state"),
-                updated_at=match.get("updated_at"),
-                suggested_play_order=match.get("suggested_play_order"),
-            )
-            m1.save()
-
-        for participant in challonge.participants.index(t1.tournament_id):
-            p1 = Participant(
-                participant.get("id"),
-                participant.get("name"),
-                participant.get("tournament_id"),
-            )
-            p1.save()
 
 
 def output(tournaments, ordered_matches):
