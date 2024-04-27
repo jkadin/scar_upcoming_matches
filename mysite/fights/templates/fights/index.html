@@ -1,6 +1,6 @@
 <div class="container-fluid">
     {% include './htmx_generic.html' %}
-    <div class="d-flex justify-content-center align-items-center h-100 display-6" hx-get="/fights"
+    <div class="d-flex justify-content-center align-items-center h-100 display-6 lh-sm" hx-get="/fights"
         hx-trigger="every 30s" hx-swap="innerHTML">
         {% for match in output_matches %}
         {{forloop.counter}}. {{match.player1_name}} vs {{match.player2_name}} - {{match.match_start}}
