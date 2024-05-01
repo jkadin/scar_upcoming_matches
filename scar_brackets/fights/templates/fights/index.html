@@ -1,0 +1,21 @@
+<div class="container-fluid bg-info text-white">
+
+
+    {% include './htmx_generic.html' %}
+    <div class="d-flex justify-content-center align-items-center h-100 display-2 lh-sm px-5" hx-get="/fights"
+        hx-trigger="every 30s" hx-swap="innerHTML">
+
+	{% if output_matches %}
+        <ol>
+            {% for match in output_matches %}
+
+            <li><strong>{{match.player1_name}}</strong> vs <strong>{{match.player2_name}}</strong> -
+                {{match.match_start}}
+                ({{match.tournament_name}})</li>
+
+            {% endfor %}
+        </ol>
+	{% else %}
+	<strong>No active tournaments available</strong>
+	{% endif %}
+    </div>
