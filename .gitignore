@@ -3,5 +3,6 @@ current_matches.svg
 .venv
 db.sqlite3
 __pycache__
-mysite/pyproject.toml
+scar_brackets/pyproject.toml
 scar_upcoming_matches.code-workspace
+.DS_Store

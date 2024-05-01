@@ -40,7 +40,7 @@ def interleave_matches(tournaments):
 def output(tournaments, ordered_matches):
     match_start = datetime.now() + NEXT_MATCH_START
     output_match = []
-    for i, match in enumerate(ordered_matches[:6]):
+    for i, match in enumerate(ordered_matches[:4]):
         output_match.append(
             {
                 "index": i + 1,
@@ -82,11 +82,6 @@ def get_tournaments():
 
 def index(request):
     t = Url.objects.all()
-    if not t:
-        return render(
-            request,
-            "fights/no_tournaments.html",
-        )
 
     tournaments = get_tournaments()
     ordered_matches = interleave_matches(tournaments)
