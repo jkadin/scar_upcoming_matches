@@ -6,3 +6,4 @@ __pycache__
 scar_brackets/pyproject.toml
 scar_upcoming_matches.code-workspace
 .DS_Store
+mysite/pyproject.toml
