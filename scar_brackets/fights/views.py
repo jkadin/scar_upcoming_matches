@@ -81,8 +81,6 @@ def get_tournaments():
 
 
 def index(request):
-    t = Url.objects.all()
-
     tournaments = get_tournaments()
     ordered_matches = interleave_matches(tournaments)
     output_matches = output(tournaments, ordered_matches)
@@ -90,6 +88,20 @@ def index(request):
     return render(
         request,
         "fights/index.html",
+        {
+            "output_matches": output_matches,
+        },
+    )
+
+
+def display_matches(request):
+    tournaments = get_tournaments()
+    ordered_matches = interleave_matches(tournaments)
+    output_matches = output(tournaments, ordered_matches)
+
+    return render(
+        request,
+        "fights/matches.html",
         {
             "output_matches": output_matches,
         },
