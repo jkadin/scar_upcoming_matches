@@ -3,26 +3,31 @@
 
 <style>
     .scar_logo {
-        background-position: center center;
+        background-position: center;
         background-image: url({% static 'fights/images/scar_transparent.png' %});
         background-size: contain;
         background-repeat: no-repeat;
     }
 
-    .text_shadow {
-        text-shadow: 3px 3px 0px black;
+    .text_style {
+        /* text-shadow: 3px 3px 0px black; */
+        text-transform: uppercase;
+        font-weight: 400;
     }
 </style>
 
 <body>
     <div class="container-fluid">
-        <div class="container-fluid bg-danger text-white scar_logo text_shadow">
-            <div class="text-center">
-                <div class="display-5"><strong>Upcoming Matches</strong></div>
-                <div class="display-6">(All times approx.)</div>
-                {% include './matches.html' %}
+        <div class="container-fluid bg-danger text-white scar_logo text_style py-4">
+            <div class="row text-center py-4">
+                <div class="col-md-6 offset-md-3">
+                    <div class="display-5 bg-primary"><strong>Upcoming Matches</strong></div>
+                    <div class="display-6 bg-primary">(All times approx.)</div>
+                </div>
             </div>
+            {% include './matches.html' %}
         </div>
+    </div>
 </body>
 
 </html>

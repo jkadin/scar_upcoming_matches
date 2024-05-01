@@ -1,11 +1,27 @@
-<div class="d-flex justify-content-center align-items-center h-100 display-1 lh-sm px-8">
+<div class="d-flex justify-content-center align-items-center h-100 display-3 lh-sm px-8">
     <div hx-get="/display_matches" hx-trigger="every 30s" hx-swap="innerHTML">
         {% if output_matches %}
         <ol class="list-unstyled text-center">
             {% for match in output_matches %}
-            <li><strong>{{match.player1_name}}</strong> vs <strong>{{match.player2_name}}</strong><br />
-                <p class="display-5">{{match.match_start}} ({{match.tournament_name}})</p>
-            </li>
+
+
+            <div class="row justify-content-md-center text-dark text_style py-3">
+                <div class="col col-lg-5 bg-warning">
+                    {{match.player1_name}}
+                </div>
+                <div class="col-md-auto bg-secondary text-white">
+                    vs
+                </div>
+                <div class="col-md-5 bg-warning">
+                    {{match.player2_name}}
+                </div>
+            </div>
+            <div class="row display-6">
+                <div class="col">
+                    {{match.match_start}} ({{match.tournament_name}})
+                </div>
+            </div>
+
             {% endfor %}
         </ol>
         {% else %}
