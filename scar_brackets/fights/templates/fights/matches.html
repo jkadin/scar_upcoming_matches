@@ -1,0 +1,15 @@
+<div class="d-flex justify-content-center align-items-center h-100 display-1 lh-sm px-8">
+    <div hx-get="/display_matches" hx-trigger="every 30s" hx-swap="innerHTML">
+        {% if output_matches %}
+        <ol class="list-unstyled text-center">
+            {% for match in output_matches %}
+            <li><strong>{{match.player1_name}}</strong> vs <strong>{{match.player2_name}}</strong><br />
+                <p class="display-5">{{match.match_start}} ({{match.tournament_name}})</p>
+            </li>
+            {% endfor %}
+        </ol>
+        {% else %}
+        <strong>No active tournaments available</strong>
+        {% endif %}
+    </div>
+</div>

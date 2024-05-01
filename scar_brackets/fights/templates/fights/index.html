@@ -1,38 +1,22 @@
 {% load static %}
+{% include './htmx_generic.html' %}
 
 <style>
-    .scar_logo{
-    background-position: center center;
-    background-image: url({% static 'fights/images/scar_transparent.png' %});
-    background-size: contain;
-    background-repeat: no-repeat;
+    .scar_logo {
+        background-position: center center;
+        background-image: url({% static 'fights/images/scar_transparent.png' %});
+        background-size: contain;
+        background-repeat: no-repeat;
     }
 
     .text_shadow {
-    text-shadow: 3px 3px 0px black;
-}
-
+        text-shadow: 3px 3px 0px black;
+    }
 </style>
-<div hx-get="/fights" hx-trigger="every 30s" hx-swap="innerHTML"></div>
-    <div class="container-fluid bg-danger text-white scar_logo text_shadow">
-        <div class="text-center">
-            <div class="display-5"><strong>Upcoming Matches</strong></div>
-            <div class="display-6">(All times approx.)</div>
-        </div>
-        {% include './htmx_generic.html' %}
-            <div class="d-flex justify-content-center align-items-center h-100 display-1 lh-sm px-8">
-            {% if output_matches %}
-                <ol class="list-unstyled text-center">
-                    {% for match in output_matches %}
-
-                    <li><strong>{{match.player1_name}}</strong> vs <strong>{{match.player2_name}}</strong><br/>
-                    <p class="display-5">{{match.match_start}} ({{match.tournament_name}})</p></li>
-                    <br>
-                    {% endfor %}
-                </ol>
-            {% else %}
-            <strong>No active tournaments available</strong>
-            {% endif %}
-            </div>
+<div class="container-fluid bg-danger text-white scar_logo text_shadow">
+    <div class="text-center">
+        <div class="display-5"><strong>Upcoming Matches</strong></div>
+        <div class="display-6">(All times approx.)</div>
+        {% include './matches.html' %}
     </div>
 </div>
