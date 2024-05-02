@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Url(models.Model):
-    url = models.CharField(max_length=100)
+    url = models.CharField(primary_key=True, max_length=100)
 
     def __str__(self) -> str:
         return self.url
@@ -25,6 +25,7 @@ class Tournament(models.Model):
     tournament_id = models.CharField(max_length=100, primary_key=True)
     tournament_name = models.CharField(max_length=100)
     tournament_state = models.CharField(max_length=100)
+    tournament_url = models.ForeignKey(Url, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
         return self.tournament_name

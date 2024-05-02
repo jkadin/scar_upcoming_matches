@@ -24,7 +24,7 @@ def update_database():
             challonge.tournaments.show(tournament=f"/{tournament_url}")
         )
     for t in tournament_list:
-        t1 = Tournament(t.get("id"), t.get("name"), t.get("state"))
+        t1 = Tournament(t.get("id"), t.get("name"), t.get("state"), tournament_url)
         t1.save()
         for match in challonge.matches.index(t1.tournament_id, state="all"):
             m1 = Match(
