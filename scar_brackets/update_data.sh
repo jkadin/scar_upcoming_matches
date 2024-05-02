@@ -1,2 +1,2 @@
-. ~/workspace/venvs/scar_upcoming_matches/bin/activate
+. ~/workspace/scar_upcoming_matches/.venv/bin/activate
 python3 manage.py update_from_api
