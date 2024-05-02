@@ -1,29 +1,28 @@
-<div class="d-flex justify-content-center align-items-center h-100 display-3 lh-sm px-8">
+<div class="justify-content-center align-items-center h-50 display-3 lh-sm px-8">
     <div hx-get="/display_matches" hx-trigger="every 30s" hx-swap="innerHTML">
         {% if output_matches %}
-        <ol class="list-unstyled text-center">
+        <div class="text-center">
             {% for match in output_matches %}
-
-
-            <div class="row justify-content-md-center text-dark text_style py-3">
-                <div class="col col-lg-5 bg-warning">
-                    {{match.player1_name}}
+            <div class="pt-5 pb-5">
+                <div class="row justify-content-md-center text-dark text_style">
+                    <div class="col-md-4 bg-warning rounded-start">
+                        {{match.player1_name}}
+                    </div>
+                    <div class="col-md-auto bg-secondary text-white">
+                        vs
+                    </div>
+                    <div class="col-md-4 bg-warning rounded-end">
+                        {{match.player2_name}}
+                    </div>
                 </div>
-                <div class="col-md-auto bg-secondary text-white">
-                    vs
-                </div>
-                <div class="col-md-5 bg-warning">
-                    {{match.player2_name}}
+                <div class="row display-5">
+                    <div class="col" style="text-shadow: 3px 3px 0px black;">
+                        {{match.match_start}} ({{match.tournament_name}})
+                    </div>
                 </div>
             </div>
-            <div class="row display-6">
-                <div class="col">
-                    {{match.match_start}} ({{match.tournament_name}})
-                </div>
-            </div>
-
             {% endfor %}
-        </ol>
+        </div>
         {% else %}
         <strong>No active tournaments available</strong>
         {% endif %}
