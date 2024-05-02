@@ -8,19 +8,6 @@ class Url(models.Model):
         return self.url
 
 
-class Match(models.Model):
-    player1_id = models.CharField(max_length=100, null=True)
-    player2_id = models.CharField(max_length=100, null=True)
-    tournament_id = models.CharField(max_length=100)
-    match_id = models.CharField(max_length=100, primary_key=True)
-    match_state = models.CharField(max_length=100, null=True)
-    updated_at = models.DateTimeField(null=True)
-    suggested_play_order = models.IntegerField()
-
-    def __str__(self) -> str:
-        return self.match_id
-
-
 class Tournament(models.Model):
     tournament_id = models.CharField(max_length=100, primary_key=True)
     tournament_name = models.CharField(max_length=100)
@@ -31,10 +18,23 @@ class Tournament(models.Model):
         return self.tournament_name
 
 
+class Match(models.Model):
+    player1_id = models.CharField(max_length=100, null=True)
+    player2_id = models.CharField(max_length=100, null=True)
+    tournament_id = models.ForeignKey(Tournament, on_delete=models.CASCADE)
+    match_id = models.CharField(max_length=100, primary_key=True)
+    match_state = models.CharField(max_length=100, null=True)
+    updated_at = models.DateTimeField(null=True)
+    suggested_play_order = models.IntegerField()
+
+    def __str__(self) -> str:
+        return self.match_id
+
+
 class Participant(models.Model):
-    participant_id = models.CharField(max_length=100, primary_key=True)
+    participant_id = models.CharField(max_length=100, null=True)
     participant_name = models.CharField(max_length=100)
-    tournament_id = models.CharField(max_length=100)
+    tournament_id = models.ForeignKey(Tournament, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
         return f"{self.participant_name}"
