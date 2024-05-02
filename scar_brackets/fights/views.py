@@ -61,8 +61,6 @@ def get_tournaments():
         matches = Match.objects.filter(tournament_id=t).values()
         for y, match in enumerate(matches):
             try:
-                print(match.get("player1_id"))
-                print(match.get("player2_id"))
                 matches[y]["player1_name"] = Participant.objects.get(
                     participant_id=match.get("player1_id")
                 )
