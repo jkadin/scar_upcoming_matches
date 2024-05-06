@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Url, Tournament, Match, Participant
+from .models import Tournament, Match, Participant
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
 from operator import itemgetter
