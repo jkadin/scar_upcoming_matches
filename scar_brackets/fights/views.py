@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Tournament, Match, Participant
+from .models import Tournament, Match
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
 from operator import itemgetter
@@ -41,13 +41,14 @@ def output(tournaments, ordered_matches):
     match_start = datetime.now() + NEXT_MATCH_START
     output_match = []
     for i, match in enumerate(ordered_matches[:5]):
+        tournament_name = tournaments[match.get("tournament_id_id")]["tournament_name"]
         output_match.append(
             {
                 "index": i + 1,
-                "player1_name": match["player1_name"],
-                "player2_name": match["player2_name"],
+                "player1_name": match.get("player1_name"),
+                "player2_name": match.get("player2_name"),
                 "match_start": match_start.strftime("%I:%M %p"),
-                "tournament_name": match["tournament_name"],
+                "tournament_name": tournament_name,
             }
         )
         match_start += MATCH_DELAY
@@ -57,24 +58,16 @@ def output(tournaments, ordered_matches):
 def get_tournaments():
     tournament_list = Tournament.objects.filter(tournament_state="underway").values()
     tournaments = {t.get("tournament_id"): t for t in tournament_list}
-    for t in tournaments:
-        matches = Match.objects.filter(tournament_id=t).values()
+    for t in tournament_list:
+        print(t.get("tournament_id"))
+        matches = Match.objects.filter(tournament_id=t.get("tournament_id")).values()
+        match_list = Match.objects.filter(tournament_id=t.get("tournament_id"))
         for y, match in enumerate(matches):
-            try:
-                matches[y]["player1_name"] = Participant.objects.get(
-                    participant_id=match.get("player1_id")
-                )
-            except Participant.DoesNotExist:
-                matches[y]["player1_name"] = "Unassigned"
-            try:
-                matches[y]["player2_name"] = Participant.objects.get(
-                    participant_id=match.get("player2_id")
-                )
-            except Participant.DoesNotExist:
-                matches[y]["player2_name"] = "Unassigned"
+            # try:
+            matches[y]["player1_name"] = match_list[y].player1_id.participant_name
+            matches[y]["player2_name"] = match_list[y].player2_id.participant_name
 
-            matches[y]["tournament_name"] = Tournament.objects.get(tournament_id=t)
-        tournaments[t]["matches"] = matches
+        tournaments[t.get("tournament_id")]["matches"] = matches
     return tournaments
 
 
