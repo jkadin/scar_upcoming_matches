@@ -35,7 +35,6 @@ class Participant(models.Model):
 
 
 class Match(models.Model):
-    # player1_id = models.CharField(max_length=100, null=True)
     match_id = models.CharField(max_length=100, primary_key=True)
     player1_id = models.ForeignKey(
         Participant, on_delete=models.DO_NOTHING, related_name="player1_id", null=True
