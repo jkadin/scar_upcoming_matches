@@ -59,11 +59,9 @@ def get_tournaments():
     tournament_list = Tournament.objects.filter(tournament_state="underway").values()
     tournaments = {t.get("tournament_id"): t for t in tournament_list}
     for t in tournament_list:
-        print(t.get("tournament_id"))
         matches = Match.objects.filter(tournament_id=t.get("tournament_id")).values()
         match_list = Match.objects.filter(tournament_id=t.get("tournament_id"))
         for y, match in enumerate(matches):
-            # try:
             matches[y]["player1_name"] = match_list[y].player1_id.participant_name
             matches[y]["player2_name"] = match_list[y].player2_id.participant_name
 
