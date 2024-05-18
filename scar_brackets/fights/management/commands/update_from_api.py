@@ -54,6 +54,8 @@ def update_database():
                 match_state=match.get("state"),
                 updated_at=match.get("updated_at"),
                 suggested_play_order=match.get("suggested_play_order"),
+                calculated_play_order=0,
+                estimated_start_time=None,
             )
             try:
                 m1.save()
