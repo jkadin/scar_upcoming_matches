@@ -52,10 +52,7 @@ def index(request):
 
 
 def display_matches(request):
-    # tournaments = get_tournaments()
-    # ordered_matches = interleave_matches(tournaments)
     output_matches = output()
-
     return render(
         request,
         "fights/matches.html",
