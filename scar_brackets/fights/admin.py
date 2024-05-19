@@ -3,7 +3,6 @@ from .models import Url, Match, Tournament, Participant
 
 
 admin.site.register(Url)
-admin.site.register(Tournament)
 
 
 class Participant_admin(admin.ModelAdmin):
@@ -25,5 +24,12 @@ class Match_admin(admin.ModelAdmin):
     )
     ordering = ("match_state", "calculated_play_order")
 
+
+class Tournament_admin(admin.ModelAdmin):
+    list_display = ("tournament_name", "tournament_id", "tournament_state")
+    ordering = ("tournament_name",)
+
+
+admin.site.register(Tournament, Tournament_admin)
 
 admin.site.register(Match, Match_admin)
