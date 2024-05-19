@@ -3,6 +3,7 @@ from django.db import IntegrityError
 import challonge
 import os
 from fights.models import Url, Tournament, Match, Participant
+from itertools import chain, zip_longest
 
 
 class Command(BaseCommand):
@@ -61,6 +62,21 @@ def update_database():
                 m1.save()
             except IntegrityError:
                 print("Match already exists")
+    # assign calculated_play_order
+    matches_list = []
+    for t, tournament in enumerate(Tournament.objects.all()):
+        matches_list.append(
+            Match.objects.filter(tournament_id=tournament, match_state="open").order_by(
+                "suggested_play_order"
+            )
+        )
+    interleaved = zip_longest(*matches_list)
+    list_of_tuples = chain.from_iterable(interleaved)
+    remove_fill = [x for x in list_of_tuples if x is not None]
+    for i, m in enumerate(remove_fill):
+        print(m.tournament_id.tournament_name, m.suggested_play_order)
+        m.calculated_play_order = i + 1
+        m.save()
 
 
 def load_particpants(t1):
@@ -81,7 +97,8 @@ def create_null_particpant(t1):
     try:
         p1 = Participant.objects.get(participant_id=None, tournament_id=t1)
         print(p1)
-    except:
+    except Exception as E:
+        print("Exception", E)
         p1 = Participant(
             participant_id=None,
             participant_name="Not assigned",
