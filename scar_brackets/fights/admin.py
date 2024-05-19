@@ -15,8 +15,15 @@ admin.site.register(Participant, Participant_admin)
 
 
 class Match_admin(admin.ModelAdmin):
-    list_display = ("match_id", "player1_id", "player2_id", "tournament_id")
-    ordering = ("match_id", "player1_id")
+    list_display = (
+        "match_id",
+        "player1_id",
+        "player2_id",
+        "tournament_id",
+        "calculated_play_order",
+        "match_state",
+    )
+    ordering = ("match_state", "calculated_play_order")
 
 
 admin.site.register(Match, Match_admin)
