@@ -8,15 +8,15 @@ NEXT_MATCH_START = timedelta(minutes=1)
 MATCH_DELAY = timedelta(minutes=3)
 
 
-def most_recent_match_time(tournament):
-    most_recent_match_time = datetime.min
-    for m in tournament["matches"]:
-        if m.match_state != "complete":
-            continue
-        match_time = m.updated_at.replace(tzinfo=None)
-        if match_time > most_recent_match_time:
-            most_recent_match_time = match_time
-    return most_recent_match_time
+# def most_recent_match_time(tournament):
+#     most_recent_match_time = datetime.min
+#     for m in tournament["matches"]:
+#         if m.match_state != "complete":
+#             continue
+#         match_time = m.updated_at.replace(tzinfo=None)
+#         if match_time > most_recent_match_time:
+#             most_recent_match_time = match_time
+#     return most_recent_match_time
 
 
 def output():
@@ -24,9 +24,9 @@ def output():
     match_list = Match.objects.filter(match_state="open").order_by(
         "calculated_play_order"
     )
-    print(match_list)
     output_match = []
     for i, match in enumerate(match_list[:5]):
+        print(match.tournament_id, match.tournament_id.tournament_state)
         output_match.append(
             {
                 "index": i + 1,
