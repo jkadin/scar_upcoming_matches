@@ -64,7 +64,15 @@ def update_database():
                 print("Match already exists")
     # assign calculated_play_order
     matches_list = []
-    for t, tournament in enumerate(Tournament.objects.all()):
+    need_interleave = Tournament.objects.filter(tournament_needs_interleave=True)
+    if not need_interleave:
+        return
+    for t, tournament in enumerate(
+        Tournament.objects.filter(tournament_needs_interleave=True)
+    ):
+        print(tournament.tournament_name)
+        tournament.tournament_needs_interleave = False
+        tournament.save()
         matches_list.append(
             Match.objects.filter(tournament_id=tournament, match_state="open").order_by(
                 "suggested_play_order"
