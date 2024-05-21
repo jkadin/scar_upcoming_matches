@@ -33,10 +33,13 @@ ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
     "[::1]",
+    "scar.kadinenterprises.com",
+    "www.kadinenterprises.com",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://scar.kadinenterprises.com",
+    "https://kadinenterprises.com",
 ]
 
 
