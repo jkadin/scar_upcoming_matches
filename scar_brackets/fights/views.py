@@ -25,7 +25,7 @@ def output():
         "calculated_play_order"
     )
     output_match = []
-    for i, match in enumerate(match_list[:5]):
+    for i, match in enumerate(match_list[:6]):
         print(match.tournament_id, match.tournament_id.tournament_state)
         output_match.append(
             {
@@ -45,6 +45,17 @@ def index(request):
     return render(
         request,
         "fights/index.html",
+        {
+            "output_matches": output_matches,
+        },
+    )
+
+
+def no_background_index(request):
+    output_matches = output()
+    return render(
+        request,
+        "fights/no_background_index.html",
         {
             "output_matches": output_matches,
         },
