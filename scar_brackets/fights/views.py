@@ -8,17 +8,6 @@ NEXT_MATCH_START = timedelta(minutes=1)
 MATCH_DELAY = timedelta(minutes=3)
 
 
-# def most_recent_match_time(tournament):
-#     most_recent_match_time = datetime.min
-#     for m in tournament["matches"]:
-#         if m.match_state != "complete":
-#             continue
-#         match_time = m.updated_at.replace(tzinfo=None)
-#         if match_time > most_recent_match_time:
-#             most_recent_match_time = match_time
-#     return most_recent_match_time
-
-
 def output():
     match_start = datetime.now() + NEXT_MATCH_START
     match_list = Match.objects.filter(match_state="open").order_by(
