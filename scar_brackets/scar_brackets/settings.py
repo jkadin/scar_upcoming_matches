@@ -33,7 +33,10 @@ ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
     "[::1]",
-    "152.67.250.7",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://scar.kadinenterprises.com",
 ]
 
 
@@ -127,7 +130,7 @@ AUTHENTICATION_BACKENDS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "America/New_York"
+TIME_ZONE = "America/Los_Angeles"
 
 USE_I18N = True
 
@@ -138,6 +141,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = "/var/www/scar_brackets/static"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
