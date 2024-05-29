@@ -4,6 +4,9 @@ import challonge
 import os
 from fights.models import Url, Tournament, Match, Participant
 from itertools import chain, zip_longest
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class Command(BaseCommand):
@@ -26,8 +29,19 @@ def update_database():
         )
     # Load Tournament and Participants first
     for t in tournament_list:
-        t1 = Tournament(t.get("id"), t.get("name"), t.get("state"), tournament_url)
+        needs_interleave = True
+        exists = Tournament.objects.filter(tournament_id=t.get("id"))
+        if exists:
+            needs_interleave = False
+        t1 = Tournament(
+            t.get("id"),
+            t.get("name"),
+            t.get("state"),
+            tournament_url,
+            needs_interleave,
+        )
         t1.save()
+        print(t1.tournament_needs_interleave)
         print(f"Tournament_id= - {t1.tournament_id}")
         print("Loading participants")
         load_particpants(t1)
@@ -63,10 +77,13 @@ def update_database():
             except IntegrityError:
                 print("Match already exists")
     # assign calculated_play_order
+    print("Check interleave")
     matches_list = []
-    need_interleave = Tournament.objects.filter(tournament_needs_interleave=True)
-    if not need_interleave:
+    needs_interleave = Tournament.objects.filter(tournament_needs_interleave=True)
+    if not needs_interleave:
+        print("No interleave needed")
         return
+    print("Interleave needed")
     for t, tournament in enumerate(
         Tournament.objects.filter(tournament_needs_interleave=True)
     ):
