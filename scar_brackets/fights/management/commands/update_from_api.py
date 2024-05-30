@@ -52,7 +52,6 @@ def update_database():
     for t in tournament_list:
         t1 = Tournament(t.get("id"), t.get("name"), t.get("state"), tournament_url)
         for match in challonge.matches.index(t1.tournament_id, state="all"):
-            print(match)
             player1_id = Participant.objects.get(
                 participant_id=match.get("player1_id"), tournament_id=t1
             )
