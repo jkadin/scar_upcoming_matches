@@ -49,6 +49,8 @@ class Match(models.Model):
     suggested_play_order = models.IntegerField()
     calculated_play_order = models.IntegerField(default=0)
     estimated_start_time = models.DateTimeField(null=True, blank=True)
+    started_at = models.DateTimeField(null=True, blank=True)
+    underway_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self) -> str:
         return self.match_id

@@ -52,6 +52,7 @@ def update_database():
     for t in tournament_list:
         t1 = Tournament(t.get("id"), t.get("name"), t.get("state"), tournament_url)
         for match in challonge.matches.index(t1.tournament_id, state="all"):
+            print(match)
             player1_id = Participant.objects.get(
                 participant_id=match.get("player1_id"), tournament_id=t1
             )
@@ -67,9 +68,18 @@ def update_database():
                 updated_at=match.get("updated_at"),
                 suggested_play_order=match.get("suggested_play_order"),
                 estimated_start_time=None,
+                started_at=match.get("started_at"),
+                underway_at=match.get("underway_at"),
             )
             try:
-                m1.save(update_fields=["match_state", "updated_at"])
+                m1.save(
+                    update_fields=[
+                        "match_state",
+                        "updated_at",
+                        "started_at",
+                        "underway_at",
+                    ]
+                )
             except DatabaseError:
                 try:
                     m1.save()
