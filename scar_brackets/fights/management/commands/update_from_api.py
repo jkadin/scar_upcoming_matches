@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from django.db import IntegrityError
+from django.db import IntegrityError, DatabaseError
 import challonge
 import os
 from fights.models import Url, Tournament, Match, Participant
@@ -52,9 +52,6 @@ def update_database():
     for t in tournament_list:
         t1 = Tournament(t.get("id"), t.get("name"), t.get("state"), tournament_url)
         for match in challonge.matches.index(t1.tournament_id, state="all"):
-            p1 = match.get("player1_id")
-            p2 = match.get("player2_id")
-            print(p1, p2)
             player1_id = Participant.objects.get(
                 participant_id=match.get("player1_id"), tournament_id=t1
             )
@@ -69,13 +66,15 @@ def update_database():
                 match_state=match.get("state"),
                 updated_at=match.get("updated_at"),
                 suggested_play_order=match.get("suggested_play_order"),
-                calculated_play_order=0,
                 estimated_start_time=None,
             )
             try:
-                m1.save()
-            except IntegrityError:
-                print("Match already exists")
+                m1.save(update_fields=["match_state", "updated_at"])
+            except DatabaseError:
+                try:
+                    m1.save()
+                except IntegrityError:
+                    print("Match already exists")
     # assign calculated_play_order
     print("Check interleave")
     matches_list = []
@@ -84,29 +83,31 @@ def update_database():
         print("No interleave needed")
         return
     print("Interleave needed")
-    for t, tournament in enumerate(
-        Tournament.objects.filter(tournament_needs_interleave=True)
-    ):
+    for t, tournament in enumerate(Tournament.objects.all()):
         print(tournament.tournament_name)
         tournament.tournament_needs_interleave = False
         tournament.save()
         matches_list.append(
-            Match.objects.filter(tournament_id=tournament, match_state="open").order_by(
+            Match.objects.filter(tournament_id=tournament).order_by(
                 "suggested_play_order"
             )
         )
+    print(matches_list)
     interleaved = zip_longest(*matches_list)
+    print(interleaved)
     list_of_tuples = chain.from_iterable(interleaved)
+    print("list of tuples - ", list_of_tuples)
     remove_fill = [x for x in list_of_tuples if x is not None]
+    print(remove_fill)
     for i, m in enumerate(remove_fill):
         print(m.tournament_id.tournament_name, m.suggested_play_order)
         m.calculated_play_order = i + 1
+        print(m.calculated_play_order)
         m.save()
 
 
 def load_particpants(t1):
     for participant in challonge.participants.index(t1.tournament_id):
-        print(f'Participant_id= - {participant.get("id")}')
         p1 = Participant(
             participant_id=participant.get("id"),
             participant_name=participant.get("name"),
@@ -115,7 +116,8 @@ def load_particpants(t1):
         try:
             p1.save()
         except IntegrityError:
-            print("Participant already exists")
+            # print(f"Participant {p1} already exists")
+            pass
 
 
 def create_null_particpant(t1):
