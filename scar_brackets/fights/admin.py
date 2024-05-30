@@ -19,6 +19,7 @@ class Match_admin(admin.ModelAdmin):
         "player1_id",
         "player2_id",
         "tournament_id",
+        "suggested_play_order",
         "calculated_play_order",
         "match_state",
     )
