@@ -54,3 +54,11 @@ class Match(models.Model):
 
     def __str__(self) -> str:
         return self.match_id
+
+
+class Option(models.Model):
+    option_name = models.CharField(max_length=100, primary_key=True)
+    option_value = models.CharField(max_length=100)
+
+    def __str__(self) -> str:
+        return self.option_name
