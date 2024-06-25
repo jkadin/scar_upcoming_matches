@@ -57,8 +57,10 @@ class Match(models.Model):
 
 
 class Option(models.Model):
-    option_name = models.CharField(max_length=100, primary_key=True)
-    option_value = models.CharField(max_length=100)
+    option_name = models.CharField(
+        max_length=100, primary_key=True, default="Interleave type"
+    )
+    option_value = models.CharField(max_length=100, default="Recalc")
 
     def __str__(self) -> str:
         return self.option_name
