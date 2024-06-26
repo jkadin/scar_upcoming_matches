@@ -1,9 +1,9 @@
 from django.shortcuts import render
-from django.core.exceptions import ObjectDoesNotExist
-from .models import Match, Tournament, Option
+from .models import Match, Tournament
 
 from itertools import chain, zip_longest
 from datetime import datetime, timedelta
+from preferences import preferences
 
 
 NEXT_MATCH_START = timedelta(minutes=1)
@@ -12,11 +12,9 @@ MATCH_DELAY = timedelta(minutes=3)
 
 def output():
     match_start = datetime.now() + NEXT_MATCH_START
-    try:
-        interleave_type = Option.objects.get(option_name="Interleave type").option_value
-    except ObjectDoesNotExist:
-        interleave_type = "Fixed"
-    if interleave_type == "Fixed":
+    INTERLEAVE_METHOD = preferences.MyPreferences.interleave_method
+    print(f"{INTERLEAVE_METHOD=}")
+    if INTERLEAVE_METHOD == "Fixed":
         match_list = Match.objects.filter(match_state="open").order_by(
             "calculated_play_order"
         )

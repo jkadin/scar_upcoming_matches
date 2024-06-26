@@ -1,9 +1,12 @@
 from django.contrib import admin
-from .models import Url, Match, Tournament, Participant, Option
+from .models import Url, Match, Tournament, Participant
+from preferences.admin import PreferencesAdmin
+from .models import MyPreferences
+
+admin.site.register(MyPreferences, PreferencesAdmin)
 
 
 admin.site.register(Url)
-admin.site.register(Option)
 
 
 class Participant_admin(admin.ModelAdmin):

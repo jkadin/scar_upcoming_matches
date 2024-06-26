@@ -1,4 +1,11 @@
 from django.db import models
+from preferences.models import Preferences
+
+
+class MyPreferences(Preferences):
+    interleave_method = models.CharField(
+        max_length=100, default="Fixed", null=True, blank=True
+    )
 
 
 class Url(models.Model):
@@ -54,13 +61,3 @@ class Match(models.Model):
 
     def __str__(self) -> str:
         return self.match_id
-
-
-class Option(models.Model):
-    option_name = models.CharField(
-        max_length=100, primary_key=True, default="Interleave type"
-    )
-    option_value = models.CharField(max_length=100, default="Recalc")
-
-    def __str__(self) -> str:
-        return self.option_name
