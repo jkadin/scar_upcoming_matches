@@ -29,11 +29,13 @@ def update_database():
         )
     # Load Tournament and Participants first
     for t in tournament_list:
+        exists = Tournament.objects.filter(tournament_id=t.get("id"))
         print("state", t.get("state"))
-        if t.get("state") == "pending":
+        if t.get("state") != "underway":
+            if exists:
+                exists.delete()
             continue
         needs_interleave = True
-        exists = Tournament.objects.filter(tournament_id=t.get("id"))
         if exists:
             needs_interleave = False
         t1 = Tournament(
@@ -50,6 +52,9 @@ def update_database():
         load_particpants(t1)
         create_null_particpant(t1)
         print("Participant loading complete")
+
+    # remove non-underway tournaments
+    tournament_list = [t for t in tournament_list if t.get("state") == "underway"]
 
     # load matches
     print("Loading Matches")
