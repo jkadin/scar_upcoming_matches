@@ -29,6 +29,9 @@ def update_database():
         )
     # Load Tournament and Participants first
     for t in tournament_list:
+        print("state", t.get("state"))
+        if t.get("state") == "pending":
+            continue
         needs_interleave = True
         exists = Tournament.objects.filter(tournament_id=t.get("id"))
         if exists:
@@ -41,7 +44,7 @@ def update_database():
             needs_interleave,
         )
         t1.save()
-        print(t1.tournament_needs_interleave)
+        print(f"{t1.tournament_needs_interleave=}")
         print(f"Tournament_id= - {t1.tournament_id}")
         print("Loading participants")
         load_particpants(t1)
@@ -49,8 +52,11 @@ def update_database():
         print("Participant loading complete")
 
     # load matches
+    print("Loading Matches")
     for t in tournament_list:
         t1 = Tournament(t.get("id"), t.get("name"), t.get("state"), tournament_url)
+        print(f"{t1.tournament_id=}")
+        print(challonge.matches.index(t1.tournament_id))
         for match in challonge.matches.index(t1.tournament_id, state="all"):
             player1_id = Participant.objects.get(
                 participant_id=match.get("player1_id"), tournament_id=t1
