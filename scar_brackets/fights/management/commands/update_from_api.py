@@ -88,6 +88,8 @@ def update_database():
                         "updated_at",
                         "started_at",
                         "underway_at",
+                        "player1_id",
+                        "player2_id",
                     ]
                 )
             except DatabaseError:
