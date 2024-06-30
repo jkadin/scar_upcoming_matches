@@ -155,15 +155,18 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 DISCORD_CLIENT_ID = str(os.getenv("DISCORD_CLIENT_ID"))
 DISCORD_CLIENT_SECRET = str(os.getenv("DISCORD_CLIENT_SECRET"))
+SOCIALACCOUNT_LOGIN_ON_GET = True
+ACCOUNT_LOGOUT_ON_GET = True
 SOCIALACCOUNT_PROVIDERS = {
     "discord": {
         "APP": {
             "client_id": DISCORD_CLIENT_ID,
             "secret": DISCORD_CLIENT_SECRET,
             "key": "",
-        }
+        },
     }
 }
 
 SITE_ID = 1
-LOGIN_REDIRECT_URL = "/admin"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT = "/"

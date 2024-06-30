@@ -58,6 +58,8 @@ class Match(models.Model):
     estimated_start_time = models.DateTimeField(null=True, blank=True)
     started_at = models.DateTimeField(null=True, blank=True)
     underway_at = models.DateTimeField(null=True, blank=True)
+    player1_is_prereq_match_loser = models.BooleanField(default=False)
+    player2_is_prereq_match_loser = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return self.match_id

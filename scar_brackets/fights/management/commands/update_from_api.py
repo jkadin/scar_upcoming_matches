@@ -5,6 +5,7 @@ import os
 from fights.models import Url, Tournament, Match, Participant
 from itertools import chain, zip_longest
 from dotenv import load_dotenv
+import pprint
 
 load_dotenv()
 
@@ -60,8 +61,8 @@ def update_database():
     print("Loading Matches")
     for t in tournament_list:
         t1 = Tournament(t.get("id"), t.get("name"), t.get("state"), tournament_url)
-        print(f"{t1.tournament_id=}")
-        print(challonge.matches.index(t1.tournament_id))
+        # print(f"{t1.tournament_id=}")
+        # pprint.pp(challonge.matches.index(t1.tournament_id))
         for match in challonge.matches.index(t1.tournament_id, state="all"):
             player1_id = Participant.objects.get(
                 participant_id=match.get("player1_id"), tournament_id=t1
@@ -80,6 +81,12 @@ def update_database():
                 estimated_start_time=None,
                 started_at=match.get("started_at"),
                 underway_at=match.get("underway_at"),
+                player1_is_prereq_match_loser=match.get(
+                    "player1_is_prereq_match_loser"
+                ),
+                player2_is_prereq_match_loser=match.get(
+                    "player2_is_prereq_match_loser"
+                ),
             )
             try:
                 m1.save(
@@ -90,6 +97,8 @@ def update_database():
                         "underway_at",
                         "player1_id",
                         "player2_id",
+                        "player1_is_prereq_match_loser",
+                        "player2_is_prereq_match_loser",
                     ]
                 )
             except DatabaseError:
