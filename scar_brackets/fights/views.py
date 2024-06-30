@@ -29,6 +29,9 @@ def output():
                 "player2_name": match.player2_id,
                 "match_start": match_start.strftime("%I:%M %p"),
                 "tournament_name": match.tournament_id.tournament_name,
+                "suggested_play_order": match.suggested_play_order,
+                "losers_bracket": match.player1_is_prereq_match_loser
+                or match.player2_is_prereq_match_loser,
             }
         )
         match_start += MATCH_DELAY

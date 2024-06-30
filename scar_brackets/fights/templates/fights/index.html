@@ -16,15 +16,22 @@
 </style>
 
 <body>
-        <div class="container-fluid bg-danger text-white scar_logo text_style py-4 ">
-            <div class="row text-center justify-content-center py-4">
-                <div class="col-md-3 bg-primary rounded-3" style="text-shadow: 3px 3px 0px black;">
-                    <div class="display-5"><strong>Upcoming Matches</strong></div>
-                    <div class="display-6">(All times approx.)</div>
-                </div>
-            </div>
-            {% include './matches.html' %}
+    <div class="container-fluid bg-danger text-white scar_logo text_style py-4 ">
+        <div class="">
+            {% if user.is_authenticated %}
+            {{ user }} | <a href="/accounts/logout">Logout</a>
+            {% else %}
+            <a href="/accounts/login">Login</a>
+            {% endif %}
         </div>
+        <div class="row text-center justify-content-center py-4">
+            <div class="col-md-3 bg-primary rounded-3" style="text-shadow: 3px 3px 0px black;">
+                <div class="display-5"><strong>Upcoming Matches</strong></div>
+                <div class="display-6">(All times approx.)</div>
+            </div>
+        </div>
+        {% include './matches.html' %}
+    </div>
 </body>
 
 </html>
