@@ -17,17 +17,18 @@
                 </div>
                 <div class="row display-5">
                     <div class="col" style="text-shadow: 3px 3px 0px black;">
-                        {{match.match_start}} ({{match.tournament_name}})
+                        {{match.match_start}} ({{match.tournament_name}}) -
+                        {% if match.losers_bracket %}L{% else %}W{% endif %} {{ match.suggested_play_order }}
                     </div>
                 </div>
             </div>
             {% endfor %}
         </div>
         {% else %}
-	<br><br>
-	<div class="col-md-auto text-center">
+        <br><br>
+        <div class="col-md-auto text-center">
             <strong>No active tournaments available</strong>
-	</div>
+        </div>
         {% endif %}
     </div>
 </div>
