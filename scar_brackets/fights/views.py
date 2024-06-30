@@ -21,7 +21,7 @@ def output():
     else:
         match_list = match_by_tournament()
     output_match = []
-    for i, match in enumerate(match_list[:6]):
+    for i, match in enumerate(match_list[:15]):
         output_match.append(
             {
                 "index": i + 1,
