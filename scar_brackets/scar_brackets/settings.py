@@ -33,13 +33,11 @@ ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
     "[::1]",
-    "scar.kadinenterprises.com",
-    "www.kadinenterprises.com",
+    "fights.socalattackrobots.com",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://scar.kadinenterprises.com",
-    "https://kadinenterprises.com",
+    "https://fights.socalattackrobots.com",
 ]
 
 
@@ -163,6 +161,9 @@ SOCIALACCOUNT_PROVIDERS = {
             "client_id": DISCORD_CLIENT_ID,
             "secret": DISCORD_CLIENT_SECRET,
             "key": "",
+        },
+        'AUTH_PARAMS': {
+            'prompt': 'none',
         },
     }
 }

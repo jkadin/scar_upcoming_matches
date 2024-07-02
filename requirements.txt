@@ -2,6 +2,6 @@ pychallonge==1.11.5
 python-dotenv==1.0.0
 django==5.0.4
 django-htmx==1.17.3
-django-allauth==0.62.1
+django-allauth==0.63.3
 gunicorn==22.0.0
 django-preferences==1.0.0
