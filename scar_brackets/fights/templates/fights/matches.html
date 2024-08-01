@@ -1,9 +1,9 @@
 <div class="justify-content-center align-items-center h-50 display-3 lh-sm px-8">
     <div hx-get="display_matches" hx-trigger="every 30s" hx-swap="innerHTML">
         {% if output_matches %}
-        <div class="text-center">
+        <div class="text-center list-group" id="listForSorting">
             {% for match in output_matches %}
-            <div class="pt-5 pb-5">
+            <div class="pt-5 pb-5 list-item">
                 <div class="row justify-content-md-center text-dark text_style">
                     <div class="col-md-4 bg-warning rounded-start">
                         {{match.player1_name}}
@@ -15,7 +15,7 @@
                         {{match.player2_name}}
                     </div>
                 </div>
-                <div class="row display-5">
+                <div class="row display-5 drag-handle">
                     <div class="col" style="text-shadow: 3px 3px 0px black;">
                         {{match.match_start}} ({{match.tournament_name}}) -
                         {% if match.losers_bracket %}L{% else %}W{% endif %} {{ match.suggested_play_order }}
@@ -32,3 +32,21 @@
         {% endif %}
     </div>
 </div>
+{% if perms.fights.change_match %}
+<script>
+    // List with handle
+    Sortable.create(listForSorting, {
+    handle: '.drag-handle',
+    animation: 150,
+    onEnd: function (/**Event*/evt) {
+		var itemEl = evt.item;  // dragged HTMLElement
+		evt.oldIndex;  // element's old index within old parent
+		evt.newIndex;  // element's new index within new parent
+        if (evt.oldIndex != evt.newIndex) {
+            // Call a URL to make changes to calculated sort order here
+            console.log("Moved item #" + evt.oldIndex + " to #" + evt.newIndex);
+        }
+	},
+    });
+</script>
+{% endif %}
