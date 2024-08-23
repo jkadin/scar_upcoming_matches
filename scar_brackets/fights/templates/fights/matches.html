@@ -3,7 +3,7 @@
         {% if output_matches %}
         <div class="text-center list-group" id="listForSorting">
             {% for match in output_matches %}
-            <div class="pt-5 pb-5 list-item">
+            <div class="pt-5 pb-5 list-item" id="{{match.match_id}}">
                 <div class="row justify-content-md-center text-dark text_style">
                     <div class="col-md-4 bg-warning rounded-start">
                         {{match.player1_name}}
@@ -16,7 +16,7 @@
                     </div>
                 </div>
                 <div class="row display-5 drag-handle">
-                    <div class="col" style="text-shadow: 3px 3px 0px black;">
+                    <div class="col" style="text-shadow: 2px 3px 0px black;">
                         {{match.match_start}} ({{match.tournament_name}}) -
                         {% if match.losers_bracket %}L{% else %}W{% endif %} {{ match.suggested_play_order }}
                     </div>
@@ -26,27 +26,49 @@
         </div>
         {% else %}
         <br><br>
-        <div class="col-md-auto text-center">
-            <strong>No active tournaments available</strong>
-        </div>
-        {% endif %}
+        <strong>No active tournaments available</strong>
     </div>
+    {% endif %}
+</div>
 </div>
 {% if perms.fights.change_match %}
 <script>
     // List with handle
+    document.querySelectorAll('#listForSorting li').forEach(function (el, index) {
+        el.id = 'item' + index;  // Set a dynamic ID if it doesn't exist
+    });
     Sortable.create(listForSorting, {
-    handle: '.drag-handle',
-    animation: 150,
-    onEnd: function (/**Event*/evt) {
-		var itemEl = evt.item;  // dragged HTMLElement
-		evt.oldIndex;  // element's old index within old parent
-		evt.newIndex;  // element's new index within new parent
-        if (evt.oldIndex != evt.newIndex) {
-            // Call a URL to make changes to calculated sort order here
-            console.log("Moved item #" + evt.oldIndex + " to #" + evt.newIndex);
-        }
-	},
+        handle: '.drag-handle',
+        animation: 150,
+        onEnd: function (/**Event*/evt) {
+            var itemEl = evt.item;  // dragged HTMLElement
+            evt.oldIndex;  // element's old index within old parent
+            evt.newIndex;  // element's new index within new parent
+            var matchID = itemEl.id;
+            if (evt.oldIndex != evt.newIndex) {
+                // Call a URL to make changes to calculated sort order here
+                console.log("Moved item #" + evt.oldIndex + " to #" + evt.newIndex);
+                console.log(matchID, evt.newIndex, evt.oldIndex);
+                fetch('reorder', {  // Replace with your actual URL
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        matchID: matchID,
+                        newIndex: evt.newIndex,
+                        oldIndex: evt.oldIndex
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Success:', data);
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+            }
+        },
     });
 </script>
 {% endif %}
