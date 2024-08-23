@@ -8,4 +8,5 @@ urlpatterns = [
     path("", views.index, name="index"),
     path("display_matches", views.display_matches, name="display_matches"),
     path("stream", views.no_background_index, name="stream"),
+    path("reorder", views.manual_sort, name="reorder"),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
