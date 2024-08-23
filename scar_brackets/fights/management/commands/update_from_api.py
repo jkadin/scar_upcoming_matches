@@ -5,7 +5,8 @@ import os
 from fights.models import Url, Tournament, Match, Participant
 from itertools import chain, zip_longest
 from dotenv import load_dotenv
-import pprint
+
+# import pprint
 
 load_dotenv()
 
