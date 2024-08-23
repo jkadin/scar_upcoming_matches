@@ -1,10 +1,11 @@
 from django.shortcuts import render
+from django.http import JsonResponse
 from .models import Match, Tournament
-
+from django.views.decorators.csrf import csrf_exempt
 from itertools import chain, zip_longest
 from datetime import datetime, timedelta
 from preferences import preferences
-
+import json
 
 NEXT_MATCH_START = timedelta(minutes=1)
 MATCH_DELAY = timedelta(minutes=3)
@@ -32,6 +33,7 @@ def output():
                 "suggested_play_order": match.suggested_play_order,
                 "losers_bracket": match.player1_is_prereq_match_loser
                 or match.player2_is_prereq_match_loser,
+                "match_id": match.match_id,
             }
         )
         match_start += MATCH_DELAY
@@ -58,6 +60,63 @@ def no_background_index(request):
             "output_matches": output_matches,
         },
     )
+
+
+def update_manaual_play_order(changed_match_id, old_index, new_index):
+    if old_index == new_index:
+        return
+    distance = new_index - old_index
+    match_list = Match.objects.filter(match_state="open").order_by(
+        "calculated_play_order"
+    )
+    print(changed_match_id, old_index, new_index)
+
+    for index, match in enumerate(match_list):
+        if match.match_id == changed_match_id:
+            match.calculated_play_order += distance
+            print(f"Updated Match - {match.match_id} to  {match.calculated_play_order}")
+            match.save()
+            break
+    # print(f"Index = {index},{match_list[index]}")
+
+    ##move the rest
+    direction = int(distance / abs(distance))
+    print(f"{index=}, {distance=}, {direction=}")
+    for i in range(index + direction, index + distance + direction, direction):
+        match = match_list[i]
+        print(
+            i,
+            match,
+            match.calculated_play_order,
+            match.calculated_play_order + direction,
+        )
+        match.calculated_play_order -= direction
+        match.save()
+
+
+@csrf_exempt
+def manual_sort(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            match_id = data.get("matchID")
+            old_index = data.get("oldIndex")
+            new_index = data.get("newIndex")
+            update_manaual_play_order(match_id, old_index, new_index)
+            return JsonResponse(
+                {
+                    "status": "success",
+                    "matchID": match_id,
+                    "oldIndex": old_index,
+                    "newIndex": new_index,
+                }
+            )
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
+    else:
+        return JsonResponse(
+            {"status": "error", "message": "Invalid request method"}, status=405
+        )
 
 
 def display_matches(request):
@@ -93,7 +152,7 @@ def match_by_tournament():
     for tournament in Tournament.objects.all():
         matches_list.append(
             Match.objects.filter(tournament_id=tournament, match_state="open").order_by(
-                "suggested_play_order"
+                "calculated_play_order"
             )
         )
     interleaved = zip_longest(*matches_list)
