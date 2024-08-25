@@ -13,7 +13,7 @@ MATCH_DELAY = timedelta(minutes=3)
 
 def output():
     match_start = datetime.now() + NEXT_MATCH_START
-    INTERLEAVE_METHOD = preferences.MyPreferences.interleave_method
+    INTERLEAVE_METHOD = preferences.MyPreferences.interleave_method  # type: ignore
     print(f"{INTERLEAVE_METHOD=}")
     if INTERLEAVE_METHOD == "Fixed":
         match_list = Match.objects.filter(match_state="open").order_by(
