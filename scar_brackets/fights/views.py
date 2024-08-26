@@ -62,34 +62,49 @@ def no_background_index(request):
     )
 
 
-def update_manaual_play_order(changed_match_id, old_index, new_index):
+def end_match(ordered_matches, new_index):
+    return ordered_matches[new_index].get("id")
+
+
+def match_indexes(start_match_id, end_match_id, match_list):
+    for index, match in enumerate(match_list):
+        if start_match_id == match.match_id:
+            match_start_index = index
+        if end_match_id == match.match_id:
+            match_end_index = index
+    return match_start_index, match_end_index
+
+
+def update_manaual_play_order(start_match_id, old_index, new_index, ordered_items):
     if old_index == new_index:
         return
-    distance = new_index - old_index
-    match_list = Match.objects.filter(match_state="open").order_by(
-        "calculated_play_order"
+    screen_distance = new_index - old_index
+    direction = int(screen_distance / abs(screen_distance))
+    end_match_id = end_match(ordered_items, new_index)
+    match_list = Match.objects.order_by("calculated_play_order")
+    match_start_index, match_end_index = match_indexes(
+        start_match_id, end_match_id, match_list
     )
-    print(changed_match_id, old_index, new_index)
+    distance = match_end_index - match_start_index
+    print(f"{match_start_index=},{match_end_index=},{distance=}")
 
     for index, match in enumerate(match_list):
-        if match.match_id == changed_match_id:
+        if match.match_id == start_match_id:
             match.calculated_play_order += distance
             print(f"Updated Match - {match.match_id} to  {match.calculated_play_order}")
             match.save()
             break
-    # print(f"Index = {index},{match_list[index]}")
 
     ##move the rest
     direction = int(distance / abs(distance))
-    print(f"{index=}, {distance=}, {direction=}")
     for i in range(index + direction, index + distance + direction, direction):
         match = match_list[i]
-        print(
-            i,
-            match,
-            match.calculated_play_order,
-            match.calculated_play_order + direction,
-        )
+        # print(
+        #     i,
+        #     match,
+        #     match.calculated_play_order,
+        #     match.calculated_play_order + direction,
+        # )
         match.calculated_play_order -= direction
         match.save()
 
@@ -99,10 +114,11 @@ def manual_sort(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
-            match_id = data.get("matchID")
-            old_index = data.get("oldIndex")
-            new_index = data.get("newIndex")
-            update_manaual_play_order(match_id, old_index, new_index)
+            ordered_items = data.get("orderedItems")
+            match_id = data.get("movedItem").get("matchID")
+            old_index = data.get("movedItem").get("oldIndex")
+            new_index = data.get("movedItem").get("newIndex")
+            update_manaual_play_order(match_id, old_index, new_index, ordered_items)
             return JsonResponse(
                 {
                     "status": "success",
