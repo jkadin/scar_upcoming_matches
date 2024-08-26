@@ -27,48 +27,67 @@
         {% else %}
         <br><br>
         <strong>No active tournaments available</strong>
+        {% endif %}
     </div>
-    {% endif %}
 </div>
-</div>
+
 {% if perms.fights.change_match %}
 <script>
-    // List with handle
-    document.querySelectorAll('#listForSorting li').forEach(function (el, index) {
-        el.id = 'item' + index;  // Set a dynamic ID if it doesn't exist
-    });
-    Sortable.create(listForSorting, {
-        handle: '.drag-handle',
-        animation: 150,
-        onEnd: function (/**Event*/evt) {
-            var itemEl = evt.item;  // dragged HTMLElement
-            evt.oldIndex;  // element's old index within old parent
-            evt.newIndex;  // element's new index within new parent
-            var matchID = itemEl.id;
-            if (evt.oldIndex != evt.newIndex) {
-                // Call a URL to make changes to calculated sort order here
-                console.log("Moved item #" + evt.oldIndex + " to #" + evt.newIndex);
-                console.log(matchID, evt.newIndex, evt.oldIndex);
-                fetch('reorder', {  // Replace with your actual URL
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        matchID: matchID,
-                        newIndex: evt.newIndex,
-                        oldIndex: evt.oldIndex
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize Sortable after DOM is fully loaded
+        Sortable.create(document.getElementById('listForSorting'), {
+            handle: '.drag-handle',
+            animation: 150,
+            onStart: function (evt) {
+                // Capture the initial order of the items when dragging starts
+                var listItems = document.querySelectorAll('#listForSorting .list-item');
+                initialOrder = Array.from(listItems).map((item, index) => ({
+                    id: item.id,
+                    order: index
+                }));
+
+                console.log("Initial order:", initialOrder);
+            },
+            onEnd: function (evt) {
+
+                // Log the orderedItems array for debugging
+
+                // Check if the order has changed
+                var itemEl = evt.item;  // dragged HTMLElement
+                var matchID = itemEl.id;  // ID of the dragged element
+                var oldIndex = evt.oldIndex;  // old index
+                var newIndex = evt.newIndex;  // new index
+
+                if (oldIndex !== newIndex) {
+                    console.log("Moved item #" + oldIndex + " to #" + newIndex);
+                    console.log("Match ID:", matchID);
+
+                    // Send the orderedItems array in the POST request
+                    fetch('reorder', {  // Replace with your actual URL
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            orderedItems: initialOrder,
+                            movedItem: {
+                                matchID: matchID,
+                                newIndex: newIndex,
+                                oldIndex: oldIndex
+                            }
+                        })
                     })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Success:', data);
-                    })
-                    .catch((error) => {
-                        console.error('Error:', error);
-                    });
-            }
-        },
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('Success:', data);
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error);
+                        });
+                }
+            },
+        });
+
     });
 </script>
 {% endif %}
