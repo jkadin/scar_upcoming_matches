@@ -15,7 +15,7 @@ def output():
     match_start = datetime.now() + NEXT_MATCH_START
     INTERLEAVE_METHOD = preferences.MyPreferences.interleave_method  # type: ignore
     print(f"{INTERLEAVE_METHOD=}")
-    if INTERLEAVE_METHOD.lower == "fixed":
+    if INTERLEAVE_METHOD.lower() == "fixed":
         match_list = Match.objects.filter(match_state="open").order_by(
             "calculated_play_order"
         )

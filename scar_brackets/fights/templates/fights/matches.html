@@ -1,21 +1,21 @@
-<div class="justify-content-center align-items-center h-50 display-3 lh-sm px-8">
-    <div hx-get="display_matches" hx-trigger="every 10s" hx-swap="innerHTML">
+<div class="justify-content-center align-items-center h-50 display-3 lh-sm px-8" ;">
+    <div hx-get="display_matches" hx-trigger="every 10s [document.currentlyDragging == false]" hx-swap="innerHTML" hx-on::after-request="initSortable()">
         {% if output_matches %}
-        <div class="text-center list-group" id="listForSorting" style="user-select: none;">
+        <div class="text-center list-group" id="listForSorting">
             {% for match in output_matches %}
             <div class="pt-5 pb-5 list-item" id="{{match.match_id}}">
                 <div class="row justify-content-md-center text-dark text_style">
                     <div class="col-md-4 bg-warning rounded-start">
                         {{match.player1_name}}
                     </div>
-                    <div class="col-md-auto bg-secondary text-white">
+                    <div class="col-md-auto bg-secondary text-white drag-handle">
                         VS
                     </div>
                     <div class="col-md-4 bg-warning rounded-end">
                         {{match.player2_name}}
                     </div>
                 </div>
-                <div class="row display-5 drag-handle">
+                <div class="row display-6">
                     <div class="col" style="text-shadow: 2px 3px 0px black;">
                         {{match.match_start}} ({{match.tournament_name}}) -
                         {% if match.losers_bracket %}L{% else %}W{% endif %} {{ match.suggested_play_order }}
@@ -33,8 +33,7 @@
 
 {% if perms.fights.change_match %}
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Initialize Sortable after DOM is fully loaded
+    function initSortable() {
         Sortable.create(document.getElementById('listForSorting'), {
             handle: '.drag-handle',
             animation: 150,
@@ -47,6 +46,7 @@
                 }));
 
                 console.log("Initial order:", initialOrder);
+                document.currentlyDragging = true;
             },
             onEnd: function (evt) {
 
@@ -85,9 +85,14 @@
                             console.error('Error:', error);
                         });
                 }
+                document.currentlyDragging = false;
             },
         });
+    }
 
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize Sortable after DOM is fully loaded
+        initSortable();
     });
 </script>
 {% endif %}
