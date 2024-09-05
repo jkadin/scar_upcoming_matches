@@ -17,17 +17,22 @@
         /*text-transform: uppercase;*/
         font-weight: 400;
     }
+
+    .glyphicon-move {
+        cursor: move;
+        cursor: -webkit-grabbing;
+    }
 </style>
 
 <body>
     <div class="float-end text-white">
         {% if user.is_authenticated %}
-            {% if accounts.discord.0 %} {{ accounts.discord.0.extra_data.global_name }} {% else %} {{ user }} {% endif %} | <a href="/accounts/logout" class="link-light">Logout </a>
+            {% if accounts.discord.0 %} {{ accounts.discord.0.extra_data.global_name }} {% else %} {{ user }} {% endif %} {% if perms.fights.change_match %}| Staff {% endif %}| <a href="/accounts/logout" class="link-light">Logout </a>
         {% else %}
             <a href="/accounts/login" class="link-light">Login</a>
         {% endif %}
     </div>
-    <div class="container-fluid bg-danger text-white scar_logo text_style py-4">
+    <div class="container-fluid bg-danger text-white scar_logo text_style py-4" style="user-select: none;">
         <div class="row text-center justify-content-center py-4">
             <div class="col-md-3 bg-primary rounded-3" style="text-shadow: 3px 3px 0px black;">
                 <div class="display-5"><strong>Upcoming Matches</strong></div>
@@ -37,5 +42,4 @@
         {% include './matches.html' %}
     </div>
 </body>
-
 </html>

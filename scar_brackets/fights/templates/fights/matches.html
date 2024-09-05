@@ -1,22 +1,22 @@
-<div class="justify-content-center align-items-center h-50 display-3 lh-sm px-8">
-    <div hx-get="/display_matches" hx-trigger="every 30s" hx-swap="innerHTML">
+<div class="justify-content-center align-items-center h-50 display-3 lh-sm px-8" ;">
+    <div hx-get="display_matches" hx-trigger="every 10s [document.currentlyDragging == false]" hx-swap="innerHTML" hx-on::after-request="initSortable()">
         {% if output_matches %}
-        <div class="text-center">
+        <div class="text-center list-group" id="listForSorting">
             {% for match in output_matches %}
-            <div class="pt-5 pb-5">
+            <div class="pt-5 pb-5 list-item" id="{{match.match_id}}">
                 <div class="row justify-content-md-center text-dark text_style">
                     <div class="col-md-4 bg-warning rounded-start">
                         {{match.player1_name}}
                     </div>
-                    <div class="col-md-auto bg-secondary text-white">
+                    <div class="col-md-auto bg-secondary text-white drag-handle">
                         VS
                     </div>
                     <div class="col-md-4 bg-warning rounded-end">
                         {{match.player2_name}}
                     </div>
                 </div>
-                <div class="row display-5">
-                    <div class="col" style="text-shadow: 3px 3px 0px black;">
+                <div class="row display-6">
+                    <div class="col" style="text-shadow: 2px 3px 0px black;">
                         {{match.match_start}} ({{match.tournament_name}}) -
                         {% if match.losers_bracket %}L{% else %}W{% endif %} {{ match.suggested_play_order }}
                     </div>
@@ -26,9 +26,73 @@
         </div>
         {% else %}
         <br><br>
-        <div class="col-md-auto text-center">
-            <strong>No active tournaments available</strong>
-        </div>
+        <strong>No active tournaments available</strong>
         {% endif %}
     </div>
 </div>
+
+{% if perms.fights.change_match %}
+<script>
+    function initSortable() {
+        Sortable.create(document.getElementById('listForSorting'), {
+            handle: '.drag-handle',
+            animation: 150,
+            onStart: function (evt) {
+                // Capture the initial order of the items when dragging starts
+                var listItems = document.querySelectorAll('#listForSorting .list-item');
+                initialOrder = Array.from(listItems).map((item, index) => ({
+                    id: item.id,
+                    order: index
+                }));
+
+                console.log("Initial order:", initialOrder);
+                document.currentlyDragging = true;
+            },
+            onEnd: function (evt) {
+
+                // Log the orderedItems array for debugging
+
+                // Check if the order has changed
+                var itemEl = evt.item;  // dragged HTMLElement
+                var matchID = itemEl.id;  // ID of the dragged element
+                var oldIndex = evt.oldIndex;  // old index
+                var newIndex = evt.newIndex;  // new index
+
+                if (oldIndex !== newIndex) {
+                    console.log("Moved item #" + oldIndex + " to #" + newIndex);
+                    console.log("Match ID:", matchID);
+
+                    // Send the orderedItems array in the POST request
+                    fetch('reorder', {  // Replace with your actual URL
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            orderedItems: initialOrder,
+                            movedItem: {
+                                matchID: matchID,
+                                newIndex: newIndex,
+                                oldIndex: oldIndex
+                            }
+                        })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('Success:', data);
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error);
+                        });
+                }
+                document.currentlyDragging = false;
+            },
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize Sortable after DOM is fully loaded
+        initSortable();
+    });
+</script>
+{% endif %}

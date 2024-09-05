@@ -1,10 +1,11 @@
 from django.shortcuts import render
+from django.http import JsonResponse
 from .models import Match, Tournament
-
+from django.views.decorators.csrf import csrf_exempt
 from itertools import chain, zip_longest
 from datetime import datetime, timedelta
 from preferences import preferences
-
+import json
 
 NEXT_MATCH_START = timedelta(minutes=1)
 MATCH_DELAY = timedelta(minutes=3)
@@ -12,9 +13,9 @@ MATCH_DELAY = timedelta(minutes=3)
 
 def output():
     match_start = datetime.now() + NEXT_MATCH_START
-    INTERLEAVE_METHOD = preferences.MyPreferences.interleave_method
+    INTERLEAVE_METHOD = preferences.MyPreferences.interleave_method  # type: ignore
     print(f"{INTERLEAVE_METHOD=}")
-    if INTERLEAVE_METHOD == "Fixed":
+    if INTERLEAVE_METHOD.lower() == "fixed":
         match_list = Match.objects.filter(match_state="open").order_by(
             "calculated_play_order"
         )
@@ -32,6 +33,7 @@ def output():
                 "suggested_play_order": match.suggested_play_order,
                 "losers_bracket": match.player1_is_prereq_match_loser
                 or match.player2_is_prereq_match_loser,
+                "match_id": match.match_id,
             }
         )
         match_start += MATCH_DELAY
@@ -58,6 +60,79 @@ def no_background_index(request):
             "output_matches": output_matches,
         },
     )
+
+
+def end_match(ordered_matches, new_index):
+    return ordered_matches[new_index].get("id")
+
+
+def match_indexes(start_match_id, end_match_id, match_list):
+    for index, match in enumerate(match_list):
+        if start_match_id == match.match_id:
+            match_start_index = index
+        if end_match_id == match.match_id:
+            match_end_index = index
+    return match_start_index, match_end_index
+
+
+def update_manaual_play_order(start_match_id, old_index, new_index, ordered_items):
+    if old_index == new_index:
+        return
+    screen_distance = new_index - old_index
+    direction = int(screen_distance / abs(screen_distance))
+    end_match_id = end_match(ordered_items, new_index)
+    match_list = Match.objects.order_by("calculated_play_order")
+    match_start_index, match_end_index = match_indexes(
+        start_match_id, end_match_id, match_list
+    )
+    distance = match_end_index - match_start_index
+    print(f"{match_start_index=},{match_end_index=},{distance=}")
+
+    for index, match in enumerate(match_list):
+        if match.match_id == start_match_id:
+            match.calculated_play_order += distance
+            print(f"Updated Match - {match.match_id} to  {match.calculated_play_order}")
+            match.save()
+            break
+
+    ##move the rest
+    direction = int(distance / abs(distance))
+    for i in range(index + direction, index + distance + direction, direction):
+        match = match_list[i]
+        # print(
+        #     i,
+        #     match,
+        #     match.calculated_play_order,
+        #     match.calculated_play_order + direction,
+        # )
+        match.calculated_play_order -= direction
+        match.save()
+
+
+@csrf_exempt
+def manual_sort(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            ordered_items = data.get("orderedItems")
+            match_id = data.get("movedItem").get("matchID")
+            old_index = data.get("movedItem").get("oldIndex")
+            new_index = data.get("movedItem").get("newIndex")
+            update_manaual_play_order(match_id, old_index, new_index, ordered_items)
+            return JsonResponse(
+                {
+                    "status": "success",
+                    "matchID": match_id,
+                    "oldIndex": old_index,
+                    "newIndex": new_index,
+                }
+            )
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
+    else:
+        return JsonResponse(
+            {"status": "error", "message": "Invalid request method"}, status=405
+        )
 
 
 def display_matches(request):
@@ -93,7 +168,7 @@ def match_by_tournament():
     for tournament in Tournament.objects.all():
         matches_list.append(
             Match.objects.filter(tournament_id=tournament, match_state="open").order_by(
-                "suggested_play_order"
+                "calculated_play_order"
             )
         )
     interleaved = zip_longest(*matches_list)
