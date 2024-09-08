@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from .models import Match, Tournament
+from .models import Match, Tournament, Url
 from django.views.decorators.csrf import csrf_exempt
 from itertools import chain, zip_longest
 from datetime import datetime, timedelta
@@ -47,6 +47,18 @@ def index(request):
         "fights/index.html",
         {
             "output_matches": output_matches,
+        },
+    )
+
+
+def challonge_index(request):
+    output_matches = output()
+    return render(
+        request,
+        "fights/challonge_index.html",
+        {
+            "output_matches": output_matches,
+            "urls": Url.objects.all()
         },
     )
 
