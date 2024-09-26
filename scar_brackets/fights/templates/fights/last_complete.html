@@ -1,0 +1,22 @@
+<style>
+    .text_style {
+        /*text-transform: uppercase;*/
+        font-weight: 400;
+    }
+</style>
+
+<body class="bg-transparent">
+    <div class="container-fluid text-white text_style py-3 ">
+        <div class="row text-center justify-content-center py-4">
+            <div class="col-md-3 bg-warning rounded-3 text-black">
+                <div class="display-5"><strong>Last Complete</strong></div>
+                <h1>Players</h1>
+                {%for participant,last_complete in participants %}
+                <h4>{{participant}} {{last_complete}}</h4>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

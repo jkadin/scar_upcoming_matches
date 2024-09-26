@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from .models import Match, Tournament, Url
+from .models import Match, Tournament, Url, Participant
 from django.views.decorators.csrf import csrf_exempt
 from itertools import chain, zip_longest
 from datetime import datetime, timedelta
@@ -56,10 +56,7 @@ def challonge_index(request):
     return render(
         request,
         "fights/challonge_index.html",
-        {
-            "output_matches": output_matches,
-            "urls": Url.objects.all()
-        },
+        {"output_matches": output_matches, "urls": Url.objects.all()},
     )
 
 
@@ -70,6 +67,33 @@ def no_background_index(request):
         "fights/no_background_index.html",
         {
             "output_matches": output_matches,
+        },
+    )
+
+
+def last_complete_list():
+    participants = Participant.objects.all()
+    return participants
+
+
+def last_complete(request):
+    participants = {}
+    complete_matches = Match.objects.filter(match_state="complete")
+    for match in complete_matches:
+
+        if not participants.get(match.player1_id):
+            participants[match.player1_id] = match.updated_at
+        if not participants.get(match.player2_id):
+            participants[match.player2_id] = match.updated_at
+        if participants.get(match.player1_id) < match.updated_at:
+            participants[match.player1_id] = match.updated_at
+        if participants.get(match.player2_id) < match.updated_at:
+            participants[match.player2_id] = match.updated_at
+    return render(
+        request,
+        "fights/last_complete.html",
+        {
+            "participants": participants.items(),
         },
     )
 
