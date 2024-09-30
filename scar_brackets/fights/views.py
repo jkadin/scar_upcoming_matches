@@ -77,7 +77,7 @@ def last_complete_list():
     return participants
 
 
-def last_complete(request):
+def time_remaining(request):
     participants = {}
     complete_matches = Match.objects.filter(match_state="complete")
     for match in complete_matches:
@@ -106,7 +106,7 @@ def last_complete(request):
         
     return render(
         request,
-        "fights/last_complete.html",
+        "fights/time_remaining.html",
         {
             "participants": sorted(participants.items(), key = lambda x: x[0]),
         },

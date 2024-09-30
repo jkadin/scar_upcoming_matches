@@ -10,5 +10,5 @@ urlpatterns = [
     path("display_matches", views.display_matches, name="display_matches"),
     path("stream", views.no_background_index, name="stream"),
     path("reorder", views.manual_sort, name="reorder"),
-    path("last_complete", views.last_complete, name="last_complete"),
+    path("time_remaining", views.time_remaining, name="time_remaining"),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
