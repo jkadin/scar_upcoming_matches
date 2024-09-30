@@ -1,5 +1,5 @@
 <div class="justify-content-center align-items-center h-50 display-3 lh-sm px-8" ;">
-    <div hx-get="display_matches" hx-trigger="every 10s [document.currentlyDragging == false]" hx-swap="innerHTML" hx-on::after-request="initSortable()">
+    <div hx-get="display_matches" hx-trigger="every 10s [document.currentlyDragging != true]" hx-swap="innerHTML" hx-on::after-request="initSortable()">
         {% if output_matches %}
         <div class="text-center list-group" id="listForSorting">
             {% for match in output_matches %}
@@ -25,7 +25,10 @@
             {% endfor %}
         </div>
         {% else %}
-        <strong class="text-center">No active tournaments available</strong>
+        <div class="text-center">
+            <br>
+            <strong>No active tournaments available</strong>
+        </div>
         {% endif %}
     </div>
 </div>
