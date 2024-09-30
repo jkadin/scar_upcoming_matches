@@ -6,6 +6,7 @@ from itertools import chain, zip_longest
 from datetime import datetime, timedelta
 from preferences import preferences
 import json
+from django.utils import timezone
 
 NEXT_MATCH_START = timedelta(minutes=1)
 MATCH_DELAY = timedelta(minutes=3)
@@ -80,20 +81,34 @@ def last_complete(request):
     participants = {}
     complete_matches = Match.objects.filter(match_state="complete")
     for match in complete_matches:
+        if not participants.get(match.player1_id.participant_name):
+            participants[match.player1_id.participant_name] = match.updated_at
+        if not participants.get(match.player2_id.participant_name):
+            participants[match.player2_id.participant_name] = match.updated_at
+        if participants.get(match.player1_id.participant_name) < match.updated_at:
+            participants[match.player1_id.participant_name] = match.updated_at
+        if participants.get(match.player2_id.participant_name) < match.updated_at:
+            participants[match.player2_id.participant_name] = match.updated_at
 
-        if not participants.get(match.player1_id):
-            participants[match.player1_id] = match.updated_at
-        if not participants.get(match.player2_id):
-            participants[match.player2_id] = match.updated_at
-        if participants.get(match.player1_id) < match.updated_at:
-            participants[match.player1_id] = match.updated_at
-        if participants.get(match.player2_id) < match.updated_at:
-            participants[match.player2_id] = match.updated_at
+    # Add any participants that haven't competed yet
+    for p in Participant.objects.exclude(participant_id=None):
+        if not p.participant_name in participants:
+            participants[p.participant_name] = timezone.make_aware(datetime.min, timezone.get_default_timezone())
+
+    now = timezone.now()
+    for p in participants:
+        time_remaining = timedelta(minutes=20) - (now - participants[p])
+        if time_remaining < timedelta(minutes=0):
+            time_remaining = "00:00"
+        else:
+            time_remaining = str(time_remaining).split(".")[0]
+        participants[p] = time_remaining
+        
     return render(
         request,
         "fights/last_complete.html",
         {
-            "participants": participants.items(),
+            "participants": sorted(participants.items(), key = lambda x: x[0]),
         },
     )
 
