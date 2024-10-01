@@ -74,6 +74,7 @@ def no_background_index(request):
 
 def last_complete_list():
     participants = Participant.objects.all()
+    print()
     return participants
 
 
@@ -92,8 +93,11 @@ def time_remaining(request):
 
     # Add any participants that haven't competed yet
     for p in Participant.objects.exclude(participant_id=None):
+        print(p.participant_id, p.participant_name, p.tournament_id, p.last_updated)
         if not p.participant_name in participants:
-            participants[p.participant_name] = timezone.make_aware(datetime.min, timezone.get_default_timezone())
+            participants[p.participant_name] = timezone.make_aware(
+                datetime.min, timezone.get_default_timezone()
+            )
 
     now = timezone.now()
     for p in participants:
@@ -103,12 +107,12 @@ def time_remaining(request):
         else:
             time_remaining = str(time_remaining).split(".")[0]
         participants[p] = time_remaining
-        
+
     return render(
         request,
         "fights/time_remaining.html",
         {
-            "participants": sorted(participants.items(), key = lambda x: x[0]),
+            "participants": sorted(participants.items(), key=lambda x: x[0]),
         },
     )
 

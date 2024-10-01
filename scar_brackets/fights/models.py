@@ -1,5 +1,6 @@
 from django.db import models
 from preferences.models import Preferences
+from django.db.models import Q
 
 
 class MyPreferences(Preferences):
@@ -40,6 +41,20 @@ class Participant(models.Model):
 
     def __str__(self) -> str:
         return f"{self.participant_name}"
+
+    @property
+    def last_updated(self):
+        # Get the most recent match where the participant is either player1 or player2
+        recent_match = (
+            Match.objects.filter(
+                Q(player1_id=self) | Q(player2_id=self), match_state="complete"
+            )
+            .order_by("-updated_at")
+            .first()
+        )
+
+        # Return the updated_at of the most recent match, or None if no matches found
+        return recent_match.updated_at if recent_match else None
 
 
 class Match(models.Model):
