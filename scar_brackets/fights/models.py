@@ -1,6 +1,8 @@
 from django.db import models
 from preferences.models import Preferences
 from django.db.models import Q
+from datetime import datetime
+from django.utils import timezone
 
 
 class MyPreferences(Preferences):
@@ -54,7 +56,11 @@ class Participant(models.Model):
         )
 
         # Return the updated_at of the most recent match, or None if no matches found
-        return recent_match.updated_at if recent_match else None
+        return (
+            recent_match.updated_at
+            if recent_match
+            else timezone.make_aware(datetime.min, timezone.get_default_timezone())
+        )
 
 
 class Match(models.Model):

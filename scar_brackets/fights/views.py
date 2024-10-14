@@ -79,34 +79,16 @@ def last_complete_list():
 
 
 def time_remaining(request):
-    participants = {}
-    complete_matches = Match.objects.filter(match_state="complete")
-    for match in complete_matches:
-        if not participants.get(match.player1_id.participant_name):
-            participants[match.player1_id.participant_name] = match.updated_at
-        if not participants.get(match.player2_id.participant_name):
-            participants[match.player2_id.participant_name] = match.updated_at
-        if participants.get(match.player1_id.participant_name) < match.updated_at:
-            participants[match.player1_id.participant_name] = match.updated_at
-        if participants.get(match.player2_id.participant_name) < match.updated_at:
-            participants[match.player2_id.participant_name] = match.updated_at
-
-    # Add any participants that haven't competed yet
-    for p in Participant.objects.exclude(participant_id=None):
-        print(p.participant_id, p.participant_name, p.tournament_id, p.last_updated)
-        if not p.participant_name in participants:
-            participants[p.participant_name] = timezone.make_aware(
-                datetime.min, timezone.get_default_timezone()
-            )
 
     now = timezone.now()
-    for p in participants:
-        time_remaining = timedelta(minutes=20) - (now - participants[p])
+    participants = {}
+    for p in Participant.objects.exclude(participant_id=None):
+        time_remaining = timedelta(minutes=20) - (now - p.last_updated)  # type: ignore
         if time_remaining < timedelta(minutes=0):
             time_remaining = "00:00"
         else:
             time_remaining = str(time_remaining).split(".")[0]
-        participants[p] = time_remaining
+        participants[p.participant_name] = time_remaining
 
     return render(
         request,
