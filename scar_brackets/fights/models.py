@@ -1,8 +1,8 @@
 from django.db import models
 from preferences.models import Preferences
 from django.db.models import Q
-from datetime import datetime
 from django.utils import timezone
+from datetime import datetime, timedelta
 
 
 class MyPreferences(Preferences):
@@ -61,6 +61,16 @@ class Participant(models.Model):
             if recent_match
             else timezone.make_aware(datetime.min, timezone.get_default_timezone())
         )
+
+    @property
+    def time_remaining(self):
+        now = timezone.now()
+        time_remaining = timedelta(minutes=20) - (now - self.last_updated)  # type: ignore
+        if time_remaining < timedelta(minutes=0):
+            time_remaining = "00:00"
+        else:
+            time_remaining = str(time_remaining).split(".")[0]
+        return time_remaining
 
 
 class Match(models.Model):

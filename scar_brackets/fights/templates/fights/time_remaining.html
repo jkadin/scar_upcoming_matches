@@ -10,9 +10,9 @@
         <div class="row text-center justify-content-center py-4">
             <div class="col-md-3 bg-warning rounded-3 text-black">
                 <div class="display-5"><strong>Time Remaining</strong></div>
-                    {% for participant, last_complete in participants %}
-                            <p>{{ participant }} - {{ last_complete }}  remaining</p>
-                    {% endfor %}
+                {% for participant in participants %}
+                <p>{{ participant.participant_name }} - {{ participant.time_remaining }} remaining</p>
+                {% endfor %}
             </div>
         </div>
     </div>

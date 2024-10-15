@@ -80,22 +80,11 @@ def last_complete_list():
 
 def time_remaining(request):
 
-    now = timezone.now()
-    participants = {}
-    for p in Participant.objects.exclude(participant_id=None):
-        time_remaining = timedelta(minutes=20) - (now - p.last_updated)  # type: ignore
-        if time_remaining < timedelta(minutes=0):
-            time_remaining = "00:00"
-        else:
-            time_remaining = str(time_remaining).split(".")[0]
-        participants[p.participant_name] = time_remaining
-
+    participants = Participant.objects.all()
     return render(
         request,
         "fights/time_remaining.html",
-        {
-            "participants": sorted(participants.items(), key=lambda x: x[0]),
-        },
+        {"participants": participants},
     )
 
 
