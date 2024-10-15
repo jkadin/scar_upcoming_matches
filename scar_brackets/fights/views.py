@@ -88,6 +88,18 @@ def time_remaining(request):
     )
 
 
+def bot(request, participant_name):
+    try:
+        particpant = Participant.objects.get(participant_name__iexact=participant_name)
+    except Participant.DoesNotExist:
+        particpant = None
+    return render(
+        request,
+        "fights/bot.html",
+        {"bot": particpant},
+    )
+
+
 def end_match(ordered_matches, new_index):
     return ordered_matches[new_index].get("id")
 
