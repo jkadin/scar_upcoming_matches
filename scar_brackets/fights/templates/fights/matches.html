@@ -1,5 +1,4 @@
-<div class="justify-content-center align-items-center h-50 display-3 lh-sm px-8" ;">
-    <div hx-get="display_matches" hx-trigger="every 10s [document.currentlyDragging != true]" hx-swap="innerHTML" hx-on::after-request="initSortable()">
+<div class="justify-content-center align-items-center h-50 display-3 lh-sm px-8">
         {% if output_matches %}
         <div class="text-center list-group" id="listForSorting">
             {% for match in output_matches %}
@@ -8,7 +7,7 @@
                     <div class="col-md-4 bg-warning rounded-start">
                         {{match.player1_name}}
                         <br>
-                        <div class="text-muted fs-2">{% if match.player1_name.time_remaining != "00:00" %}(Time remaining: {{match.player1_name.time_remaining}}){% else %}(Ready!){% endif %}</div>
+                        <div class="text-muted fs-2">{% if match.player1_name.time_remaining != "00:00" %}Time remaining: {{match.player1_name.time_remaining}}{% else %}Ready!{% endif %}</div>
                     </div>
                     <div class="col-md-auto bg-secondary text-white drag-handle">
                         VS
@@ -16,7 +15,7 @@
                     <div class="col-md-4 bg-warning rounded-end">
                         {{match.player2_name}}
                         <br>
-                        <div class="text-muted fs-2">{% if match.player2_name.time_remaining != "00:00" %}(Time remaining: {{match.player2_name.time_remaining}}){% else %}(Ready!){% endif %}</div>
+                        <div class="text-muted fs-2">{% if match.player2_name.time_remaining != "00:00" %}Time remaining: {{match.player2_name.time_remaining}}{% else %}Ready!{% endif %}</div>
                     </div>
                 </div>
                 <div class="row display-6">
@@ -34,7 +33,6 @@
             <strong>No active tournaments available</strong>
         </div>
         {% endif %}
-    </div>
 </div>
 
 {% if perms.fights.change_match %}

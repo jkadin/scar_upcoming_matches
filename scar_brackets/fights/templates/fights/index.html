@@ -38,7 +38,9 @@
                 <div class="display-5"><strong>Upcoming Matches</strong></div>
             </div>
         </div>
-        {% include './matches.html' %}
+        <div hx-get="display_matches" hx-trigger="every 10s [document.currentlyDragging != true]" hx-swap="innerHTML" hx-on::after-request="initSortable()">
+            {% include './matches.html' %}
+        </div>
     </div>
 </body>
 </html>

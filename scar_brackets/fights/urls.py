@@ -11,5 +11,6 @@ urlpatterns = [
     path("stream", views.no_background_index, name="stream"),
     path("reorder", views.manual_sort, name="reorder"),
     path("time_remaining", views.time_remaining, name="time_remaining"),
+    path("time_remaining_inner", views.time_remaining_inner, name="time_remaining_inner"),
     path("bot/<str:participant_name>/", views.bot, name="bot"),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
