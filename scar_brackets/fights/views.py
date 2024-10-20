@@ -79,7 +79,6 @@ def last_complete_list():
 
 
 def time_remaining(request):
-
     participants = Participant.objects.all()
     return render(
         request,
@@ -90,13 +89,13 @@ def time_remaining(request):
 
 def bot(request, participant_name):
     try:
-        particpant = Participant.objects.get(participant_name__iexact=participant_name)
+        participant = Participant.objects.get(participant_name__iexact=participant_name)
     except Participant.DoesNotExist:
-        particpant = None
+        participant = None
     return render(
         request,
         "fights/bot.html",
-        {"bot": particpant},
+        {"bot": participant},
     )
 
 
