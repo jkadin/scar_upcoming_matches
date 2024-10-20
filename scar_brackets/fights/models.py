@@ -69,7 +69,7 @@ class Participant(models.Model):
         if time_remaining < timedelta(minutes=0):
             time_remaining = "00:00"
         else:
-            time_remaining = str(time_remaining).split(".")[0]
+            time_remaining = ":".join(str(time_remaining).split(".")[0].split(":")[1:])
         return time_remaining
 
 

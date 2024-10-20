@@ -72,14 +72,8 @@ def no_background_index(request):
     )
 
 
-def last_complete_list():
-    participants = Participant.objects.all()
-    print()
-    return participants
-
-
 def time_remaining(request):
-    participants = Participant.objects.all()
+    participants = Participant.objects.exclude(participant_id=None).order_by("participant_name")
     return render(
         request,
         "fights/time_remaining.html",

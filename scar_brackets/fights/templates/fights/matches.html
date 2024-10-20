@@ -7,17 +7,21 @@
                 <div class="row justify-content-md-center text-dark text_style">
                     <div class="col-md-4 bg-warning rounded-start">
                         {{match.player1_name}}
+                        <br>
+                        <div class="text-muted fs-2">{% if match.player1_name.time_remaining != "00:00" %}(Time remaining: {{match.player1_name.time_remaining}}){% else %}(Ready!){% endif %}</div>
                     </div>
                     <div class="col-md-auto bg-secondary text-white drag-handle">
                         VS
                     </div>
                     <div class="col-md-4 bg-warning rounded-end">
                         {{match.player2_name}}
+                        <br>
+                        <div class="text-muted fs-2">{% if match.player2_name.time_remaining != "00:00" %}(Time remaining: {{match.player2_name.time_remaining}}){% else %}(Ready!){% endif %}</div>
                     </div>
                 </div>
                 <div class="row display-6">
                     <div class="col" style="text-shadow: 2px 3px 0px black;">
-                        {{match.match_start}} ({{match.tournament_name}}) -
+                        ({{match.tournament_name}}) -
                         {% if match.losers_bracket %}L{% else %}W{% endif %} {{ match.suggested_play_order }}
                     </div>
                 </div>
