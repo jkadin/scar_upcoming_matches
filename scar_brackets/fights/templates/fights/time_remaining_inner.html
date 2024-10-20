@@ -7,8 +7,8 @@
                     {% for participant in tournament.participant_set.all|dictsort:"participant_name" %}
                         {% if participant.participant_id != None %}
                             <div class="h1">
-                                <strong>{{ participant.participant_name }}</strong>
-                                - {% if participant.time_remaining != "00:00" %}{{ participant.time_remaining }}{% else %}Ready!{% endif %}
+                                {{ participant.participant_name }}
+                                - <strong>{% if participant.time_remaining != "00:00" %}{{ participant.time_remaining }}{% else %}Ready!{% endif %}</strong>
                             </div>
                         {% endif %}
                     {% endfor %}
