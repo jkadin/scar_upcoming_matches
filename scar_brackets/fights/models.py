@@ -72,6 +72,17 @@ class Participant(models.Model):
             time_remaining = ":".join(str(time_remaining).split(".")[0].split(":")[1:])
         return time_remaining
 
+    @property
+    def still_in_tournament(self):
+        in_tournament = False
+        matches = Match.objects.filter(
+            ~Q(player1_id=self) | Q(player2_id=self), match_state="complete"
+        )
+        if matches:
+            return True
+
+        return in_tournament
+
 
 class Match(models.Model):
     match_id = models.CharField(max_length=100, primary_key=True)
