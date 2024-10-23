@@ -73,7 +73,9 @@ def no_background_index(request):
 
 
 def time_remaining(request):
-    tournaments = Tournament.objects.filter(tournament_state="underway").order_by("tournament_name")
+    tournaments = Tournament.objects.filter(tournament_state="underway").order_by(
+        "tournament_name"
+    )
     return render(
         request,
         "fights/time_remaining.html",
@@ -82,7 +84,9 @@ def time_remaining(request):
 
 
 def time_remaining_inner(request):
-    tournaments = Tournament.objects.filter(tournament_state="underway").order_by("tournament_name")
+    tournaments = Tournament.objects.filter(tournament_state="underway").order_by(
+        "tournament_name"
+    )
     return render(
         request,
         "fights/time_remaining_inner.html",

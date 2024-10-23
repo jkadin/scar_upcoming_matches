@@ -21,6 +21,10 @@
     <p>Tournament ID - {{bot.tournament_id}}</p>
     <p>Last updated - {{bot.last_updated}}</p>
     <p>Time remaining - {{bot.time_remaining}}</p>
+    <p>Upcoming macthes</p>
+    {% for match in bot.upcoming_matches %}
+    <p>{{match.tournament_id}} - {{match.player1_id}} vs {{match.player2_id}}</p>
+    {%endfor%}
 </body>
 
 </html>

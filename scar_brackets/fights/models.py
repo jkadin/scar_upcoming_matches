@@ -83,6 +83,13 @@ class Participant(models.Model):
 
         return in_tournament
 
+    @property
+    def upcoming_matches(self):
+        matches = Match.objects.filter(
+            ~Q(player1_id=self) | Q(player2_id=self), match_state="complete"
+        )
+        return matches
+
 
 class Match(models.Model):
     match_id = models.CharField(max_length=100, primary_key=True)
