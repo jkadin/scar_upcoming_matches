@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from django.db import models
 from preferences.models import Preferences
 from django.db.models import Q
@@ -34,7 +33,6 @@ class Participant(models.Model):
     participant_id = models.CharField(max_length=100, null=True, blank=True)
     participant_name = models.CharField(max_length=100, null=True)
     tournament_id = models.ForeignKey(Tournament, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
         constraints = [
