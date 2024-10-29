@@ -88,7 +88,7 @@ class Participant(models.Model):
     @property
     def upcoming_matches(self):
         matches = Match.objects.filter(
-            ~Q(player1_id=self) | Q(player2_id=self), match_state="complete"
+            Q(player1_id=self) | Q(player2_id=self), ~Q(match_state="Complete")
         )
         return matches
 
