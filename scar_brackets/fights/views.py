@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from .models import Match, Tournament, Url, Participant
+from .models import Match, Tournament, Url, Participant, Profile
 from django.views.decorators.csrf import csrf_exempt
 from itertools import chain, zip_longest
 from datetime import datetime, timedelta
@@ -69,6 +69,22 @@ def no_background_index(request):
         {
             "output_matches": output_matches,
         },
+    )
+
+
+def time_out(request):
+    user = request.user
+    profile = Profile.objects.get(user=user)
+    print(profile.user)
+    profile.last_timeout = timezone.now()
+    profile.save()
+    tournaments = Tournament.objects.filter(tournament_state="underway").order_by(
+        "tournament_name"
+    )
+    return render(
+        request,
+        "fights/time_remaining.html",
+        {"tournaments": tournaments},
     )
 
 
