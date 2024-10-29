@@ -1,24 +1,25 @@
 {% if tournaments %}
-    <div class="text-center container">
-        <div class="row">
-            {% for tournament in tournaments %}
-                <div class="col">
-                    <div class="h1 text-dark bg-warning rounded-start rounded-end">{{ tournament.tournament_name }}</div>
-                    {% for participant in tournament.participant_set.all|dictsort:"participant_name" %}
-                        {% if participant.participant_id != None %}
-                            <div class="h1">
-                                {{ participant.participant_name }}
-                                - <strong>{% if participant.time_remaining != "00:00" %}{{ participant.time_remaining }}{% else %}Ready!{% endif %}</strong>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                </div>
+<div class="text-center container">
+    <div class="row">
+        {% for tournament in tournaments %}
+        <div class="col">
+            <div class="h1 text-dark bg-warning rounded-start rounded-end">{{ tournament.tournament_name }}</div>
+            {% for participant in tournament.participant_set.all|dictsort:"participant_name" %}
+            {% if participant.participant_id != None %}
+            <div class="h1">
+                {{ participant.participant_name }}
+                - <strong>{% if participant.time_remaining != "00:00" %}{{ participant.time_remaining }}{% else
+                    %}Ready!{% endif %}</strong>
+            </div>
+            {% endif %}
             {% endfor %}
         </div>
+        {% endfor %}
     </div>
+</div>
 {% else %}
-    <div class="text-center">
-        <br>
-        <strong>No participants available</strong>
-    </div>
+<div class="text-center">
+    <br>
+    <strong>No participants available</strong>
+</div>
 {% endif %}
