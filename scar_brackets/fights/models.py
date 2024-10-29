@@ -3,6 +3,7 @@ from preferences.models import Preferences
 from django.db.models import Q
 from django.utils import timezone
 from datetime import datetime, timedelta
+from django.contrib.auth.models import User
 
 
 class MyPreferences(Preferences):
@@ -33,6 +34,7 @@ class Participant(models.Model):
     participant_id = models.CharField(max_length=100, null=True, blank=True)
     participant_name = models.CharField(max_length=100, null=True)
     tournament_id = models.ForeignKey(Tournament, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
         constraints = [
@@ -112,3 +114,8 @@ class Match(models.Model):
 
     def __str__(self) -> str:
         return self.match_id
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    last_timeout = models.DateTimeField(null=True, blank=True)
