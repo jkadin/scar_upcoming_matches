@@ -85,7 +85,6 @@ class Participant(models.Model):
             time_remaining = "00:00"
         else:
             time_remaining = ":".join(str(time_remaining).split(".")[0].split(":")[1:])
-        print(f"  {time_out_remaining=} {time_remaining=}")
 
         return time_remaining
 

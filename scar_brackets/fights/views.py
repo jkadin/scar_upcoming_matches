@@ -77,7 +77,6 @@ def no_background_index(request):
 def time_out(request):
     user = request.user
     profile = Profile.objects.get(user=user)
-    print(profile.user)
     profile.last_timeout = timezone.now()
     profile.save()
     tournaments = Tournament.objects.filter(tournament_state="underway").order_by(
