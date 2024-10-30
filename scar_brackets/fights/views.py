@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from preferences import preferences
 import json
 from django.utils import timezone
+from django.contrib.auth.decorators import login_required
 
 NEXT_MATCH_START = timedelta(minutes=1)
 MATCH_DELAY = timedelta(minutes=3)
@@ -72,6 +73,7 @@ def no_background_index(request):
     )
 
 
+@login_required
 def time_out(request):
     user = request.user
     profile = Profile.objects.get(user=user)
