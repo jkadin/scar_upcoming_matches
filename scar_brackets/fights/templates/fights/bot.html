@@ -19,7 +19,7 @@
     <p>Name - {{bot.participant_name}}</p>
     {% include './user.html' %}
     <p>Bot ID - {{bot.participant_id}}</p>
-    <p>Last Timeout {{bot.time_out}}</p>
+    {% include './timeout.html' %}
     <p>Tournament ID - {{bot.tournament_id}}</p>
     <p>Last updated - {{bot.last_updated}}</p>
     <p>Time remaining - {{bot.time_remaining}}</p>

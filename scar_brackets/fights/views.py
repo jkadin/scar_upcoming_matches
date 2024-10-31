@@ -74,7 +74,7 @@ def no_background_index(request):
 
 
 @login_required
-def time_out(request):
+def time_out(request, participant_name):
     user = request.user
     now = timezone.now()
     try:
@@ -88,13 +88,22 @@ def time_out(request):
         profile = Profile(user=user)
         profile.last_timeout = now
         profile.save()
-    tournaments = Tournament.objects.filter(tournament_state="underway").order_by(
-        "tournament_name"
-    )
+    try:
+        participant = Participant.objects.get(participant_name__iexact=participant_name)
+        participant.user = None
+        participant.save()
+    except Participant.DoesNotExist:
+        participant = None
     return render(
         request,
-        "fights/time_remaining.html",
-        {"tournaments": tournaments},
+        "fights/user.html",
+        {"bot": participant},
+    )
+
+    return render(
+        request,
+        "fights/time_out.html",
+        {"bot": participant},
     )
 
 
