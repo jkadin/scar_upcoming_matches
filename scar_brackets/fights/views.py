@@ -132,6 +132,7 @@ def bot(request, participant_name):
     )
 
 
+@login_required
 def associate_user(request, participant_name):
     print(f"associating {participant_name} to {request.user} ")
     try:
@@ -147,6 +148,7 @@ def associate_user(request, participant_name):
     )
 
 
+@login_required
 def un_associate_user(request, participant_name):
     print(f"un_associating {participant_name} from {request.user} ")
     try:
