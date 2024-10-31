@@ -15,5 +15,10 @@ urlpatterns = [
         "time_remaining_inner", views.time_remaining_inner, name="time_remaining_inner"
     ),
     path("bot/<str:participant_name>/", views.bot, name="bot"),
-    path("time_out", views.time_out, name="out"),
+    path("time_out", views.time_out, name="time_out"),
+    path(
+        "associate_user/<str:participant_name>/",
+        views.associate_user,
+        name="associate_user",
+    ),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

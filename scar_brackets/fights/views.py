@@ -136,6 +136,8 @@ def associate_user(request, participant_name):
     print(f"associtating {participant_name} to {request.user} ")
     try:
         participant = Participant.objects.get(participant_name__iexact=participant_name)
+        participant.user = request.user
+        participant.save()
     except Participant.DoesNotExist:
         participant = None
     return render(
