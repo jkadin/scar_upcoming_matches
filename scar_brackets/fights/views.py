@@ -79,10 +79,15 @@ def time_out(request):
     now = timezone.now()
     try:
         profile = Profile.objects.get(user=user)
+        print(profile.last_timeout)
+        if now.date() != profile.last_timeout.date():
+            print("timeout added")
+            profile.last_timeout = now
+            profile.save()
     except Profile.DoesNotExist:
         profile = Profile(user=user)
-    profile.last_timeout = now
-    profile.save()
+        profile.last_timeout = now
+        profile.save()
     tournaments = Tournament.objects.filter(tournament_state="underway").order_by(
         "tournament_name"
     )
@@ -116,6 +121,19 @@ def time_remaining_inner(request):
 
 
 def bot(request, participant_name):
+    try:
+        participant = Participant.objects.get(participant_name__iexact=participant_name)
+    except Participant.DoesNotExist:
+        participant = None
+    return render(
+        request,
+        "fights/bot.html",
+        {"bot": participant},
+    )
+
+
+def associate_user(request, participant_name):
+    print(f"associtating {participant_name} to {request.user} ")
     try:
         participant = Participant.objects.get(participant_name__iexact=participant_name)
     except Participant.DoesNotExist:
