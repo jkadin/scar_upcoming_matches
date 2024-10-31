@@ -21,4 +21,9 @@ urlpatterns = [
         views.associate_user,
         name="associate_user",
     ),
+    path(
+        "un_associate_user/<str:participant_name>/",
+        views.un_associate_user,
+        name="un_associate_user",
+    ),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

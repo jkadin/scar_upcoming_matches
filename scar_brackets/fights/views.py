@@ -133,10 +133,25 @@ def bot(request, participant_name):
 
 
 def associate_user(request, participant_name):
-    print(f"associtating {participant_name} to {request.user} ")
+    print(f"associating {participant_name} to {request.user} ")
     try:
         participant = Participant.objects.get(participant_name__iexact=participant_name)
         participant.user = request.user
+        participant.save()
+    except Participant.DoesNotExist:
+        participant = None
+    return render(
+        request,
+        "fights/bot.html",
+        {"bot": participant},
+    )
+
+
+def un_associate_user(request, participant_name):
+    print(f"un_associating {participant_name} from {request.user} ")
+    try:
+        participant = Participant.objects.get(participant_name__iexact=participant_name)
+        participant.user = None
         participant.save()
     except Participant.DoesNotExist:
         participant = None
