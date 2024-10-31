@@ -142,7 +142,7 @@ def associate_user(request, participant_name):
         participant = None
     return render(
         request,
-        "fights/bot.html",
+        "fights/user.html",
         {"bot": participant},
     )
 
@@ -157,7 +157,7 @@ def un_associate_user(request, participant_name):
         participant = None
     return render(
         request,
-        "fights/bot.html",
+        "fights/user.html",
         {"bot": participant},
     )
 
