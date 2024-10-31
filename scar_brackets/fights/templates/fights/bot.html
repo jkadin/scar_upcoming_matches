@@ -17,15 +17,7 @@
         </div>
     </div>
     <p>Name - {{bot.participant_name}}</p>
-    <div> <button hx-get="/fights/associate_user/{{bot.participant_name}}" hx-target="#User"
-            hx-swap="innerHTML">Associate</button>
-    </div>
-    <div> <button hx-get="/fights/un_associate_user/{{bot.participant_name}}" hx-target="#User"
-            hx-swap="innerHTML">Un-Associate</button>
-    </div>
-    <div id="User">
-        <p>User - {{bot.user}}</p>
-    </div>
+    {% include './user.html' %}
     <p>Bot ID - {{bot.participant_id}}</p>
     <p>Last Timeout {{bot.time_out}}</p>
     <p>Tournament ID - {{bot.tournament_id}}</p>

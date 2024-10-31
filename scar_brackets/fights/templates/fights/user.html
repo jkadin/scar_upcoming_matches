@@ -1,3 +1,10 @@
 <div id="User">
-    <p>User - {{bot.user}}</p>
+    User - {{bot.user}}
+    {% if bot.user %}
+    <button hx-get="/fights/un_associate_user/{{bot.participant_name}}" hx-target="#User"
+        hx-swap="innerHTML">Un-Associate</button>
+    {% else %}
+    <button hx-get="/fights/associate_user/{{bot.participant_name}}" hx-target="#User"
+        hx-swap="innerHTML">Associate</button>
+    {% endif %}
 </div>
