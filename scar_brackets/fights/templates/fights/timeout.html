@@ -1,4 +1,4 @@
 <div id="timeout">
     Last Timeout {{bot.time_out}}
-    <button hx-get="/fights/time_out" hx-target="#timeout" hx-swap="innerHTML">Timeout</button>
+    <button hx-get="/fights/time_out/{{bot.user}}" hx-target="#timeout" hx-swap="innerHTML">Timeout</button>
 </div>
