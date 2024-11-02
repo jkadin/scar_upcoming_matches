@@ -106,6 +106,18 @@ class Participant(models.Model):
         )
         return matches
 
+    @property
+    def time_out_active(self):
+        now = timezone.now()
+        if timedelta(minutes=20) - (now - self.time_out):
+            return True
+
+    @property
+    def time_out_available(self):
+        now = timezone.now()
+        if self.time_out == now.date():
+            return False
+
 
 class Match(models.Model):
     match_id = models.CharField(max_length=100, primary_key=True)

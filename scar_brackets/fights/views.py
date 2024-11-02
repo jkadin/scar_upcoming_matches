@@ -126,7 +126,6 @@ def time_remaining_inner(request):
 def bot(request, participant_name):
     try:
         participant = Participant.objects.get(participant_name__iexact=participant_name)
-        print(participant_name, participant.time_out)
     except Participant.DoesNotExist:
         participant = None
     return render(
