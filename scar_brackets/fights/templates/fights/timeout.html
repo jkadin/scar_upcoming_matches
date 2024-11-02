@@ -3,7 +3,9 @@
     <br>
     Last Timeout {{bot.time_out}}
     <br>
+    Timeout Available {{bot.time_out_available}}
     {% if bot.time_out_available %}
-    <button hx-get="/fights/time_out/{{bot.participant_name}}" hx-target="#timeout" hx-swap="innerHTML">Timeout</button>
+    <button hx-post="/fights/time_out/{{bot.participant_name}}/" hx-target="#timeout"
+        hx-swap="innerHTML">Timeout</button>
     {% endif %}
 </div>

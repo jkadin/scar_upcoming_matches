@@ -108,15 +108,21 @@ class Participant(models.Model):
 
     @property
     def time_out_active(self):
+        if not self.time_out:
+            return False
         now = timezone.now()
-        if timedelta(minutes=20) - (now - self.time_out):
+        if (now - self.time_out).total_seconds() < 0:
             return True
+        else:
+            return False
 
     @property
     def time_out_available(self):
         now = timezone.now()
-        if self.time_out == now.date():
+        if self.time_out.date() == now.date():
             return False
+        if (now - self.time_out).total_seconds() >= 0:
+            return True
 
 
 class Match(models.Model):

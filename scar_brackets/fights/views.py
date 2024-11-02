@@ -74,6 +74,7 @@ def no_background_index(request):
 
 
 @login_required
+@csrf_exempt
 def time_out(request, participant_name):
     user = request.user
     now = timezone.now()
