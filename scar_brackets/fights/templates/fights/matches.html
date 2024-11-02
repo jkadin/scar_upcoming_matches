@@ -7,7 +7,7 @@
                     <div class="col-md-4 bg-warning rounded-start">
                         {{match.player1_name}}
                         <br>
-                        <div class="text-muted fs-2">{% if match.player1_name.time_remaining != "00:00" %}Time remaining: {{match.player1_name.time_remaining}}{% else %}Ready!{% endif %}</div>
+                        <div class="text-muted fs-2">Time remaining: {{match.player1_name.time_remaining}}</div>
                     </div>
                     <div class="col-md-auto bg-secondary text-white drag-handle">
                         VS
@@ -15,7 +15,7 @@
                     <div class="col-md-4 bg-warning rounded-end">
                         {{match.player2_name}}
                         <br>
-                        <div class="text-muted fs-2">{% if match.player2_name.time_remaining != "00:00" %}Time remaining: {{match.player2_name.time_remaining}}{% else %}Ready!{% endif %}</div>
+                        <div class="text-muted fs-2">Time remaining: {{match.player2_name.time_remaining}}</div>
                     </div>
                 </div>
                 <div class="row display-6">

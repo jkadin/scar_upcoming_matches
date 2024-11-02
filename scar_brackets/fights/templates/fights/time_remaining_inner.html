@@ -4,11 +4,11 @@
             {% for tournament in tournaments %}
                 <div class="col">
                     <div class="h1 text-dark bg-warning rounded-start rounded-end">{{ tournament.tournament_name }}</div>
-                    {% for participant in tournament.participant_set.all|dictsort:"participant_name" %}
+                    {% for participant in tournament.participant_set.all|dictsort:"participant_name"|dictsort:"time_remaining" %}
                         {% if participant.participant_id != None %}
                             <div class="h1">
                                 {{ participant.participant_name }}
-                                - <strong>{% if participant.time_remaining != "00:00" %}{{ participant.time_remaining }}{% else %}Ready!{% endif %}</strong>
+                                - <strong>{{ participant.time_remaining }}</strong>
                             </div>
                         {% endif %}
                     {% endfor %}
