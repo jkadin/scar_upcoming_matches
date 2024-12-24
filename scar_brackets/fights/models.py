@@ -106,15 +106,15 @@ class Participant(models.Model):
         )
         return matches
 
-    @property
-    def time_out_active(self):
-        if not self.time_out:
-            return False
-        now = timezone.now()
-        if (now - self.time_out).total_seconds() < 0:
-            return True
-        else:
-            return False
+    # @property
+    # def time_out_active(self):
+    #     if not self.time_out:
+    #         return False
+    #     now = timezone.now()
+    #     if (now - self.time_out).total_seconds() < 0:
+    #         return True
+    #     else:
+    #         return False
 
     @property
     def time_out_available(self):
