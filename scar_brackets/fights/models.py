@@ -90,14 +90,14 @@ class Participant(models.Model):
 
     @property
     def still_in_tournament(self):
-        in_tournament = False
-        matches = Match.objects.filter(
-            ~Q(player1_id=self) | Q(player2_id=self), match_state="complete"
-        )
-        if matches:
-            return True
+        # in_tournament = False
+        # matches = Match.objects.filter(
+        #     ~Q(player1_id=self) | Q(player2_id=self), match_state="complete"
+        # )
+        # if matches:
+        #     return True
 
-        return in_tournament
+        return self.upcoming_matches
 
     @property
     def upcoming_matches(self):
