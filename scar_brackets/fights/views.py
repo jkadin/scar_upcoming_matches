@@ -138,11 +138,14 @@ def bot(request, participant_name):
 
 @login_required
 @csrf_exempt
-def associate_user(request, participant_name):
-    print(f"associating {participant_name} to {request.user} ")
+def claim_user(request, participant_name):
+    claim = request.POST.get("claim", False)
     try:
         participant = Participant.objects.get(participant_name__iexact=participant_name)
-        participant.user = request.user
+        if claim != "true":
+            participant.user = None
+        else:
+            participant.user = request.user
         participant.save()
     except Participant.DoesNotExist:
         participant = None
@@ -155,21 +158,6 @@ def associate_user(request, participant_name):
 
 @login_required
 @csrf_exempt
-def un_associate_user(request, participant_name):
-    print(f"un_associating {participant_name} from {request.user} ")
-    try:
-        participant = Participant.objects.get(participant_name__iexact=participant_name)
-        participant.user = None
-        participant.save()
-    except Participant.DoesNotExist:
-        participant = None
-    return render(
-        request,
-        "fights/user.html",
-        {"bot": participant},
-    )
-
-
 def end_match(ordered_matches, new_index):
     return ordered_matches[new_index].get("id")
 

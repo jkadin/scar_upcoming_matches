@@ -1,10 +1,10 @@
 <div id="User">
     User - {{bot.user}}
     {% if bot.user %}
-    <button hx-post="/fights/un_associate_user/{{bot.participant_name}}/" hx-target="#User"
+    <button hx-post="/fights/claim_user/{{bot.participant_name}}/" hx-vals='{"claim":"false"}' hx-target="#User"
         hx-swap="innerHTML">Un-Associate</button>
     {% else %}
-    <button hx-post="/fights/associate_user/{{bot.participant_name}}/" hx-target="#User"
+    <button hx-post="/fights/claim_user/{{bot.participant_name}}/" hx-vals='{"claim":"true"}' hx-target="#User"
         hx-swap="innerHTML">Associate</button>
     {% endif %}
 </div>
