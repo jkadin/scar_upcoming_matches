@@ -90,13 +90,6 @@ class Participant(models.Model):
 
     @property
     def still_in_tournament(self):
-        # in_tournament = False
-        # matches = Match.objects.filter(
-        #     ~Q(player1_id=self) | Q(player2_id=self), match_state="complete"
-        # )
-        # if matches:
-        #     return True
-
         return self.upcoming_matches
 
     @property
@@ -105,16 +98,6 @@ class Participant(models.Model):
             Q(player1_id=self) | Q(player2_id=self), ~Q(match_state="Complete")
         )
         return matches
-
-    # @property
-    # def time_out_active(self):
-    #     if not self.time_out:
-    #         return False
-    #     now = timezone.now()
-    #     if (now - self.time_out).total_seconds() < 0:
-    #         return True
-    #     else:
-    #         return False
 
     @property
     def time_out_available(self):
