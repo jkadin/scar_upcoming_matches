@@ -78,15 +78,14 @@ def no_background_index(request):
 def time_out(request, participant_name):
     user = request.user
     now = timezone.now()
-    try:
-        profile = Profile.objects.get(user=user)
-        print(profile.last_timeout)
-        if now.date() != profile.last_timeout.date():
-            print("timeout added")
-            profile.last_timeout = now
-            profile.save()
-    except Profile.DoesNotExist:
-        profile = Profile(user=user)
+
+    # use get_or_crate instead of try except
+
+    profile, created = Profile.objects.get_or_create(
+        user=user, defaults={"last_timeout": now}
+    )
+    print(f"{created=}")
+    if created or now.date() != profile.last_timeout.date():
         profile.last_timeout = now
         profile.save()
     try:
@@ -195,12 +194,6 @@ def update_manaual_play_order(start_match_id, old_index, new_index, ordered_item
     direction = int(distance / abs(distance))
     for i in range(index + direction, index + distance + direction, direction):
         match = match_list[i]
-        # print(
-        #     i,
-        #     match,
-        #     match.calculated_play_order,
-        #     match.calculated_play_order + direction,
-        # )
         match.calculated_play_order -= direction
         match.save()
 
