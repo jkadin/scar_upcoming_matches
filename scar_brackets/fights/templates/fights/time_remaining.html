@@ -20,13 +20,14 @@
 </style>
 
 <body class="bg-danger">
-    <div class="float-end text-white">
+    <div class="float-end text-white fs-3 pe-2">
         {% if user.is_authenticated %}
             {% if accounts.discord.0 %} {{ accounts.discord.0.extra_data.global_name }} {% else %} {{ user }} {% endif %} {% if perms.fights.change_match %}| Staff {% endif %}| <a href="/accounts/logout" class="link-light">Logout </a>
         {% else %}
             <a href="/accounts/login" class="link-light">Login</a>
         {% endif %}
     </div>
+    <br><br>
     <div class="container-fluid bg-danger text-white scar_logo text_style py-4">
         <div class="row text-center justify-content-center py-4">
             <div class="col-md-3 bg-primary rounded-3" style="text-shadow: 3px 3px 0px black;">

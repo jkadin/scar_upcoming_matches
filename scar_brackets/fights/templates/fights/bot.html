@@ -9,24 +9,26 @@
 </style>
 
 <body class="bg-transparent">
-    <div class="container-fluid text-white text_style py-4 ">
+    <div class="container-fluid text-white text_style py-4 bg-danger scar_logo text_style">
         <div class="row text-center justify-content-center py-4">
             <div class="col-md-3 bg-warning rounded-3 text-black">
-                <div class="display-5"><strong>Bot Detail</strong></div>
+                <div class="display-5"><strong>{{bot.participant_name}}</strong></div>
+            </div>
+            <br><br><br><br><br>
+            <div>
+                {% include './user.html' %}
+                <p>Bot ID - {{bot.participant_id}}</p>
+                {% include './timeout.html' %}
+                <p>Tournament ID - {{bot.tournament_id}}</p>
+                <p>Last updated - {{bot.last_updated}}</p>
+                <p>Time remaining - {{bot.time_remaining}}</p>
+                <p>Upcoming macthes</p>
+                {% for match in bot.upcoming_matches %}
+                <p>{{match.tournament_id}} - {{match.player1_id}} vs {{match.player2_id}}</p>
+                {%endfor%}
             </div>
         </div>
     </div>
-    <p>Name - {{bot.participant_name}}</p>
-    {% include './user.html' %}
-    <p>Bot ID - {{bot.participant_id}}</p>
-    {% include './timeout.html' %}
-    <p>Tournament ID - {{bot.tournament_id}}</p>
-    <p>Last updated - {{bot.last_updated}}</p>
-    <p>Time remaining - {{bot.time_remaining}}</p>
-    <p>Upcoming macthes</p>
-    {% for match in bot.upcoming_matches %}
-    <p>{{match.tournament_id}} - {{match.player1_id}} vs {{match.player2_id}}</p>
-    {%endfor%}
 </body>
 
 </html>
