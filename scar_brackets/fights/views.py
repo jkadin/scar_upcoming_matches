@@ -154,9 +154,12 @@ def bot(request, participant_name):
     try:
         participant = Participant.objects.get(participant_name__iexact=participant_name)
         users_match = False
-        if request.user.username == participant.user.username:
-            users_match = True
-            print(users_match)
+        try:
+            if request.user.username == participant.user.username:
+                users_match = True
+                print(users_match)
+        except AttributeError:
+            pass
     except Participant.DoesNotExist:
         participant = None
     return render(
