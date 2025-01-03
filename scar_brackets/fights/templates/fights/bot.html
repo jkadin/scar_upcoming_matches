@@ -1,34 +1,18 @@
-{% load static %}
-{% include './htmx_generic.html' %}
-
-<style>
-    .text_style {
-        /*text-transform: uppercase;*/
-        font-weight: 400;
-    }
-</style>
-
-<body class="bg-transparent">
-    <div class="container-fluid text-white text_style py-4 bg-danger scar_logo text_style">
+{% extends "fights/base_template.html" %}
+{% block content %}
         <div class="row text-center justify-content-center py-4">
             <div class="col-md-3 bg-warning rounded-3 text-black">
                 <div class="display-5"><strong>{{bot.participant_name}}</strong></div>
             </div>
-            <br><br><br><br><br>
             <div>
-                {% include './user.html' %}
-                <p>Bot ID - {{bot.participant_id}}</p>
+                {% include './claim_bot.html' %}
                 {% include './timeout.html' %}
-                <p>Tournament ID - {{bot.tournament_id}}</p>
-                <p>Last updated - {{bot.last_updated}}</p>
+                <p>{{bot.tournament_id}}</p>
                 <p>Time remaining - {{bot.time_remaining}}</p>
-                <p>Upcoming macthes</p>
+                <p>Upcoming matches</p>
                 {% for match in bot.upcoming_matches %}
                 <p>{{match.tournament_id}} - {{match.player1_id}} vs {{match.player2_id}}</p>
                 {%endfor%}
             </div>
         </div>
-    </div>
-</body>
-
-</html>
+{% endblock %}

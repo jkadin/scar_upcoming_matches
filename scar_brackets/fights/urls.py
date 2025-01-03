@@ -17,8 +17,9 @@ urlpatterns = [
     path("bot/<str:participant_name>/", views.bot, name="bot"),
     path("time_out/<str:participant_name>/", views.time_out, name="time_out"),
     path(
-        "claim_user/<str:participant_name>/",
-        views.claim_user,
-        name="claim_user",
+        "claim_bot/<str:participant_name>/",
+        views.claim_bot,
+        name="claim_bot",
     ),
+    path("user/<str:user_id>/", views.user, name="user"),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

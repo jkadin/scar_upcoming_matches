@@ -1,10 +1,17 @@
-<div id="User">
-    User - {{bot.user}}
-    {% if bot.user %}
-    <button hx-post="/fights/claim_user/{{bot.participant_name}}/" hx-vals='{"claim":"false"}' hx-target="#User"
-        hx-swap="innerHTML">Claim Bot</button>
-    {% else %}
-    <button hx-post="/fights/claim_user/{{bot.participant_name}}/" hx-vals='{"claim":"true"}' hx-target="#User"
-        hx-swap="innerHTML">Release Bot</button>
-    {% endif %}
-</div>
+{% extends "fights/base_template.html" %}
+{% block content %}
+        <div class="row text-center justify-content-center py-4">
+            <div class="col-md-3 bg-warning rounded-3 text-black">
+                <div class="display-5"><strong>{{ user }}</strong></div>
+            </div>
+            <div>
+                {% include './timeout.html' %}
+                <p>{{bot.tournament_id}}</p>
+                <p>Time remaining - {{bot.time_remaining}}</p>
+                <p>Upcoming matches</p>
+                {% for match in bot.upcoming_matches %}
+                <p>{{match.tournament_id}} - {{match.player1_id}} vs {{match.player2_id}}</p>
+                {%endfor%}
+            </div>
+        </div>
+{% endblock %}

@@ -79,7 +79,7 @@ def time_out(request, participant_name):
     user = request.user
     now = timezone.now()
 
-    # use get_or_crate instead of try except
+    # use get_or_cerate instead of try except
 
     profile, created = Profile.objects.get_or_create(
         user=user, defaults={"last_timeout": now}
@@ -98,6 +98,29 @@ def time_out(request, participant_name):
         request,
         "fights/timeout.html",
         {"bot": participant},
+    )
+
+
+@login_required
+@csrf_exempt
+def user(request, user_id):
+    current_user = request.user
+    now = timezone.now()
+
+    # use get_or_create instead of try except
+
+    profile, created = Profile.objects.get_or_create(
+        user=user_id, defaults={"last_timeout": now}
+    )
+    print(f"{created=}")
+    if created or now.date() != profile.last_timeout.date():
+        profile.last_timeout = now
+        profile.save()
+
+    return render(
+        request,
+        "fights/user.html",
+        {"profile": profile},
     )
 
 
@@ -137,7 +160,7 @@ def bot(request, participant_name):
 
 @login_required
 @csrf_exempt
-def claim_user(request, participant_name):
+def claim_bot(request, participant_name):
     claim = request.POST.get("claim", False)
     try:
         participant = Participant.objects.get(participant_name__iexact=participant_name)
@@ -150,7 +173,7 @@ def claim_user(request, participant_name):
         participant = None
     return render(
         request,
-        "fights/user.html",
+        "fights/claim_bot.html",
         {"bot": participant},
     )
 
