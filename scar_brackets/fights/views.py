@@ -116,11 +116,15 @@ def user(request, user_id):
     if created or now.date() != profile.last_timeout.date():
         profile.last_timeout = now
         profile.save()
-
+    bots = Participant.objects.filter(user=user_id)
+    users_match = False
+    print(f"{request.user.username=},{profile.user=}{users_match=}")
+    if current_user == profile.user:
+        users_match = True
     return render(
         request,
         "fights/user.html",
-        {"profile": profile},
+        {"profile": profile, "bots": bots, "users_match": users_match},
     )
 
 
