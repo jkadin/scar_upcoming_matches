@@ -118,9 +118,9 @@ def user(request, user_id):
         profile.save()
     bots = Participant.objects.filter(user=user_id)
     users_match = False
-    print(f"{request.user.username=},{profile.user=}{users_match=}")
-    if current_user == profile.user:
+    if request.user.username == profile.user.username:
         users_match = True
+        print(users_match)
     return render(
         request,
         "fights/user.html",
@@ -153,12 +153,16 @@ def time_remaining_inner(request):
 def bot(request, participant_name):
     try:
         participant = Participant.objects.get(participant_name__iexact=participant_name)
+        users_match = False
+        if request.user.username == participant.user.username:
+            users_match = True
+            print(users_match)
     except Participant.DoesNotExist:
         participant = None
     return render(
         request,
         "fights/bot.html",
-        {"bot": participant},
+        {"bot": participant, "users_match": users_match},
     )
 
 
