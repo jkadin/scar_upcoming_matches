@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.test import Client
 from fights.models import Match, Tournament, Url, Participant, Profile, User
 from django.utils import timezone
-from datetime import datetime, timedelta
+from datetime import datetime
 
 
 @pytest.fixture
@@ -50,3 +50,16 @@ def participant(tournament, authenticated_user):
 def profile(authenticated_user):
     time_out = timezone.make_aware(datetime.min, timezone.get_default_timezone())
     return Profile.objects.create(user=authenticated_user, last_timeout=time_out)
+
+
+@pytest.fixture
+def match(participant, tournament):
+    return Match.objects.create(
+        match_id="test match",
+        tournament_id=tournament,
+        player1_id=participant,
+        player2_id=participant,
+        suggested_play_order=1,
+        calculated_play_order=1,
+        match_state="open",
+    )
