@@ -6,6 +6,8 @@ from django.urls import reverse
 
 @pytest.mark.django_db
 def test_claim_user(client, authenticated_user, participant):
+    # Set up test data
+    # user = User.objects.create_user(username="testuser", password="password")
     # Case 1: Valid claim with "true"
     url = "/fights/claim_user/Player 2/"
     response = client.post(url, {"claim": "true"})
