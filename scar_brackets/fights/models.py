@@ -80,7 +80,7 @@ class Participant(models.Model):
             time_remaining = time_out_remaining
         if time_remaining < timedelta(minutes=0):
             time_remaining = "00:00"
-        if not time_remaining:
+        elif not time_remaining:
             time_remaining = "00:00"
         else:
             time_remaining = ":".join(str(time_remaining).split(".")[0].split(":")[1:])
@@ -132,15 +132,16 @@ class Profile(models.Model):
             display_name = self.user.socialaccount_set.filter(provider="discord")[
                 0
             ].extra_data["global_name"]
-        except Exception as e:
-            raise e
-            display_name = self.user.name
+        except IndexError:
+            display_name = self.user.username
         return display_name
 
     @property
     def time_out_available(self):
         now = timezone.now()
+        print(self.last_timeout)
         if self.last_timeout.date() == now.date():
+            print("last timeout was today, not available now")
             return False
         if (now - self.last_timeout).total_seconds() >= 0:
             return True

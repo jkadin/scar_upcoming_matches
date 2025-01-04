@@ -75,7 +75,7 @@ def no_background_index(request):
 
 @login_required
 @csrf_exempt
-def time_out(request, participant_name):  # Take a timeout if one is available
+def time_out(request):  # Take a timeout if one is available
     user = request.user
     now = timezone.now()
     profile = Profile.objects.get(user=user)
@@ -83,29 +83,24 @@ def time_out(request, participant_name):  # Take a timeout if one is available
     if now.date() != profile.last_timeout.date():
         profile.last_timeout = now
         profile.save()
-    try:
-        participant = Participant.objects.get(participant_name__iexact=participant_name)
-    except Participant.DoesNotExist:
-        participant = None
 
     return render(
         request,
         "fights/timeout.html",
-        {"bot": participant},
+        {"profile": profile, "users_match": True},
     )
 
 
-@login_required
 @csrf_exempt
 def user(request, user_id):
     current_user = request.user
     now = timezone.now()
     profile, created = Profile.objects.get_or_create(
-        user=current_user, defaults={"last_timeout": now}
+        user=user_id, defaults={"last_timeout": "2001-01-01 00:00:00"}
     )
-    bots = Participant.objects.filter(user=user_id)
+    bots = Participant.objects.filter(user=profile.user)
     users_match = False
-    if request.user.username == profile.user.username:
+    if request.user == profile.user:
         users_match = True
     return render(
         request,
@@ -161,9 +156,6 @@ def claim_bot(request, participant_name):
     profile, created = Profile.objects.get_or_create(
         user=request.user, defaults={"last_timeout": "2001-01-01 00:00:00"}
     )
-    if created:
-        profile.last_timeout = "2001-01-01 00:00:00"
-        profile.save()
     try:
         participant = Participant.objects.get(participant_name__iexact=participant_name)
         if claim != "true":
