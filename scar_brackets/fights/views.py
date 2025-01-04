@@ -184,7 +184,7 @@ def claim_bot(request, participant_name):
         "fights/claim_bot.html",
         {
             "bot": participant,
-            "users_match": True,
+            "users_match": users_match,
         },
     )
 
