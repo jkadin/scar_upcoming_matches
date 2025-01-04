@@ -7,12 +7,27 @@
     <div>
         {% include './timeout.html' %}
         <br>
-        {% for bot in bots %}
-            <p><a class="text-reset text-decoration-none" href="/fights/bot/{{bot.participant_name}}">{{bot.participant_name}}</a> - {{bot.time_remaining}}</p>
-            {% for match in bot.upcoming_matches %}
-                <p>{{match.tournament_id}} - <a class="text-reset text-decoration-none" href="/fights/bot/{{match.player1_id}}">{{match.player1_id}}</a> vs <a class="text-reset text-decoration-none" href="/fights/bot/{{match.player2_id}}">{{match.player2_id}}</a></p>
-            {%endfor%}
-        {%endfor%}
+        {% if bots %}
+        <div class="text-center container">
+            <div class="row">
+                {% for bot in bots %}
+                    <div class="col">
+                        <div class="h1 text-dark bg-light rounded-start rounded-end"><a class="text-reset text-decoration-none" href="/fights/bot/{{ bot.participant_name }}">{{ bot.participant_name }}</a></div>
+                        <div class="fs-3">Time Remaining - {{bot.time_remaining}}</div>
+                        <br>
+                        <div class="fs-4">Next match:<br>
+                            <a class="text-reset text-decoration-none" href="/fights/bot/{{bot.upcoming_matches.0.player1_id}}">{{bot.upcoming_matches.0.player1_id}}</a> vs <a class="text-reset text-decoration-none" href="/fights/bot/{{bot.upcoming_matches.0.player2_id}}">{{bot.upcoming_matches.0.player2_id}}</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+            <div class="text-center">
+                <br>
+                <strong>No bots claimed by this user</strong>
+            </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
