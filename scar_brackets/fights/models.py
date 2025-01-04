@@ -134,3 +134,12 @@ class Match(models.Model):
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     last_timeout = models.DateTimeField(null=True, blank=True)
+
+    @property
+    def display_name(self):
+        try:
+            display_name = self.user.socialaccount_set.filter(provider="discord")[0].extra_data["global_name"]
+        except Exception as e:
+            raise e
+            display_name = self.user.name
+        return display_name

@@ -155,9 +155,8 @@ def bot(request, participant_name):
         participant = Participant.objects.get(participant_name__iexact=participant_name)
         users_match = False
         try:
-            if request.user.username == participant.user.username:
+            if request.user == participant.user:
                 users_match = True
-                print(users_match)
         except AttributeError:
             pass
     except Participant.DoesNotExist:
@@ -177,15 +176,20 @@ def claim_bot(request, participant_name):
         participant = Participant.objects.get(participant_name__iexact=participant_name)
         if claim != "true":
             participant.user = None
+            users_match = False
         else:
             participant.user = request.user
+            users_match = True
         participant.save()
     except Participant.DoesNotExist:
         participant = None
     return render(
         request,
         "fights/claim_bot.html",
-        {"bot": participant},
+        {
+            "bot": participant,
+            "users_match": True,
+        },
     )
 
 

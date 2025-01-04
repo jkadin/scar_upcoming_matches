@@ -32,7 +32,7 @@
         </div>
         <div class="float-end text-white fs-2 pe-2">
             {% if user.is_authenticated %}
-                <a href="/fights/user/{{ user.id }}" class="link-light">{{ accounts.discord.0.extra_data.global_name|default:user }}</a> {% if perms.fights.change_match %}| Staff {% endif %}| <a href="/accounts/logout" class="link-light">Logout </a>
+                <a href="/fights/user/{{ user.id }}" class="link-light">{{ user.profile.display_name }}</a> {% if perms.fights.change_match %}| Staff {% endif %}| <a href="/accounts/logout" class="link-light">Logout </a>
             {% else %}
                 <a href="/accounts/login" class="link-light">Login</a>
             {% endif %}

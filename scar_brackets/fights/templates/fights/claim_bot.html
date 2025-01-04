@@ -1,14 +1,19 @@
-<br>
 <div id="User">
-    Assigned Builder - {{bot.user}}
+    {% if bot.user %}
+    <br>
+    Assigned to <a href="/fights/user/{{ user.id }}" class="text-reset text-decoration-none">{{bot.user.profile.display_name}}</a>
     <br>
     {% if users_match %}
     <button class="btn btn-info" hx-post="/fights/claim_bot/{{bot.participant_name}}/" hx-vals='{"claim":"false"}'
-        hx-target="#User" hx-swap="innerHTML">Release Bot</button>
+        hx-target="#User" hx-swap="innerHTML">This is not my bot</button>
+    {% endif %}
     {% endif %}
     {% if not bot.user%}
+    <br>
+    No builder assigned
+    <br>
     <button class="btn btn-primary" hx-post="/fights/claim_bot/{{bot.participant_name}}/" hx-vals='{"claim":"true"}'
         hx-target="#User" hx-swap="innerHTML">Claim Bot</button>
     {% endif %}
+    <br>
 </div>
-<br>
