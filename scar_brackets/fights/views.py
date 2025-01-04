@@ -130,9 +130,9 @@ def time_remaining_inner(request):
 
 
 def bot(request, participant_name):
+    users_match = False
     try:
         participant = Participant.objects.get(participant_name__iexact=participant_name)
-        users_match = False
         try:
             if request.user == participant.user:
                 users_match = True
@@ -150,6 +150,7 @@ def bot(request, participant_name):
 @login_required
 @csrf_exempt
 def claim_bot(request, participant_name):
+    users_match = False
     claim = request.POST.get("claim", False)
     profile, created = Profile.objects.get_or_create(
         user=request.user,
