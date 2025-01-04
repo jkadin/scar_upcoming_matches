@@ -85,7 +85,6 @@ def time_out(request, participant_name):  # Take a timeout if one is available
         profile.save()
     try:
         participant = Participant.objects.get(participant_name__iexact=participant_name)
-        print(participant_name, participant.time_out)
     except Participant.DoesNotExist:
         participant = None
 
