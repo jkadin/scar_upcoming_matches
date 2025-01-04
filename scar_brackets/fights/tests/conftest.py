@@ -1,7 +1,7 @@
 import pytest
 from django.contrib.auth.models import User
 from django.test import Client
-from fights.models import Match, Tournament, Url, Participant, Profile, User
+from fights.models import Match, Tournament, Url, Participant, Profile
 from django.utils import timezone
 from datetime import datetime
 
