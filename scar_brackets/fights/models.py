@@ -64,20 +64,21 @@ class Participant(models.Model):
             else timezone.make_aware(datetime.min, timezone.get_default_timezone())
         )
 
-    @property
-    def time_out(self):
-        try:
-            time_out = Profile.objects.get(user=self.user).last_timeout
-        except Profile.DoesNotExist:
-            time_out = timezone.make_aware(
-                datetime.min, timezone.get_default_timezone()
-            )
-        return time_out
+    # @property
+    # def time_out(self):
+    #     try:
+    #         time_out = Profile.objects.get(user=self.user).last_timeout
+    #     except Profile.DoesNotExist:
+    #         time_out = timezone.make_aware(
+    #             datetime.min, timezone.get_default_timezone()
+    #         )
+    #     return time_out
 
     @property
     def time_remaining(self):
         now = timezone.now()
-        time_out_remaining = timedelta(minutes=20) - (now - self.time_out)  # type: ignore
+        # time_out_remaining = timedelta(minutes=20) - (now - self.time_out)  # type: ignore
+        time_out_remaining = timedelta(minutes=20)
         time_remaining = timedelta(minutes=20) - (now - self.last_updated)  # type: ignore
         if time_out_remaining > time_remaining:
             time_remaining = time_out_remaining
@@ -98,14 +99,6 @@ class Participant(models.Model):
             Q(player1_id=self) | Q(player2_id=self), ~Q(match_state="Complete")
         )
         return matches
-
-    @property
-    def time_out_available(self):
-        now = timezone.now()
-        if self.time_out.date() == now.date():
-            return False
-        if (now - self.time_out).total_seconds() >= 0:
-            return True
 
 
 class Match(models.Model):
@@ -138,8 +131,18 @@ class Profile(models.Model):
     @property
     def display_name(self):
         try:
-            display_name = self.user.socialaccount_set.filter(provider="discord")[0].extra_data["global_name"]
+            display_name = self.user.socialaccount_set.filter(provider="discord")[
+                0
+            ].extra_data["global_name"]
         except Exception as e:
             raise e
             display_name = self.user.name
         return display_name
+
+    @property
+    def time_out_available(self):
+        now = timezone.now()
+        if self.last_timeout.date() == now.date():
+            return False
+        if (now - self.last_timeout).total_seconds() >= 0:
+            return True

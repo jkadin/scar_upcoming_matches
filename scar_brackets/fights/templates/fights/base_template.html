@@ -1,7 +1,7 @@
 {% load static %}
 {% load socialaccount %}
 {% if user.is_authenticated %}
-    {% get_social_accounts user as accounts %}
+{% get_social_accounts user as accounts %}
 {% endif %}
 {% include './htmx_generic.html' %}
 
@@ -27,14 +27,15 @@
 <body>
     <div class="container-fluid bg-danger text-white scar_logo text_style" style="user-select: none;">
         <div class="float-start text-white fs-2 pe-2">
-            <a href="/fights" class="link-light">Home</a> | 
+            <a href="/fights" class="link-light">Home</a> |
             <a href="/fights/time_remaining" class="link-light">Time Remaining</a>
         </div>
         <div class="float-end text-white fs-2 pe-2">
             {% if user.is_authenticated %}
-                <a href="/fights/user/{{ user.id }}" class="link-light">{{ user.profile.display_name }}</a> {% if perms.fights.change_match %}| Staff {% endif %}| <a href="/accounts/logout" class="link-light">Logout </a>
+            <a href="/fights/user/{{ user.id }}" class="link-light">{{ user }}</a> {% if perms.fights.change_match %}|
+            Staff {% endif %}| <a href="/accounts/logout" class="link-light">Logout </a>
             {% else %}
-                <a href="/accounts/login" class="link-light">Login</a>
+            <a href="/accounts/login" class="link-light">Login</a>
             {% endif %}
         </div>
         <br><br>
@@ -42,4 +43,5 @@
         {% endblock %}
     </div>
 </body>
+
 </html>

@@ -1,7 +1,7 @@
 <br>
 <div id="timeout">
-    {% if user.time_out_available %}
-    <button class="btn btn-success" hx-post="/fights/time_out/{{bot.participant_name}}/" hx-target="#timeout"
+    {% if profile.time_out_available %}
+    <button class="btn btn-success" hx-post="/fights/time_out/{{user.profile.display_name}}/" hx-target="#timeout"
         hx-swap="innerHTML">Timeout</button>
     {% else %}
     <button class="btn btn-secondary" disabled>Timeout Already Used</button>
