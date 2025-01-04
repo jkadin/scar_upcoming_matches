@@ -93,10 +93,8 @@ def time_out(request):  # Take a timeout if one is available
 
 @csrf_exempt
 def user(request, user_id):
-    current_user = request.user
-    now = timezone.now()
     profile, created = Profile.objects.get_or_create(
-        user=user_id, defaults={"last_timeout": "2001-01-01 00:00:00"}
+        user=user_id,
     )
     bots = Participant.objects.filter(user=profile.user)
     users_match = False
@@ -154,7 +152,7 @@ def bot(request, participant_name):
 def claim_bot(request, participant_name):
     claim = request.POST.get("claim", False)
     profile, created = Profile.objects.get_or_create(
-        user=request.user, defaults={"last_timeout": "2001-01-01 00:00:00"}
+        user=request.user,
     )
     try:
         participant = Participant.objects.get(participant_name__iexact=participant_name)
@@ -172,7 +170,7 @@ def claim_bot(request, participant_name):
         "fights/claim_bot.html",
         {
             "bot": participant,
-            "users_match": True,
+            "users_match": users_match,
         },
     )
 
