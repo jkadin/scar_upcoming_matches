@@ -64,25 +64,23 @@ class Participant(models.Model):
             else timezone.make_aware(datetime.min, timezone.get_default_timezone())
         )
 
-    # @property
-    # def time_out(self):
-    #     try:
-    #         time_out = Profile.objects.get(user=self.user).last_timeout
-    #     except Profile.DoesNotExist:
-    #         time_out = timezone.make_aware(
-    #             datetime.min, timezone.get_default_timezone()
-    #         )
-    #     return time_out
-
     @property
     def time_remaining(self):
         now = timezone.now()
-        # time_out_remaining = timedelta(minutes=20) - (now - self.time_out)  # type: ignore
-        time_out_remaining = timedelta(minutes=20)
+        try:
+            profile = Profile.objects.get(user=self.user)
+            last_timeout = profile.last_timeout
+        except Profile.DoesNotExist:
+            last_timeout = timezone.make_aware(
+                datetime.min, timezone.get_default_timezone()
+            )
+        time_out_remaining = timedelta(minutes=20) - (now - last_timeout)  # type: ignore
         time_remaining = timedelta(minutes=20) - (now - self.last_updated)  # type: ignore
         if time_out_remaining > time_remaining:
             time_remaining = time_out_remaining
         if time_remaining < timedelta(minutes=0):
+            time_remaining = "00:00"
+        if not time_remaining:
             time_remaining = "00:00"
         else:
             time_remaining = ":".join(str(time_remaining).split(".")[0].split(":")[1:])
