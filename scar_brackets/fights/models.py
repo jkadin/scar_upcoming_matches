@@ -139,9 +139,7 @@ class Profile(models.Model):
     @property
     def time_out_available(self):
         now = timezone.now()
-        print(self.last_timeout)
         if self.last_timeout.date() == now.date():
-            print("last timeout was today, not available now")
             return False
         if (now - self.last_timeout).total_seconds() >= 0:
             return True
