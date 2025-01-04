@@ -4,6 +4,7 @@ from django.db.models import Q
 from django.utils import timezone
 from datetime import datetime, timedelta
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 
 class MyPreferences(Preferences):
@@ -124,7 +125,11 @@ class Match(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    last_timeout = models.DateTimeField(null=True, blank=True)
+    last_timeout = models.DateTimeField(
+        null=True,
+        blank=True,
+        default=timezone.make_aware(datetime.min, timezone.get_default_timezone()),
+    )
 
     @property
     def display_name(self):
