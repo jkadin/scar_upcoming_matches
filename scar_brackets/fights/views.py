@@ -79,7 +79,6 @@ def time_out(request):  # Take a timeout if one is available
     user = request.user
     now = timezone.now()
     profile = Profile.objects.get(user=user)
-
     if now.date() != profile.last_timeout.date():
         profile.last_timeout = now
         profile.save()
@@ -152,9 +151,6 @@ def bot(request, participant_name):
 def claim_bot(request, participant_name):
     users_match = False
     claim = request.POST.get("claim", False)
-    profile, created = Profile.objects.get_or_create(
-        user=request.user,
-    )
     try:
         participant = Participant.objects.get(participant_name__iexact=participant_name)
         if claim != "true":
