@@ -9,8 +9,9 @@ import pytest
 # Create your tests here.
 @pytest.mark.django_db
 def test_time_out(authenticated_user, client, profile):
-    url = "/fights/time_out/Player/"
+    print(f"{authenticated_user=}, {profile.last_timeout=}")
+    url = "/fights/time_out"
     response = client.get(url)
-    print(response)
-    print(authenticated_user, profile.last_timeout)
+    print(response.content)
+    print(f"{authenticated_user=}, {profile.last_timeout=}")
     assert 1 == 1
