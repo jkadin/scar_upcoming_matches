@@ -1,9 +1,5 @@
 import pytest
 
-# from django.contrib.auth.models import User
-# from django.test import Client
-# from django.urls import reverse
-
 
 @pytest.mark.django_db
 def test_claim_user(client, authenticated_user, participants):
