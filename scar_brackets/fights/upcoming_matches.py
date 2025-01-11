@@ -84,15 +84,15 @@ def get_tournaments(tournament_urls):
     for t in tournaments:
         # Populate matches
         matches = challonge.matches.index(t, state="all")
-        # Populate participants
-        participants = challonge.participants.index(t)
-        participants = {p["id"]: p for p in participants}
+        # Populate bots
+        bots = challonge.bots.index(t)
+        bots = {p["id"]: p for p in bots}
         for y, match in enumerate(matches):
             tournament_name = tournaments.get(match["tournament_id"], {}).get("name")
-            matches[y]["player1_name"] = participants.get(match["player1_id"], {}).get(
+            matches[y]["player1_name"] = bots.get(match["player1_id"], {}).get(
                 "name", "???"
             )
-            matches[y]["player2_name"] = participants.get(match["player2_id"], {}).get(
+            matches[y]["player2_name"] = bots.get(match["player2_id"], {}).get(
                 "name", "???"
             )
             matches[y]["tournament_name"] = tournament_name

@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from .models import Match, Tournament, Url, Participant, Profile
+from .models import Match, Tournament, Url, Bot, Profile
 from django.views.decorators.csrf import csrf_exempt
 from itertools import chain, zip_longest
 from datetime import datetime, timedelta
@@ -95,7 +95,7 @@ def user(request, user_id):
     if not request.user.is_authenticated:
         return
     profile = Profile.objects.get(user=user_id)
-    bots = Participant.objects.filter(user=profile.user)
+    bots = Bot.objects.filter(user=profile.user)
     users_match = False
     if request.user == profile.user:
         users_match = True
@@ -121,6 +121,8 @@ def time_remaining_inner(request):
     tournaments = Tournament.objects.filter(tournament_state="underway").order_by(
         "tournament_name"
     )
+    for tournament in tournaments:
+        print(tournament)
     return render(
         request,
         "fights/time_remaining_inner.html",
@@ -128,45 +130,46 @@ def time_remaining_inner(request):
     )
 
 
-def bot(request, participant_name):
+def bot(request, bot_name):
     users_match = False
     try:
-        participant = Participant.objects.get(participant_name__iexact=participant_name)
+        bot = Bot.objects.get(bot_name__iexact=bot_name)
         try:
-            if request.user == participant.user:
+            if request.user == bot.user:
                 users_match = True
         except AttributeError:
             pass
-    except Participant.DoesNotExist:
-        participant = None
+    except Bot.DoesNotExist:
+        bot = None
     return render(
         request,
         "fights/bot.html",
-        {"bot": participant, "users_match": users_match},
+        {"bot": bot, "users_match": users_match},
     )
 
 
 @login_required
 @csrf_exempt
-def claim_bot(request, participant_name):
+def claim_bot(request, bot_name):
     users_match = False
     claim = request.POST.get("claim", False)
     try:
-        participant = Participant.objects.get(participant_name__iexact=participant_name)
+        bot = Bot.objects.get(bot_name__iexact=bot_name)
+        print(f"{claim=},{request.user=}")
         if claim != "true":
-            participant.user = None
+            bot.user = None
             users_match = False
         else:
-            participant.user = request.user
+            bot.user = request.user
             users_match = True
-        participant.save()
-    except Participant.DoesNotExist:
-        participant = None
+        bot.save()
+    except Bot.DoesNotExist:
+        bot = None
     return render(
         request,
         "fights/claim_bot.html",
         {
-            "bot": participant,
+            "bot": bot,
             "users_match": users_match,
         },
     )

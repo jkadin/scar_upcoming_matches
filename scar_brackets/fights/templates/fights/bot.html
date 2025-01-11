@@ -1,18 +1,22 @@
 {% extends "fights/base_template.html" %}
 {% block content %}
-        <div class="row text-center justify-content-center py-4">
-            <div class="col-md-10 bg-warning rounded-3 text-black">
-                <div class="display-5"><strong>{{bot.participant_name}} - {{bot.tournament_id}}</strong></div>
-            </div>
-            <div>
-                {% include './claim_bot.html' %}
-                <br>
-                <div class="fs-2">Time remaining - {{bot.time_remaining}}</div>
-                <br>
-                <div>
-                    <div class="fs-2">Next Match</div>
-                    <div class="fs-1"><a class="text-reset text-decoration-none" href="/fights/bot/{{bot.upcoming_matches.0.player1_id}}">{{bot.upcoming_matches.0.player1_id}}</a> vs <a class="text-reset text-decoration-none" href="/fights/bot/{{bot.upcoming_matches.0.player2_id}}">{{bot.upcoming_matches.0.player2_id}}</a></div>
-                </div>
+<div class="row text-center justify-content-center py-4">
+    <div class="col-md-10 bg-warning rounded-3 text-black">
+        <div class="display-5"><strong>{{bot.bot_name}} - {{bot.tournament_id}}</strong></div>
+    </div>
+    <div>
+        {% include './claim_bot.html' %}
+        <br>
+        <div class="fs-2">Time remaining - {{bot.time_remaining}}</div>
+        <br>
+        <div>
+            <div class="fs-2">Next Match</div>
+            <div class="fs-1"><a class="text-reset text-decoration-none"
+                    href="/fights/bot/{{bot.upcoming_matches.0.player1_id}}">{{bot.upcoming_matches.0.player1_id}}</a>
+                vs <a class="text-reset text-decoration-none"
+                    href="/fights/bot/{{bot.upcoming_matches.0.player2_id}}">{{bot.upcoming_matches.0.player2_id}}</a>
             </div>
         </div>
+    </div>
+</div>
 {% endblock %}
