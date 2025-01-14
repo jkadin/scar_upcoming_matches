@@ -11,3 +11,4 @@ def test_match(match):
     assert match.updated_at is None
     assert match.suggested_play_order == 1
     assert match.calculated_play_order == 1
+    assert str(match) == "test match"
