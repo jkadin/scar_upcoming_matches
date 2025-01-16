@@ -1,10 +1,11 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from .models import Match, Tournament, Url, Bot, Profile
+from .models import Match, Tournament, Url, Bot, Profile, MyPreferences
 from django.views.decorators.csrf import csrf_exempt
 from itertools import chain, zip_longest
 from datetime import datetime, timedelta
-from preferences import preferences
+
+# from preferences import preferences
 import json
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
@@ -15,7 +16,7 @@ MATCH_DELAY = timedelta(minutes=3)
 
 def output():
     match_start = datetime.now() + NEXT_MATCH_START
-    INTERLEAVE_METHOD = preferences.MyPreferences.interleave_method  # type: ignore
+    INTERLEAVE_METHOD = MyPreferences.objects.all()[0].interleave_method
     print(f"{INTERLEAVE_METHOD=}")
     if INTERLEAVE_METHOD.lower() == "fixed":
         match_list = Match.objects.filter(match_state="open").order_by(
@@ -155,7 +156,6 @@ def claim_bot(request, bot_name):
     claim = request.POST.get("claim", False)
     try:
         bot = Bot.objects.get(bot_name__iexact=bot_name)
-        print(f"{claim=},{request.user=}")
         if claim != "true":
             bot.user = None
             users_match = False
