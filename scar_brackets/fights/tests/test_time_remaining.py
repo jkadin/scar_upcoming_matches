@@ -6,6 +6,7 @@ def test_time_remaining(
     client,
     profile,
     my_preferences,
+    bots,
 ):
     url = "/fights/time_remaining"
     response = client.get(url)
