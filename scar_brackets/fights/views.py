@@ -94,7 +94,10 @@ def time_out(request):  # Take a timeout if one is available
 @csrf_exempt
 def user(request, user_id):
     if not request.user.is_authenticated:
-        return
+        return render(
+            request,
+            "fights/user.html",
+        )
     profile = Profile.objects.get(user=user_id)
     bots = Bot.objects.filter(user=profile.user)
     users_match = False
