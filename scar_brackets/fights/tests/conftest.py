@@ -1,7 +1,7 @@
 import pytest
 from django.contrib.auth.models import User
 from django.test import Client
-from fights.models import Match, Tournament, Url, Bot, Profile
+from fights.models import Match, Tournament, Url, Bot, Profile, MyPreferences
 
 
 @pytest.fixture
@@ -70,3 +70,8 @@ def match(bots, tournament):
         calculated_play_order=1,
         match_state="open",
     )
+
+
+@pytest.fixture
+def my_preferences():
+    return MyPreferences.objects.create()
