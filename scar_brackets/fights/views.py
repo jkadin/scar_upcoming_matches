@@ -258,21 +258,21 @@ def display_matches(request):
     )
 
 
-def least_recent_match():
-    ordered_output = []
-    tournament_list = {}
-    for tournament in Tournament.objects.all():
-        tournament_matches = Match.objects.filter(
-            tournament_id=tournament, match_state="open"
-        )
-        sorted_list = sorted(tournament_list, key=lambda x: x.started_at)
-        tournament_list[tournament] = tournament_matches.order_by("started_at").last()
-    for t1 in sorted_list:
-        ordered_output.append(
-            tournament_matches.order_by("calculated_play_order").first()
-        )
+# def least_recent_match():
+#     ordered_output = []
+#     tournament_list = {}
+#     for tournament in Tournament.objects.all():
+#         tournament_matches = Match.objects.filter(
+#             tournament_id=tournament, match_state="open"
+#         )
+#         sorted_list = sorted(tournament_list, key=lambda x: x.started_at)
+#         tournament_list[tournament] = tournament_matches.order_by("started_at").last()
+#     for t1 in sorted_list:
+#         ordered_output.append(
+#             tournament_matches.order_by("calculated_play_order").first()
+#         )
 
-    return ordered_output
+#     return ordered_output
 
 
 def match_by_tournament():
