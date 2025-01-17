@@ -2,6 +2,9 @@ import pytest
 from django.contrib.auth.models import User
 from django.test import Client
 from fights.models import Match, Tournament, Url, Bot, Profile, MyPreferences
+from django.utils import timezone
+
+now = timezone.now()
 
 
 @pytest.fixture
@@ -69,6 +72,7 @@ def match(bots, tournament):
         suggested_play_order=1,
         calculated_play_order=1,
         match_state="open",
+        started_at=now,
     )
 
 
