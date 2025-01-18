@@ -17,12 +17,12 @@ def test_claim_user(client, authenticated_user, bots):
     assert response.status_code == 200
     assert bot1.user is None
     assert "bot" in response.context
-    # assert response.context["bot"] == bot1
-    # assert bot1.user is None
+    assert response.context["bot"] == bot1
+    assert bot1.user is None
 
-    # # Case 3: bot does not exist
-    # url = reverse("claim_bot", kwargs={"bot_name": "Nonexistent bot"})
-    # response = client.post(url, {"claim": "true"})
+    # Case 3: bot does not exist
+    url = "/fights/claim_bot/invalid/"
+    response = client.post(url, {"claim": "true"})
 
-    # assert response.status_code == 200
-    # assert response.context["bot"] is None
+    assert response.status_code == 200
+    assert response.context["bot"] is None
