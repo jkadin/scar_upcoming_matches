@@ -27,14 +27,17 @@ def tournament(url):
         tournament_name="Tournament 1",
         tournament_id=1,
         tournament_state="underway",
-        tournament_url=url,
+        tournament_url=url[0],
         tournament_needs_interleave=True,
     )
 
 
 @pytest.fixture
 def url():
-    return Url.objects.create(url="http://www.google.com")
+    return [
+        Url.objects.create(url="r5vq4p1l"),
+        Url.objects.create(url="4vljhp3k"),
+    ]
 
 
 @pytest.fixture
