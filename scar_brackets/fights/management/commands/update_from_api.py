@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from django.db import IntegrityError, DatabaseError
+from django.db import IntegrityError
 import challonge
 import os
 from fights.models import Url, Tournament, Match, Bot
@@ -51,8 +51,8 @@ def update_database():
         print(f"{t1.tournament_needs_interleave=}")
         print(f"Tournament_id= - {t1.tournament_id}")
         print("Loading bots")
-        load_particpants(t1)
-        create_null_particpant(t1)
+        load_bots(t1)
+        create_null_bot(t1)
         print("bot loading complete")
 
     # remove non-underway tournaments
@@ -71,42 +71,28 @@ def update_database():
             player2_id = Bot.objects.get(
                 bot_id=match.get("player2_id"), tournament_id=t1
             )
-            m1 = Match(
-                player1_id=player1_id,
-                player2_id=player2_id,
-                tournament_id=t1,
+
+            Match.objects.update_or_create(
                 match_id=match.get("id"),
-                match_state=match.get("state"),
-                updated_at=match.get("updated_at"),
-                suggested_play_order=match.get("suggested_play_order"),
-                estimated_start_time=None,
-                started_at=match.get("started_at"),
-                underway_at=match.get("underway_at"),
-                player1_is_prereq_match_loser=match.get(
-                    "player1_is_prereq_match_loser"
-                ),
-                player2_is_prereq_match_loser=match.get(
-                    "player2_is_prereq_match_loser"
-                ),
+                defaults={
+                    "player1_id": player1_id,
+                    "player2_id": player2_id,
+                    "tournament_id": t1,
+                    "match_state": match.get("state"),
+                    "updated_at": match.get("updated_at"),
+                    "suggested_play_order": match.get("suggested_play_order"),
+                    "estimated_start_time": None,
+                    "started_at": match.get("started_at"),
+                    "underway_at": match.get("underway_at"),
+                    "player1_is_prereq_match_loser": match.get(
+                        "player1_is_prereq_match_loser"
+                    ),
+                    "player2_is_prereq_match_loser": match.get(
+                        "player2_is_prereq_match_loser"
+                    ),
+                },
             )
-            try:
-                m1.save(
-                    update_fields=[
-                        "match_state",
-                        "updated_at",
-                        "started_at",
-                        "underway_at",
-                        "player1_id",
-                        "player2_id",
-                        "player1_is_prereq_match_loser",
-                        "player2_is_prereq_match_loser",
-                    ]
-                )
-            except DatabaseError:
-                try:
-                    m1.save()
-                except IntegrityError:
-                    print("Match already exists")
+
     # assign calculated_play_order
     print("Check interleave")
     matches_list = []
@@ -138,7 +124,7 @@ def update_database():
         m.save()
 
 
-def load_particpants(t1):
+def load_bots(t1):
     for bot in challonge.participants.index(t1.tournament_id):
         p1 = Bot(
             bot_id=bot.get("id"),
@@ -152,7 +138,7 @@ def load_particpants(t1):
             pass
 
 
-def create_null_particpant(t1):
+def create_null_bot(t1):
     try:
         p1 = Bot.objects.get(bot_id=None, tournament_id=t1)
         print(p1)
