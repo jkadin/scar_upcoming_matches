@@ -8,7 +8,8 @@ from django.contrib.auth.models import User
 
 class MyPreferences(Preferences):
     interleave_method = models.CharField(
-        max_length=100, default="Fixed", null=True, blank=True
+        max_length=100,
+        default="Fixed",
     )
 
 
