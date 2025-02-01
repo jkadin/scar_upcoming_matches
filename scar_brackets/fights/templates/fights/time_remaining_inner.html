@@ -7,7 +7,7 @@
                     {% for participant in tournament.participant_set.all|dictsort:"participant_name"|dictsort:"time_remaining" %}
                         {% if participant.participant_id != None %}
                             <div class="h1">
-                                {{ participant.participant_name }}
+                                <a class="text-reset text-decoration-none" href="/fights/bot/{{participant.participant_name}}">{{participant.participant_name}}</a>
                                 - <strong>{{ participant.time_remaining }}</strong>
                             </div>
                         {% endif %}

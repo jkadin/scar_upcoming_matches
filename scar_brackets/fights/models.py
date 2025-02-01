@@ -3,6 +3,7 @@ from preferences.models import Preferences
 from django.db.models import Q
 from django.utils import timezone
 from datetime import datetime, timedelta
+from django.contrib.auth.models import User
 
 
 class MyPreferences(Preferences):
@@ -33,6 +34,7 @@ class Participant(models.Model):
     participant_id = models.CharField(max_length=100, null=True, blank=True)
     participant_name = models.CharField(max_length=100, null=True)
     tournament_id = models.ForeignKey(Tournament, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
         constraints = [
@@ -65,12 +67,36 @@ class Participant(models.Model):
     @property
     def time_remaining(self):
         now = timezone.now()
+        try:
+            profile = Profile.objects.get(user=self.user)
+            last_timeout = profile.last_timeout
+        except Profile.DoesNotExist:
+            last_timeout = timezone.make_aware(
+                datetime.min, timezone.get_default_timezone()
+            )
+        time_out_remaining = timedelta(minutes=20) - (now - last_timeout)  # type: ignore
         time_remaining = timedelta(minutes=20) - (now - self.last_updated)  # type: ignore
+        if time_out_remaining > time_remaining:
+            time_remaining = time_out_remaining
         if time_remaining < timedelta(minutes=0):
+            time_remaining = "00:00"
+        elif not time_remaining:
             time_remaining = "00:00"
         else:
             time_remaining = ":".join(str(time_remaining).split(".")[0].split(":")[1:])
+
         return time_remaining
+
+    @property
+    def still_in_tournament(self):
+        return bool(self.upcoming_matches)
+
+    @property
+    def upcoming_matches(self):
+        matches = Match.objects.filter(
+            Q(player1_id=self) | Q(player2_id=self), ~Q(match_state="Complete")
+        )
+        return matches
 
 
 class Match(models.Model):
@@ -94,3 +120,28 @@ class Match(models.Model):
 
     def __str__(self) -> str:
         return self.match_id
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    last_timeout = models.DateTimeField(
+        default=timezone.make_aware(datetime.min, timezone.get_default_timezone()),
+    )
+
+    @property
+    def display_name(self):
+        try:
+            display_name = self.user.socialaccount_set.filter(provider="discord")[
+                0
+            ].extra_data["global_name"]
+        except IndexError:
+            display_name = self.user.username
+        return display_name
+
+    @property
+    def time_out_available(self):
+        now = timezone.now()
+        if self.last_timeout.date() == now.date():
+            return False
+        if (now - self.last_timeout).total_seconds() >= 0:
+            return True

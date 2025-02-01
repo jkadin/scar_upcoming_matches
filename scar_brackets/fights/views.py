@@ -1,12 +1,13 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from .models import Match, Tournament, Url, Participant
+from .models import Match, Tournament, Url, Participant, Profile
 from django.views.decorators.csrf import csrf_exempt
 from itertools import chain, zip_longest
 from datetime import datetime, timedelta
 from preferences import preferences
 import json
 from django.utils import timezone
+from django.contrib.auth.decorators import login_required
 
 NEXT_MATCH_START = timedelta(minutes=1)
 MATCH_DELAY = timedelta(minutes=3)
@@ -72,8 +73,43 @@ def no_background_index(request):
     )
 
 
+@login_required
+@csrf_exempt
+def time_out(request):  # Take a timeout if one is available
+    user = request.user
+    now = timezone.now()
+    profile = Profile.objects.get(user=user)
+    if now.date() != profile.last_timeout.date():
+        profile.last_timeout = now
+        profile.save()
+
+    return render(
+        request,
+        "fights/timeout.html",
+        {"profile": profile, "users_match": True},
+    )
+
+
+@csrf_exempt
+def user(request, user_id):
+    if not request.user.is_authenticated:
+        return
+    profile = Profile.objects.get(user=user_id)
+    bots = Participant.objects.filter(user=profile.user)
+    users_match = False
+    if request.user == profile.user:
+        users_match = True
+    return render(
+        request,
+        "fights/user.html",
+        {"profile": profile, "bots": bots, "users_match": users_match},
+    )
+
+
 def time_remaining(request):
-    tournaments = Tournament.objects.filter(tournament_state="underway").order_by("tournament_name")
+    tournaments = Tournament.objects.filter(tournament_state="underway").order_by(
+        "tournament_name"
+    )
     return render(
         request,
         "fights/time_remaining.html",
@@ -82,7 +118,9 @@ def time_remaining(request):
 
 
 def time_remaining_inner(request):
-    tournaments = Tournament.objects.filter(tournament_state="underway").order_by("tournament_name")
+    tournaments = Tournament.objects.filter(tournament_state="underway").order_by(
+        "tournament_name"
+    )
     return render(
         request,
         "fights/time_remaining_inner.html",
@@ -91,17 +129,51 @@ def time_remaining_inner(request):
 
 
 def bot(request, participant_name):
+    users_match = False
     try:
         participant = Participant.objects.get(participant_name__iexact=participant_name)
+        try:
+            if request.user == participant.user:
+                users_match = True
+        except AttributeError:
+            pass
     except Participant.DoesNotExist:
         participant = None
     return render(
         request,
         "fights/bot.html",
-        {"bot": participant},
+        {"bot": participant, "users_match": users_match},
     )
 
 
+@login_required
+@csrf_exempt
+def claim_bot(request, participant_name):
+    users_match = False
+    claim = request.POST.get("claim", False)
+    try:
+        participant = Participant.objects.get(participant_name__iexact=participant_name)
+        if claim != "true":
+            participant.user = None
+            users_match = False
+        else:
+            participant.user = request.user
+            users_match = True
+        participant.save()
+    except Participant.DoesNotExist:
+        participant = None
+    return render(
+        request,
+        "fights/claim_bot.html",
+        {
+            "bot": participant,
+            "users_match": users_match,
+        },
+    )
+
+
+@login_required
+@csrf_exempt
 def end_match(ordered_matches, new_index):
     return ordered_matches[new_index].get("id")
 
@@ -139,12 +211,6 @@ def update_manaual_play_order(start_match_id, old_index, new_index, ordered_item
     direction = int(distance / abs(distance))
     for i in range(index + direction, index + distance + direction, direction):
         match = match_list[i]
-        # print(
-        #     i,
-        #     match,
-        #     match.calculated_play_order,
-        #     match.calculated_play_order + direction,
-        # )
         match.calculated_play_order -= direction
         match.save()
 

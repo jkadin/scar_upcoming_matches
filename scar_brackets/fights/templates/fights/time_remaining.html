@@ -1,33 +1,5 @@
-{% load static %}
-{% load socialaccount %}
-{% if user.is_authenticated %}
-    {% get_social_accounts user as accounts %}
-{% endif %}
-{% include './htmx_generic.html' %}
-
-<style>
-    .scar_logo {
-        background-position: center;
-        background-image: url({% static 'fights/images/scar_transparent.png' %});
-        background-size: contain;
-        background-repeat: no-repeat;
-    }
-
-    .text_style {
-        /*text-transform: uppercase;*/
-        font-weight: 400;
-    }
-</style>
-
-<body class="bg-danger">
-    <div class="float-end text-white">
-        {% if user.is_authenticated %}
-            {% if accounts.discord.0 %} {{ accounts.discord.0.extra_data.global_name }} {% else %} {{ user }} {% endif %} {% if perms.fights.change_match %}| Staff {% endif %}| <a href="/accounts/logout" class="link-light">Logout </a>
-        {% else %}
-            <a href="/accounts/login" class="link-light">Login</a>
-        {% endif %}
-    </div>
-    <div class="container-fluid bg-danger text-white scar_logo text_style py-4">
+{% extends "fights/base_template.html" %}
+{% block content %}
         <div class="row text-center justify-content-center py-4">
             <div class="col-md-3 bg-primary rounded-3" style="text-shadow: 3px 3px 0px black;">
                 <div class="display-5"><strong>Time Remaining</strong></div>
@@ -38,6 +10,4 @@
                 {% include './time_remaining_inner.html' %}
             </div>
         </div>
-    </div>
-</body>
-</html>
+{% endblock %}

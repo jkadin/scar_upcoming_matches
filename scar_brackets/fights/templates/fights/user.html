@@ -1,0 +1,33 @@
+{% extends "fights/base_template.html" %}
+{% block content %}
+<div class="row text-center justify-content-center py-4">
+    <div class="col-md-3 bg-warning rounded-3 text-black">
+        <div class="display-5"><strong>{{ profile.display_name }}</strong></div>
+    </div>
+    <div>
+        {% include './timeout.html' %}
+        <br>
+        {% if bots %}
+        <div class="text-center container">
+            <div class="row">
+                {% for bot in bots %}
+                    <div class="col">
+                        <div class="h1 text-light bg-primary rounded-start rounded-end"><a class="text-reset text-decoration-none" href="/fights/bot/{{ bot.participant_name }}">{{ bot.participant_name }}</a></div>
+                        <div class="fs-3">Time Remaining - {{bot.time_remaining}}</div>
+                        <br>
+                        <div class="fs-4">Next match:<br>
+                            <a class="text-reset text-decoration-none" href="/fights/bot/{{bot.upcoming_matches.0.player1_id}}">{{bot.upcoming_matches.0.player1_id}}</a> vs <a class="text-reset text-decoration-none" href="/fights/bot/{{bot.upcoming_matches.0.player2_id}}">{{bot.upcoming_matches.0.player2_id}}</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+            <div class="text-center">
+                <br>
+                <strong>No bots claimed by this user</strong>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

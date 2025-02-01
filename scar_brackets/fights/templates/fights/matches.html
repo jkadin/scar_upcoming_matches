@@ -5,7 +5,7 @@
             <div class="pt-5 pb-5 list-item" id="{{match.match_id}}">
                 <div class="row justify-content-md-center text-dark text_style">
                     <div class="col-md-4 bg-warning rounded-start">
-                        {{match.player1_name}}
+                        <a class="text-reset text-decoration-none" href="/fights/bot/{{match.player1_name}}">{{match.player1_name}}</a>
                         <br>
                         <div class="text-muted fs-2">Time remaining: {{match.player1_name.time_remaining}}</div>
                     </div>
@@ -13,7 +13,7 @@
                         VS
                     </div>
                     <div class="col-md-4 bg-warning rounded-end">
-                        {{match.player2_name}}
+                        <a class="text-reset text-decoration-none" href="/fights/bot/{{match.player2_name}}">{{match.player2_name}}</a>
                         <br>
                         <div class="text-muted fs-2">Time remaining: {{match.player2_name.time_remaining}}</div>
                     </div>

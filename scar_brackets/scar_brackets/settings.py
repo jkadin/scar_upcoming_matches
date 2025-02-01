@@ -162,8 +162,8 @@ SOCIALACCOUNT_PROVIDERS = {
             "secret": DISCORD_CLIENT_SECRET,
             "key": "",
         },
-        'AUTH_PARAMS': {
-            'prompt': 'none',
+        "AUTH_PARAMS": {
+            "prompt": "none",
         },
     }
 }
@@ -171,3 +171,5 @@ SOCIALACCOUNT_PROVIDERS = {
 SITE_ID = 1
 LOGIN_REDIRECT_URL = "/"
 LOGOUT = "/"
+
+SOCIALACCOUNT_ADAPTER = "fights.adapters.MySocialAccountAdapter"
