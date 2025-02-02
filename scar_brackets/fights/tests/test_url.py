@@ -4,5 +4,5 @@ import pytest
 @pytest.mark.django_db
 def test_url(url):
 
-    assert url.url == "http://www.google.com"
-    assert str(url) == "http://www.google.com"
+    assert url[0].url == "r5vq4p1l"
+    assert url[1].url == "4vljhp3k"

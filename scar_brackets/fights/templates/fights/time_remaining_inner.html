@@ -1,24 +1,24 @@
 {% if tournaments %}
-    <div class="text-center container">
-        <div class="row">
-            {% for tournament in tournaments %}
-                <div class="col">
-                    <div class="h1 text-dark bg-warning rounded-start rounded-end">{{ tournament.tournament_name }}</div>
-                    {% for participant in tournament.participant_set.all|dictsort:"participant_name"|dictsort:"time_remaining" %}
-                        {% if participant.participant_id != None %}
-                            <div class="h1">
-                                <a class="text-reset text-decoration-none" href="/fights/bot/{{participant.participant_name}}">{{participant.participant_name}}</a>
-                                - <strong>{{ participant.time_remaining }}</strong>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                </div>
+<div class="text-center container">
+    <div class="row">
+        {% for tournament in tournaments %}
+        <div class="col">
+            <div class="h1 text-dark bg-warning rounded-start rounded-end">{{ tournament.tournament_name }}</div>
+            {% for bot in tournament.bot_set.all|dictsort:"bot_name"|dictsort:"time_remaining" %}
+            {% if bot.bot_id != None %}
+            <div class="h1">
+                <a class="text-reset text-decoration-none" href="/fights/bot/{{bot.bot_name}}">{{bot.bot_name}}</a>
+                - <strong>{{ bot.time_remaining }}</strong>
+            </div>
+            {% endif %}
             {% endfor %}
         </div>
+        {% endfor %}
     </div>
+</div>
 {% else %}
-    <div class="text-center">
-        <br>
-        <strong>No participants available</strong>
-    </div>
+<div class="text-center">
+    <br>
+    <strong>No bots available</strong>
+</div>
 {% endif %}
