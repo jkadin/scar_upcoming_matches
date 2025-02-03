@@ -35,4 +35,14 @@ class Migration(migrations.Migration):
             model_name='bot',
             constraint=models.UniqueConstraint(fields=('tournament_id', 'bot_id'), name='unique-in-field'),
         ),
+        migrations.AlterField(
+            model_name='match',
+            name='player1_id',
+            field=models.ForeignKey(null=True, on_delete=models.deletion.DO_NOTHING, related_name='player1_id', to='fights.bot'),
+        ),
+        migrations.AlterField(
+            model_name='match',
+            name='player2_id',
+            field=models.ForeignKey(null=True, on_delete=models.deletion.DO_NOTHING, related_name='player2_id', to='fights.bot'),
+        ),
     ]

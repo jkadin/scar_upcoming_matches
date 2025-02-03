@@ -12,7 +12,7 @@
             <div class="row">
                 {% for bot in bots %}
                     <div class="col">
-                        <div class="h1 text-light bg-primary rounded-start rounded-end"><a class="text-reset text-decoration-none" href="/fights/bot/{{ bot.participant_name }}">{{ bot.participant_name }}</a></div>
+                        <div class="h1 text-light bg-primary rounded-start rounded-end"><a class="text-reset text-decoration-none" href="/fights/bot/{{ bot.bot_name }}">{{ bot.bot_name }}</a></div>
                         <div class="fs-3">Time Remaining - {{bot.time_remaining}}</div>
                         <br>
                         <div class="fs-4">Next match:<br>
