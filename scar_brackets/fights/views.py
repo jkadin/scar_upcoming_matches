@@ -1,10 +1,11 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from .models import Match, Tournament, Url, Participant, Profile
+from .models import Match, Tournament, Url, Bot, Profile, MyPreferences
 from django.views.decorators.csrf import csrf_exempt
 from itertools import chain, zip_longest
 from datetime import datetime, timedelta
-from preferences import preferences
+
+# from preferences import preferences
 import json
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
@@ -15,8 +16,8 @@ MATCH_DELAY = timedelta(minutes=3)
 
 def output():
     match_start = datetime.now() + NEXT_MATCH_START
-    INTERLEAVE_METHOD = preferences.MyPreferences.interleave_method  # type: ignore
-    print(f"{INTERLEAVE_METHOD=}")
+    INTERLEAVE_METHOD = MyPreferences.objects.all()[0].interleave_method
+    # print(f"{INTERLEAVE_METHOD=}")
     if INTERLEAVE_METHOD.lower() == "fixed":
         match_list = Match.objects.filter(match_state="open").order_by(
             "calculated_play_order"
@@ -92,10 +93,14 @@ def time_out(request):  # Take a timeout if one is available
 
 @csrf_exempt
 def user(request, user_id):
-    if not request.user.is_authenticated:
-        return
-    profile = Profile.objects.get(user=user_id)
-    bots = Participant.objects.filter(user=profile.user)
+    try:
+        profile = Profile.objects.get(user=user_id)
+    except Profile.DoesNotExist:
+        return render(
+            request,
+            "fights/user.html",
+        )
+    bots = Bot.objects.filter(user=profile.user)
     users_match = False
     if request.user == profile.user:
         users_match = True
@@ -121,6 +126,8 @@ def time_remaining_inner(request):
     tournaments = Tournament.objects.filter(tournament_state="underway").order_by(
         "tournament_name"
     )
+    # for tournament in tournaments:
+    #     print(tournament)
     return render(
         request,
         "fights/time_remaining_inner.html",
@@ -128,45 +135,45 @@ def time_remaining_inner(request):
     )
 
 
-def bot(request, participant_name):
+def bot(request, bot_name):
     users_match = False
     try:
-        participant = Participant.objects.get(participant_name__iexact=participant_name)
+        bot = Bot.objects.get(bot_name__iexact=bot_name)
         try:
-            if request.user == participant.user:
+            if request.user == bot.user:
                 users_match = True
         except AttributeError:
             pass
-    except Participant.DoesNotExist:
-        participant = None
+    except Bot.DoesNotExist:
+        bot = None
     return render(
         request,
         "fights/bot.html",
-        {"bot": participant, "users_match": users_match},
+        {"bot": bot, "users_match": users_match},
     )
 
 
 @login_required
 @csrf_exempt
-def claim_bot(request, participant_name):
+def claim_bot(request, bot_name):
     users_match = False
     claim = request.POST.get("claim", False)
     try:
-        participant = Participant.objects.get(participant_name__iexact=participant_name)
+        bot = Bot.objects.get(bot_name__iexact=bot_name)
         if claim != "true":
-            participant.user = None
+            bot.user = None
             users_match = False
         else:
-            participant.user = request.user
+            bot.user = request.user
             users_match = True
-        participant.save()
-    except Participant.DoesNotExist:
-        participant = None
+        bot.save()
+    except Bot.DoesNotExist:
+        bot = None
     return render(
         request,
         "fights/claim_bot.html",
         {
-            "bot": participant,
+            "bot": bot,
             "users_match": users_match,
         },
     )
@@ -198,12 +205,12 @@ def update_manaual_play_order(start_match_id, old_index, new_index, ordered_item
         start_match_id, end_match_id, match_list
     )
     distance = match_end_index - match_start_index
-    print(f"{match_start_index=},{match_end_index=},{distance=}")
+    # print(f"{match_start_index=},{match_end_index=},{distance=}")
 
     for index, match in enumerate(match_list):
         if match.match_id == start_match_id:
             match.calculated_play_order += distance
-            print(f"Updated Match - {match.match_id} to  {match.calculated_play_order}")
+            # print(f"Updated Match - {match.match_id} to  {match.calculated_play_order}")
             match.save()
             break
 
@@ -252,21 +259,21 @@ def display_matches(request):
     )
 
 
-def least_recent_match():
-    ordered_output = []
-    tournament_list = {}
-    for tournament in Tournament.objects.all():
-        tournament_matches = Match.objects.filter(
-            tournament_id=tournament, match_state="open"
-        )
-        sorted_list = sorted(tournament_list, key=lambda x: x.started_at)
-        tournament_list[tournament] = tournament_matches.order_by("started_at").last()
-    for t1 in sorted_list:
-        ordered_output.append(
-            tournament_matches.order_by("calculated_play_order").first()
-        )
+# def least_recent_match():
+#     ordered_output = []
+#     tournament_list = {}
+#     for tournament in Tournament.objects.all():
+#         tournament_matches = Match.objects.filter(
+#             tournament_id=tournament, match_state="open"
+#         )
+#         sorted_list = sorted(tournament_list, key=lambda x: x.started_at)
+#         tournament_list[tournament] = tournament_matches.order_by("started_at").last()
+#     for t1 in sorted_list:
+#         ordered_output.append(
+#             tournament_matches.order_by("calculated_play_order").first()
+#         )
 
-    return ordered_output
+#     return ordered_output
 
 
 def match_by_tournament():

@@ -7,3 +7,4 @@ scar_brackets/pyproject.toml
 scar_upcoming_matches.code-workspace
 .DS_Store
 mysite/pyproject.toml
+scar_brackets/db.sqlite3.today

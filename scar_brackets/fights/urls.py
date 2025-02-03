@@ -14,10 +14,10 @@ urlpatterns = [
     path(
         "time_remaining_inner", views.time_remaining_inner, name="time_remaining_inner"
     ),
-    path("bot/<str:participant_name>/", views.bot, name="bot"),
+    path("bot/<str:bot_name>/", views.bot, name="bot"),
     path("time_out", views.time_out, name="time_out"),
     path(
-        "claim_bot/<str:participant_name>/",
+        "claim_bot/<str:bot_name>/",
         views.claim_bot,
         name="claim_bot",
     ),

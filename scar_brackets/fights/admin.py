@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Url, Match, Tournament, Participant, Profile
+from .models import Url, Match, Tournament, Bot, Profile
 from preferences.admin import PreferencesAdmin
 from .models import MyPreferences
 
@@ -9,12 +9,12 @@ admin.site.register(MyPreferences, PreferencesAdmin)
 admin.site.register(Url)
 
 
-class Participant_admin(admin.ModelAdmin):
-    list_display = ("participant_id", "participant_name", "tournament_id")
-    ordering = ("participant_id", "participant_name")
+class Bot_admin(admin.ModelAdmin):
+    list_display = ("bot_id", "bot_name", "tournament_id")
+    ordering = ("bot_id", "bot_name")
 
 
-admin.site.register(Participant, Participant_admin)
+admin.site.register(Bot, Bot_admin)
 
 
 class Match_admin(admin.ModelAdmin):

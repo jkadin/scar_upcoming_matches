@@ -8,7 +8,8 @@ from django.contrib.auth.models import User
 
 class MyPreferences(Preferences):
     interleave_method = models.CharField(
-        max_length=100, default="Fixed", null=True, blank=True
+        max_length=100,
+        default="Fixed",
     )
 
 
@@ -30,25 +31,25 @@ class Tournament(models.Model):
         return self.tournament_name
 
 
-class Participant(models.Model):
-    participant_id = models.CharField(max_length=100, null=True, blank=True)
-    participant_name = models.CharField(max_length=100, null=True)
+class Bot(models.Model):
+    bot_id = models.CharField(max_length=100, null=True, blank=True)
+    bot_name = models.CharField(max_length=100, null=True)
     tournament_id = models.ForeignKey(Tournament, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["tournament_id", "participant_id"], name="unique-in-field"
+                fields=["tournament_id", "bot_id"], name="unique-in-field"
             )
         ]
 
     def __str__(self) -> str:
-        return f"{self.participant_name}"
+        return f"{self.bot_name}"
 
     @property
     def last_updated(self):
-        # Get the most recent match where the participant is either player1 or player2
+        # Get the most recent match where the bot is either player1 or player2
         recent_match = (
             Match.objects.filter(
                 Q(player1_id=self) | Q(player2_id=self), match_state="complete"
@@ -102,10 +103,10 @@ class Participant(models.Model):
 class Match(models.Model):
     match_id = models.CharField(max_length=100, primary_key=True)
     player1_id = models.ForeignKey(
-        Participant, on_delete=models.DO_NOTHING, related_name="player1_id", null=True
+        Bot, on_delete=models.DO_NOTHING, related_name="player1_id", null=True
     )
     player2_id = models.ForeignKey(
-        Participant, on_delete=models.DO_NOTHING, related_name="player2_id", null=True
+        Bot, on_delete=models.DO_NOTHING, related_name="player2_id", null=True
     )
     tournament_id = models.ForeignKey(Tournament, on_delete=models.CASCADE)
     match_state = models.CharField(max_length=100, null=True)
