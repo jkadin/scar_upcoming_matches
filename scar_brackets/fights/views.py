@@ -17,7 +17,7 @@ MATCH_DELAY = timedelta(minutes=3)
 def output():
     match_start = datetime.now() + NEXT_MATCH_START
     INTERLEAVE_METHOD = MyPreferences.objects.all()[0].interleave_method
-    print(f"{INTERLEAVE_METHOD=}")
+    # print(f"{INTERLEAVE_METHOD=}")
     if INTERLEAVE_METHOD.lower() == "fixed":
         match_list = Match.objects.filter(match_state="open").order_by(
             "calculated_play_order"
@@ -93,12 +93,13 @@ def time_out(request):  # Take a timeout if one is available
 
 @csrf_exempt
 def user(request, user_id):
-    if not request.user.is_authenticated:
+    try:
+        profile = Profile.objects.get(user=user_id)
+    except Profile.DoesNotExist:
         return render(
             request,
             "fights/user.html",
         )
-    profile = Profile.objects.get(user=user_id)
     bots = Bot.objects.filter(user=profile.user)
     users_match = False
     if request.user == profile.user:
@@ -125,8 +126,8 @@ def time_remaining_inner(request):
     tournaments = Tournament.objects.filter(tournament_state="underway").order_by(
         "tournament_name"
     )
-    for tournament in tournaments:
-        print(tournament)
+    # for tournament in tournaments:
+    #     print(tournament)
     return render(
         request,
         "fights/time_remaining_inner.html",
@@ -204,12 +205,12 @@ def update_manaual_play_order(start_match_id, old_index, new_index, ordered_item
         start_match_id, end_match_id, match_list
     )
     distance = match_end_index - match_start_index
-    print(f"{match_start_index=},{match_end_index=},{distance=}")
+    # print(f"{match_start_index=},{match_end_index=},{distance=}")
 
     for index, match in enumerate(match_list):
         if match.match_id == start_match_id:
             match.calculated_play_order += distance
-            print(f"Updated Match - {match.match_id} to  {match.calculated_play_order}")
+            # print(f"Updated Match - {match.match_id} to  {match.calculated_play_order}")
             match.save()
             break
 
