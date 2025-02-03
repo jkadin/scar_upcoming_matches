@@ -94,9 +94,7 @@ class Bot(models.Model):
 
     @property
     def upcoming_matches(self):
-        matches = Match.objects.filter(
-            Q(player1_id=self) | Q(player2_id=self), ~Q(match_state="Complete")
-        )
+        matches = Match.objects.filter(Q(player1_id=self) | Q(player2_id=self), ~Q(match_state="Complete")).order_by("calculated_play_order")
         return matches
 
 
