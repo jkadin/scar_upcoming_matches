@@ -94,7 +94,9 @@ class Bot(models.Model):
 
     @property
     def upcoming_matches(self):
-        matches = Match.objects.filter(Q(player1_id=self) | Q(player2_id=self), ~Q(match_state="Complete")).order_by("calculated_play_order")
+        matches = Match.objects.filter(
+            Q(player1_id=self) | Q(player2_id=self), ~Q(match_state="complete")
+        ).order_by("calculated_play_order")
         return matches
 
 
@@ -130,9 +132,11 @@ class Profile(models.Model):
     @property
     def display_name(self):
         try:
-            display_name = self.user.socialaccount_set.filter(provider="discord")[
+            display_name = self.user.socialaccount_set.filter(provider="discord")[  # type: ignore
                 0
-            ].extra_data["global_name"]
+            ].extra_data[
+                "global_name"
+            ]
         except IndexError:
             display_name = self.user.username
         return display_name
