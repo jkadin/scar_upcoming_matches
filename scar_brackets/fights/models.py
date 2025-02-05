@@ -90,7 +90,7 @@ class Bot(models.Model):
 
     @property
     def still_in_tournament(self):
-        return bool(self.upcoming_matches)
+        return bool(self.upcoming_matches.values())
 
     @property
     def upcoming_matches(self):

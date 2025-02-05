@@ -27,7 +27,7 @@ def test_bot(bots, client):
     assert bot1.time_remaining == "00:00"
     assert bot1.upcoming_matches.count() == 0
     assert str(bot1) == "Player 1"
-    assert len(bot1.still_in_tournament) == 0
+    assert bot1.still_in_tournament is False
 
     url = f"/fights/bot/{bot1.bot_name}/"
     response = client.get(url)
