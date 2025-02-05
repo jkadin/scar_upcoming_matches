@@ -17,5 +17,5 @@ def test_match(match):
 
 
 @pytest.mark.django_db
-def test_match_by_tournament(tournament, match):
+def test_match_by_tournament(tournament):
     assert match_by_tournament() is not None
