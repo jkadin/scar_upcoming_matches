@@ -25,7 +25,7 @@ def authenticated_user(client):
 def tournament(url):
     return Tournament.objects.create(
         tournament_name="Tournament 1",
-        tournament_id=1,
+        tournament_id="1",
         tournament_state="underway",
         tournament_url=url[0],
         tournament_needs_interleave=True,
