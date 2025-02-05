@@ -2,7 +2,7 @@ import pytest
 
 
 @pytest.mark.django_db
-def test_my_preferences(client, my_preferences, match, tournament):
+def test_my_preferences(client, my_preferences):
     assert my_preferences.interleave_method == "Fixed"
     my_preferences.interleave_method = "Interleave"
     my_preferences.save()
