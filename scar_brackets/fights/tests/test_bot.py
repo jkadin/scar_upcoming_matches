@@ -5,7 +5,7 @@ from datetime import datetime
 
 @pytest.mark.django_db
 def test_bot(bots, client):
-    bot1 = bots[0]
+    bot1 = bots[0][0]
     assert bot1.id == 1
     assert bot1.bot_name == "Player 1"
     assert bot1.tournament_id.tournament_name == "Tournament 1"
@@ -16,7 +16,7 @@ def test_bot(bots, client):
     assert bot1.time_remaining == "00:00"
     assert bot1.upcoming_matches.count() == 0
 
-    bot2 = bots[1]
+    bot2 = bots[1][0]
     assert bot2.id == 2
     assert bot2.bot_name == "Player 2"
     assert bot1.tournament_id.tournament_name == "Tournament 1"

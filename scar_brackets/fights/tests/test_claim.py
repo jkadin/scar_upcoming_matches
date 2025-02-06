@@ -3,7 +3,7 @@ import pytest
 
 @pytest.mark.django_db
 def test_claim_user(client, authenticated_user, bots):
-    bot1 = bots[0]
+    bot1 = bots[0][0]
     # Case 1: Valid claim with "true"
     url = "/fights/claim_bot/Player 1/"
     response = client.post(url, {"claim": "true"})
