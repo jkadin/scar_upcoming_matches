@@ -23,13 +23,24 @@ def authenticated_user(client):
 
 @pytest.fixture
 def tournament(url):
-    return Tournament.objects.create(
-        tournament_name="Tournament 1",
-        tournament_id="1",
-        tournament_state="underway",
-        tournament_url=url[0],
-        tournament_needs_interleave=True,
-    )
+    return [
+        Tournament.objects.create(
+            tournament_name="Tournament 1",
+            tournament_id="1",
+            tournament_state="underway",
+            tournament_url=url[0],
+            tournament_needs_interleave=True,
+            tournament_repair_time=30,
+        ),
+        Tournament.objects.create(
+            tournament_name="Tournament 2",
+            tournament_id="2",
+            tournament_state="underway",
+            tournament_url=url[1],
+            tournament_needs_interleave=True,
+            tournament_repair_time=20,
+        ),
+    ]
 
 
 @pytest.fixture
@@ -42,20 +53,23 @@ def url():
 
 @pytest.fixture
 def bots(tournament, authenticated_user):
-    return [
+    bot1 = (
         Bot.objects.create(
             bot_id=1,
             bot_name="Player 1",
-            tournament_id=tournament,
+            tournament_id=tournament[0],
             user=authenticated_user,
         ),
+    )
+    bot2 = (
         Bot.objects.create(
             bot_id=2,
             bot_name="Player 2",
-            tournament_id=tournament,
+            tournament_id=tournament[1],
             user=authenticated_user,
         ),
-    ]
+    )
+    return [bot1, bot2]
 
 
 @pytest.fixture
@@ -65,11 +79,11 @@ def profile(authenticated_user):
 
 @pytest.fixture
 def match(bots, tournament):
-    bot1 = bots[0]
-    bot2 = bots[1]
+    bot1 = bots[0][0]
+    bot2 = bots[1][0]
     return Match.objects.create(
         match_id="test match",
-        tournament_id=tournament,
+        tournament_id=tournament[0],
         player1_id=bot1,
         player2_id=bot2,
         suggested_play_order=1,

@@ -26,6 +26,7 @@ class Tournament(models.Model):
     tournament_state = models.CharField(max_length=100)
     tournament_url = models.ForeignKey(Url, on_delete=models.CASCADE)
     tournament_needs_interleave = models.BooleanField(default=True)
+    tournament_repair_time = models.IntegerField(default=20)
 
     def __str__(self) -> str:
         return self.tournament_name
@@ -68,6 +69,7 @@ class Bot(models.Model):
     @property
     def time_remaining(self):
         now = timezone.now()
+        minutes = self.tournament_id.tournament_repair_time
         try:
             profile = Profile.objects.get(user=self.user)
             last_timeout = profile.last_timeout
@@ -75,8 +77,8 @@ class Bot(models.Model):
             last_timeout = timezone.make_aware(
                 datetime.min, timezone.get_default_timezone()
             )
-        time_out_remaining = timedelta(minutes=20) - (now - last_timeout)  # type: ignore
-        time_remaining = timedelta(minutes=20) - (now - self.last_updated)  # type: ignore
+        time_out_remaining = timedelta(minutes=minutes) - (now - last_timeout)  # type: ignore
+        time_remaining = timedelta(minutes=minutes) - (now - self.last_updated)  # type: ignore
         if time_out_remaining > time_remaining:
             time_remaining = time_out_remaining
         if time_remaining < timedelta(minutes=0):
