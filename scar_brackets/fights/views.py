@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 import json
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
+from preferences import preferences
 
 NEXT_MATCH_START = timedelta(minutes=1)
 MATCH_DELAY = timedelta(minutes=3)
@@ -15,7 +16,7 @@ MATCH_DELAY = timedelta(minutes=3)
 
 def output():
     match_start = datetime.now() + NEXT_MATCH_START
-    INTERLEAVE_METHOD = MyPreferences.interleave_method  # type: ignore
+    INTERLEAVE_METHOD = preferences.MyPreferences.interleave_method  # type: ignore
     print(f"{INTERLEAVE_METHOD=}")
     if INTERLEAVE_METHOD.lower() == "fixed":  # type: ignore
         match_list = Match.objects.filter(match_state="open").order_by(
