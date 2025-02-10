@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from .models import Match, Tournament, Url, Bot, Profile, MyPreferences
+from .models import Match, Tournament, Url, Bot, Profile
 from django.views.decorators.csrf import csrf_exempt
 from itertools import chain, zip_longest
 from datetime import datetime, timedelta
