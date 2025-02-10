@@ -5,7 +5,6 @@ from django.views.decorators.csrf import csrf_exempt
 from itertools import chain, zip_longest
 from datetime import datetime, timedelta
 
-# from preferences import preferences
 import json
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
@@ -16,9 +15,9 @@ MATCH_DELAY = timedelta(minutes=3)
 
 def output():
     match_start = datetime.now() + NEXT_MATCH_START
-    INTERLEAVE_METHOD = MyPreferences.objects.all()[0].interleave_method
-    # print(f"{INTERLEAVE_METHOD=}")
-    if INTERLEAVE_METHOD.lower() == "fixed":
+    INTERLEAVE_METHOD = MyPreferences.interleave_method  # type: ignore
+    print(f"{INTERLEAVE_METHOD=}")
+    if INTERLEAVE_METHOD.lower() == "fixed":  # type: ignore
         match_list = Match.objects.filter(match_state="open").order_by(
             "calculated_play_order"
         )
@@ -126,8 +125,6 @@ def time_remaining_inner(request):
     tournaments = Tournament.objects.filter(tournament_state="underway").order_by(
         "tournament_name"
     )
-    # for tournament in tournaments:
-    #     print(tournament)
     return render(
         request,
         "fights/time_remaining_inner.html",
@@ -205,12 +202,10 @@ def update_manaual_play_order(start_match_id, old_index, new_index, ordered_item
         start_match_id, end_match_id, match_list
     )
     distance = match_end_index - match_start_index
-    # print(f"{match_start_index=},{match_end_index=},{distance=}")
 
     for index, match in enumerate(match_list):
         if match.match_id == start_match_id:
             match.calculated_play_order += distance
-            # print(f"Updated Match - {match.match_id} to  {match.calculated_play_order}")
             match.save()
             break
 
