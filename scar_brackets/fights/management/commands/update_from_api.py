@@ -6,6 +6,8 @@ from fights.models import Url, Tournament, Match, Bot
 from itertools import chain, zip_longest
 from dotenv import load_dotenv
 
+# import pickle
+
 # import pprint
 
 load_dotenv()
@@ -26,9 +28,14 @@ def update_database():
     )
     tournament_list = []
     for tournament_url in Url.objects.all():
-        tournament_list.append(
-            challonge.tournaments.show(tournament=f"/{tournament_url}")
+        challonge_tournament = challonge.tournaments.show(
+            tournament=f"/{tournament_url}"
         )
+        # Pickle the tournament_list
+        # with open(f"fights/tournament_list{tournament_url}.pkl", "wb") as f:
+        #     pickle.dump(challonge_tournament, f)
+        tournament_list.append(challonge_tournament)
+
     # Load Tournament and bots first
     for t in tournament_list:
         exists = Tournament.objects.filter(tournament_id=t.get("id"))
@@ -60,11 +67,15 @@ def update_database():
 
     # load matches
     print("Loading Matches")
+    matches_data = {}
     for t in tournament_list:
         t1 = Tournament(t.get("id"), t.get("name"), t.get("state"), tournament_url)
-        # print(f"{t1.tournament_id=}")
-        # pprint.pp(challonge.matches.index(t1.tournament_id))
-        for match in challonge.matches.index(t1.tournament_id, state="all"):
+        matches: dict = challonge.matches.index(t1.tournament_id, state="all")
+        # Pickle the matches_data
+        # with open(f"fights/matches_data{t1.tournament_id}.pkl", "wb") as f:
+        #     pickle.dump(matches, f)
+        matches_data[t1.tournament_id] = matches
+        for match in matches:
             player1_id = Bot.objects.get(
                 bot_id=match.get("player1_id"), tournament_id=t1
             )
@@ -125,17 +136,16 @@ def update_database():
 
 
 def load_bots(t1):
-    for bot in challonge.participants.index(t1.tournament_id):
-        p1 = Bot(
-            bot_id=bot.get("id"),
-            bot_name=bot.get("name"),
+    # Pickle the matches_data
+    # with open(f"fights/participants{t1.tournament_id}.pkl", "wb") as f:
+    #     pickle.dump(challonge.participants.index(t1.tournament_id), f)
+    participants = challonge.participants.index(t1.tournament_id)
+    for bot in participants:
+        Bot.objects.update_or_create(
+            bot_id=bot["id"],
+            bot_name=bot["name"],
             tournament_id=t1,
         )
-        try:
-            p1.save()
-        except IntegrityError:
-            # print(f"bot {p1} already exists")
-            pass
 
 
 def create_null_bot(t1):
