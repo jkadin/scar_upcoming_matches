@@ -3,6 +3,9 @@ from django.contrib.auth.models import User
 from django.test import Client
 from fights.models import Match, Tournament, Url, Bot, Profile, MyPreferences
 from django.utils import timezone
+import pytest_mock
+import pickle
+from pathlib import Path
 
 now = timezone.now()
 
@@ -96,3 +99,32 @@ def match(bots, tournament):
 @pytest.fixture
 def my_preferences():
     return MyPreferences.objects.create()
+
+
+@pytest.fixture
+def mock_challonge_matches(mocker: pytest_mock.MockerFixture):
+    pickle_file_path = Path(__file__).parent.parent / "matches_data13874863.pkl"
+    with open(pickle_file_path, "rb") as f:
+        matches_data = pickle.load(f)
+    return mocker.patch("challonge.matches.index", return_value=matches_data)
+
+
+@pytest.fixture
+def mock_challonge_participants(mocker: pytest_mock.MockerFixture):
+    pickle_file_path = Path(__file__).parent.parent / "participants13874863.pkl"
+    with open(pickle_file_path, "rb") as f:
+        matches_data = pickle.load(f)
+    return mocker.patch("challonge.participants.index", return_value=matches_data)
+
+
+@pytest.fixture
+def mock_challonge_tournaments(mocker: pytest_mock.MockerFixture):
+    # tournaments = []
+    pickle_file_path = Path(__file__).parent.parent / "tournament_list4vljhp3k.pkl"
+    with open(pickle_file_path, "rb") as f:
+        x = pickle.load(f)
+    # with open(pickle_file_path, "rb") as f:
+    #     pickle_file_path = Path(__file__).parent.parent / "tournament_listr5vq4p1l.pkl"
+    #     tournaments.append(pickle.load(f))
+    return mocker.patch("challonge.tournaments.show", return_value=x)
+    return mocker.patch('challonge.tournaments.show( tournament=f"/{tournament_url}" ')

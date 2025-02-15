@@ -23,9 +23,9 @@ class Command(BaseCommand):
 
 
 def update_database():
-    challonge.set_credentials(
-        os.getenv("CHALLONGE_USERNAME"), os.getenv("CHALLONGE_API_KEY")
-    )
+    # challonge.set_credentials(
+    #     os.getenv("CHALLONGE_USERNAME"), os.getenv("CHALLONGE_API_KEY")
+    # )
     tournament_list = []
     for tournament_url in Url.objects.all():
         challonge_tournament = challonge.tournaments.show(

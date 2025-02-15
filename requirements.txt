@@ -6,3 +6,4 @@ django-allauth==0.63.3
 gunicorn==22.0.0
 django-preferences==1.0.0
 pytest-django==4.9.0
+pytest-mock==3.14.0
