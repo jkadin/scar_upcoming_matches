@@ -1,14 +1,10 @@
 from django.core.management.base import BaseCommand
-from django.db import IntegrityError
 import challonge
 import os
 from fights.models import Url, Tournament, Match, Bot
 from itertools import chain, zip_longest
 from dotenv import load_dotenv
 
-# import pickle
-
-# import pprint
 
 load_dotenv()
 
@@ -31,9 +27,6 @@ def update_database():
         challonge_tournament = challonge.tournaments.show(
             tournament=f"/{tournament_url}"
         )
-        # Pickle the tournament_list
-        # with open(f"fights/tournament_list{tournament_url}.pkl", "wb") as f:
-        #     pickle.dump(challonge_tournament, f)
         tournament_list.append(challonge_tournament)
 
     # Load Tournament and bots first
@@ -70,10 +63,7 @@ def update_database():
     matches_data = {}
     for t in tournament_list:
         t1 = Tournament(t.get("id"), t.get("name"), t.get("state"), tournament_url)
-        matches: dict = challonge.matches.index(t1.tournament_id, state="all")
-        # Pickle the matches_data
-        # with open(f"fights/matches_data{t1.tournament_id}.pkl", "wb") as f:
-        #     pickle.dump(matches, f)
+        matches: dict = challonge.matches.index(t1.tournament_id, state="all")  # type: ignore
         matches_data[t1.tournament_id] = matches
         for match in matches:
             player1_id = Bot.objects.get(
@@ -136,14 +126,11 @@ def update_database():
 
 
 def load_bots(t1):
-    # Pickle the matches_data
-    # with open(f"fights/participants{t1.tournament_id}.pkl", "wb") as f:
-    #     pickle.dump(challonge.participants.index(t1.tournament_id), f)
     participants = challonge.participants.index(t1.tournament_id)
     for bot in participants:
         Bot.objects.update_or_create(
-            bot_id=bot["id"],
-            bot_name=bot["name"],
+            bot_id=bot["id"],  # type: ignore
+            bot_name=bot["name"],  # type: ignore
             tournament_id=t1,
         )
 
