@@ -8,6 +8,6 @@ def test_update_database(
     url, mock_challonge_matches, mock_challonge_participants, mock_challonge_tournaments
 ):
     update_database()
-    assert len(Tournament.objects.all()) == 1
+    assert len(Tournament.objects.all()) == 2
     assert len(Match.objects.all()) == 15
-    assert len(Bot.objects.all()) == 9
+    assert len(Bot.objects.all()) == 18

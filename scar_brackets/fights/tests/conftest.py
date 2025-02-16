@@ -119,12 +119,12 @@ def mock_challonge_participants(mocker: pytest_mock.MockerFixture):
 
 @pytest.fixture
 def mock_challonge_tournaments(mocker: pytest_mock.MockerFixture):
-    # tournaments = []
-    pickle_file_path = Path(__file__).parent.parent / "tournament_list4vljhp3k.pkl"
-    with open(pickle_file_path, "rb") as f:
-        x = pickle.load(f)
-    # with open(pickle_file_path, "rb") as f:
-    #     pickle_file_path = Path(__file__).parent.parent / "tournament_listr5vq4p1l.pkl"
-    #     tournaments.append(pickle.load(f))
-    return mocker.patch("challonge.tournaments.show", return_value=x)
-    return mocker.patch('challonge.tournaments.show( tournament=f"/{tournament_url}" ')
+    tournament_ids = ["4vljhp3k", "r5vq4p1l"]
+    tournaments = []
+    for tournament_id in tournament_ids:
+        pickle_file_path = (
+            Path(__file__).parent.parent / f"tournament_list{tournament_id}.pkl"
+        )
+        with open(pickle_file_path, "rb") as f:
+            tournaments.append(pickle.load(f))
+    return mocker.patch("challonge.tournaments.show", side_effect=tournaments)
