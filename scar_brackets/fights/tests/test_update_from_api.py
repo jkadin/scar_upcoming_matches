@@ -9,5 +9,5 @@ def test_update_database(
 ):
     update_database()
     assert len(Tournament.objects.all()) == 2
-    assert len(Match.objects.all()) == 15
-    assert len(Bot.objects.all()) == 18
+    assert len(Match.objects.all()) == 24
+    assert len(Bot.objects.all()) == 15

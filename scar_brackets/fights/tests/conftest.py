@@ -49,8 +49,8 @@ def tournament(url):
 @pytest.fixture
 def url():
     return [
-        Url.objects.create(url="r5vq4p1l"),
         Url.objects.create(url="4vljhp3k"),
+        Url.objects.create(url="r5vq4p1l"),
     ]
 
 
@@ -102,29 +102,54 @@ def my_preferences():
 
 
 @pytest.fixture
-def mock_challonge_matches(mocker: pytest_mock.MockerFixture):
-    pickle_file_path = Path(__file__).parent.parent / "matches_data13874863.pkl"
-    with open(pickle_file_path, "rb") as f:
-        matches_data = pickle.load(f)
-    return mocker.patch("challonge.matches.index", return_value=matches_data)
+def tournament_urls():
+    return ["4vljhp3k", "r5vq4p1l"]
+
+
+def load_matches_from_pickle(tournament_urls):
+    matches = []
+    for tournament_url in tournament_urls:
+        pickle_file_path = Path(__file__).parent.parent / f"matches{tournament_url}.pkl"
+        with open(pickle_file_path, "rb") as f:
+            matches.append(pickle.load(f))
+    return matches
 
 
 @pytest.fixture
-def mock_challonge_participants(mocker: pytest_mock.MockerFixture):
-    pickle_file_path = Path(__file__).parent.parent / "participants13874863.pkl"
-    with open(pickle_file_path, "rb") as f:
-        matches_data = pickle.load(f)
-    return mocker.patch("challonge.participants.index", return_value=matches_data)
+def mock_challonge_matches(mocker: pytest_mock.MockerFixture, tournament_urls):
+    matches = load_matches_from_pickle(tournament_urls)
+    return mocker.patch("challonge.matches.index", side_effect=matches)
 
 
-@pytest.fixture
-def mock_challonge_tournaments(mocker: pytest_mock.MockerFixture):
-    tournament_ids = ["4vljhp3k", "r5vq4p1l"]
-    tournaments = []
-    for tournament_id in tournament_ids:
+def load_participants_from_pickle(tournament_urls):
+    participants = []
+    for tournament_url in tournament_urls:
         pickle_file_path = (
-            Path(__file__).parent.parent / f"tournament_list{tournament_id}.pkl"
+            Path(__file__).parent.parent / f"participants{tournament_url}.pkl"
+        )
+        with open(pickle_file_path, "rb") as f:
+            participants.append(pickle.load(f))
+    return participants
+
+
+@pytest.fixture
+def mock_challonge_participants(mocker: pytest_mock.MockerFixture, tournament_urls):
+    participants = load_participants_from_pickle(tournament_urls)
+    return mocker.patch("challonge.participants.show", side_effect=participants)
+
+
+def load_tournaments_from_pickle(tournament_urls):
+    tournaments = []
+    for tournament_url in tournament_urls:
+        pickle_file_path = (
+            Path(__file__).parent.parent / f"tournaments{tournament_url}.pkl"
         )
         with open(pickle_file_path, "rb") as f:
             tournaments.append(pickle.load(f))
+    return tournaments
+
+
+@pytest.fixture
+def mock_challonge_tournaments(mocker: pytest_mock.MockerFixture, tournament_urls):
+    tournaments = load_tournaments_from_pickle(tournament_urls)
     return mocker.patch("challonge.tournaments.show", side_effect=tournaments)

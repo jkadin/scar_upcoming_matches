@@ -22,15 +22,60 @@ def update_database():
     challonge.set_credentials(
         os.getenv("CHALLONGE_USERNAME"), os.getenv("CHALLONGE_API_KEY")
     )
-    tournament_list = []
-    for tournament_url in Url.objects.all():
-        challonge_tournament = challonge.tournaments.show(
-            tournament=f"/{tournament_url}"
-        )
-        tournament_list.append(challonge_tournament)
+    challonge_tournament_list = get_tournament_list_from_challonge()
 
-    # Load Tournament and bots first
-    for t in tournament_list:
+    process_tournaments(challonge_tournament_list)
+
+    load_matches_from_challonge(challonge_tournament_list)
+
+    # assign calculated_play_order
+    print("Check interleave")
+    needs_interleave = Tournament.objects.filter(tournament_needs_interleave=True)
+    if not needs_interleave:
+        print("No interleave needed")
+        return
+    interleaved_matches = interleave()
+    interleaved = zip_longest(*interleaved_matches)
+    list_of_tuples = chain.from_iterable(interleaved)
+    print("list of tuples - ", list_of_tuples)
+    remove_fill(list_of_tuples)
+
+
+def interleave():
+    matches_list = []
+    print("Interleave needed")
+    for tournament in Tournament.objects.all():
+        print(tournament.tournament_name)
+        tournament.tournament_needs_interleave = False
+        tournament.save()
+        matches_list.append(
+            Match.objects.filter(tournament_id=tournament).order_by(
+                "suggested_play_order"
+            )
+        )
+    return matches_list
+
+
+def remove_fill(list_of_tuples):
+    fill = [x for x in list_of_tuples if x is not None]
+    print(remove_fill)
+    for i, m in enumerate(fill):
+        print(m.tournament_id.tournament_name, m.suggested_play_order)
+        m.calculated_play_order = i + 1
+        print(m.calculated_play_order)
+        m.save()
+
+
+def load_matches_from_challonge(challonge_tournament_list):
+    print("Loading Matches")
+    for t in challonge_tournament_list:
+        t1 = Tournament(t.get("id"), t.get("name"), t.get("state"), t.get("url"))
+        challonge_matches: list = challonge.matches.index(t1.tournament_id, state="all")  # type: ignore
+        update_or_create_matches(t1, challonge_matches)
+
+
+def process_tournaments(challonge_tournament_list):
+    for x, t in enumerate(challonge_tournament_list):
         exists = Tournament.objects.filter(tournament_id=t.get("id"))
         print("state", t.get("state"))
         if t.get("state") != "underway":
@@ -44,88 +89,60 @@ def update_database():
             t.get("id"),
             t.get("name"),
             t.get("state"),
-            tournament_url,
+            t.get("url"),
             needs_interleave,
         )
         t1.save()
         print(f"{t1.tournament_needs_interleave=}")
         print(f"Tournament_id= - {t1.tournament_id}")
         print("Loading bots")
-        load_bots(t1)
+        load_bots_from_challonge(t1)
         create_null_bot(t1)
         print("bot loading complete")
 
-    # remove non-underway tournaments
-    tournament_list = [t for t in tournament_list if t.get("state") == "underway"]
 
-    # load matches
-    print("Loading Matches")
-    matches_data = {}
-    for t in tournament_list:
-        t1 = Tournament(t.get("id"), t.get("name"), t.get("state"), tournament_url)
-        matches: dict = challonge.matches.index(t1.tournament_id, state="all")  # type: ignore
-        matches_data[t1.tournament_id] = matches
-        for match in matches:
-            player1_id = Bot.objects.get(
-                bot_id=match.get("player1_id"), tournament_id=t1
-            )
-            player2_id = Bot.objects.get(
-                bot_id=match.get("player2_id"), tournament_id=t1
-            )
-
-            Match.objects.update_or_create(
-                match_id=match.get("id"),
-                defaults={
-                    "player1_id": player1_id,
-                    "player2_id": player2_id,
-                    "tournament_id": t1,
-                    "match_state": match.get("state"),
-                    "updated_at": match.get("updated_at"),
-                    "suggested_play_order": match.get("suggested_play_order"),
-                    "estimated_start_time": None,
-                    "started_at": match.get("started_at"),
-                    "underway_at": match.get("underway_at"),
-                    "player1_is_prereq_match_loser": match.get(
-                        "player1_is_prereq_match_loser"
-                    ),
-                    "player2_is_prereq_match_loser": match.get(
-                        "player2_is_prereq_match_loser"
-                    ),
-                },
-            )
-
-    # assign calculated_play_order
-    print("Check interleave")
-    matches_list = []
-    needs_interleave = Tournament.objects.filter(tournament_needs_interleave=True)
-    if not needs_interleave:
-        print("No interleave needed")
-        return
-    print("Interleave needed")
-    for t, tournament in enumerate(Tournament.objects.all()):
-        print(tournament.tournament_name)
-        tournament.tournament_needs_interleave = False
-        tournament.save()
-        matches_list.append(
-            Match.objects.filter(tournament_id=tournament).order_by(
-                "suggested_play_order"
-            )
+def update_or_create_matches(t1, challonge_matches):
+    for i, challonge_match in enumerate(challonge_matches):
+        bot_id = challonge_match.get("player1_id")
+        player1_id = Bot.objects.get(bot_id=bot_id, tournament_id=t1)
+        player2_id = Bot.objects.get(
+            bot_id=challonge_match.get("player2_id"), tournament_id=t1
         )
-    print(matches_list)
-    interleaved = zip_longest(*matches_list)
-    print(interleaved)
-    list_of_tuples = chain.from_iterable(interleaved)
-    print("list of tuples - ", list_of_tuples)
-    remove_fill = [x for x in list_of_tuples if x is not None]
-    print(remove_fill)
-    for i, m in enumerate(remove_fill):
-        print(m.tournament_id.tournament_name, m.suggested_play_order)
-        m.calculated_play_order = i + 1
-        print(m.calculated_play_order)
-        m.save()
+
+        Match.objects.update_or_create(
+            match_id=challonge_match.get("id"),
+            defaults={
+                "player1_id": player1_id,
+                "player2_id": player2_id,
+                "tournament_id": t1,
+                "match_state": challonge_match.get("state"),
+                "updated_at": challonge_match.get("updated_at"),
+                "suggested_play_order": challonge_match.get("suggested_play_order"),
+                "estimated_start_time": None,
+                "started_at": challonge_match.get("started_at"),
+                "underway_at": challonge_match.get("underway_at"),
+                "player1_is_prereq_match_loser": challonge_match.get(
+                    "player1_is_prereq_match_loser"
+                ),
+                "player2_is_prereq_match_loser": challonge_match.get(
+                    "player2_is_prereq_match_loser"
+                ),
+            },
+        )
 
 
-def load_bots(t1):
+def get_tournament_list_from_challonge():
+    tournament_list = []
+    for tournament_url in Url.objects.all():
+        challonge_tournament = challonge.tournaments.show(
+            tournament=f"/{tournament_url.url}"
+        )
+        tournament_list.append(challonge_tournament)
+    tournament_list = [t for t in tournament_list if t.get("state") == "underway"]
+    return tournament_list
+
+
+def load_bots_from_challonge(t1):
     participants = challonge.participants.index(t1.tournament_id)
     for bot in participants:
         Bot.objects.update_or_create(
