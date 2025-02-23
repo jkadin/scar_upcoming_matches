@@ -8,9 +8,3 @@ scar_upcoming_matches.code-workspace
 .DS_Store
 mysite/pyproject.toml
 scar_brackets/db.sqlite3.today
-scar_brackets/fights/matches4vljhp3k.pkl
-scar_brackets/fights/matchesr5vq4p1l.pkl
-scar_brackets/fights/participants4vljhp3k.pkl
-scar_brackets/fights/participantsr5vq4p1l.pkl
-scar_brackets/fights/tournaments4vljhp3k.pkl
-scar_brackets/fights/tournamentsr5vq4p1l.pkl
