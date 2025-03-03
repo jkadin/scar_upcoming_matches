@@ -1,38 +1,40 @@
 <div class="justify-content-center align-items-center h-50 display-3 lh-sm px-8">
-        {% if output_matches %}
-        <div class="text-center list-group" id="listForSorting">
-            {% for match in output_matches %}
-            <div class="pt-5 pb-5 list-item" id="{{match.match_id}}">
-                <div class="row justify-content-md-center text-dark text_style">
-                    <div class="col-md-4 bg-warning rounded-start">
-                        <a class="text-reset text-decoration-none" href="/fights/bot/{{match.player1_name}}">{{match.player1_name}}</a>
-                        <br>
-                        <div class="text-muted fs-2">Time remaining: {{match.player1_name.time_remaining}}</div>
-                    </div>
-                    <div class="col-md-auto bg-secondary text-white drag-handle">
-                        VS
-                    </div>
-                    <div class="col-md-4 bg-warning rounded-end">
-                        <a class="text-reset text-decoration-none" href="/fights/bot/{{match.player2_name}}">{{match.player2_name}}</a>
-                        <br>
-                        <div class="text-muted fs-2">Time remaining: {{match.player2_name.time_remaining}}</div>
-                    </div>
+    {% if output_matches %}
+    <div class="text-center list-group" id="listForSorting">
+        {% for match in output_matches %}
+        <div class="pt-5 pb-5 list-item" id="{{match.match_id}}">
+            <div class="row justify-content-md-center text-dark text_style">
+                <div class="col-md-4 bg-warning rounded-start">
+                    <a class="text-reset text-decoration-none"
+                        href="/fights/bot/{{match.player1_name}}">{{match.player1_name}}</a>
+                    <br>
+                    <div class="text-muted fs-2">Time remaining: {{match.player1_name.time_remaining}}</div>
                 </div>
-                <div class="row display-6">
-                    <div class="col" style="text-shadow: 2px 3px 0px black;">
-                        ({{match.tournament_name}}) -
-                        {% if match.losers_bracket %}L{% else %}W{% endif %} {{ match.suggested_play_order }}
-                    </div>
+                <div class="col-md-auto bg-secondary text-white drag-handle">
+                    VS
+                </div>
+                <div class="col-md-4 bg-warning rounded-end">
+                    <a class="text-reset text-decoration-none"
+                        href="/fights/bot/{{match.player2_name}}">{{match.player2_name}}</a>
+                    <br>
+                    <div class="text-muted fs-2">Time remaining: {{match.player2_name.time_remaining}}</div>
                 </div>
             </div>
-            {% endfor %}
+            <div class="row display-6">
+                <div class="col" style="text-shadow: 2px 3px 0px black;">
+                    ({{match.tournament_name}}) -
+                    {% if match.losers_bracket %}L{% else %}W{% endif %} {{ match.suggested_play_order }}
+                </div>
+            </div>
         </div>
-        {% else %}
-        <div class="text-center">
-            <br>
-            <strong>No active tournaments available</strong>
-        </div>
-        {% endif %}
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center">
+        <br>
+        <strong>No active tournaments available</strong>
+    </div>
+    {% endif %}
 </div>
 
 {% if perms.fights.change_match %}
@@ -67,7 +69,7 @@
                     console.log("Match ID:", matchID);
 
                     // Send the orderedItems array in the POST request
-                    fetch('reorder', {  // Replace with your actual URL
+                    fetch('manual_sort', {  // Replace with your actual URL
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

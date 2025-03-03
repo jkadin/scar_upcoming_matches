@@ -9,7 +9,7 @@ urlpatterns = [
     path("challonge", views.challonge_index, name="challonge_index"),
     path("display_matches", views.display_matches, name="display_matches"),
     path("stream", views.no_background_index, name="stream"),
-    path("reorder", views.manual_sort, name="reorder"),
+    path("manual_sort", views.manual_sort, name="manual_sort"),
     path("time_remaining", views.time_remaining, name="time_remaining"),
     path(
         "time_remaining_inner", views.time_remaining_inner, name="time_remaining_inner"
