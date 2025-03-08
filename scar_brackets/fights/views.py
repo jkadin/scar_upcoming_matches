@@ -179,7 +179,6 @@ def claim_bot(request, bot_name):
     )
 
 
-@login_required
 @csrf_exempt
 def end_match(ordered_matches, new_index):
     return ordered_matches[new_index].get("id")
@@ -194,7 +193,7 @@ def match_indexes(start_match_id, end_match_id, match_list):
     return match_start_index, match_end_index
 
 
-def update_manaual_play_order(start_match_id, old_index, new_index, ordered_items):
+def update_manual_play_order(start_match_id, old_index, new_index, ordered_items):
     if old_index == new_index:
         return
     screen_distance = new_index - old_index
@@ -231,7 +230,7 @@ def manual_sort(request):
             match_id = data.get("movedItem").get("matchID")
             old_index = data.get("movedItem").get("oldIndex")
             new_index = data.get("movedItem").get("newIndex")
-            update_manaual_play_order(match_id, old_index, new_index, ordered_items)
+            update_manual_play_order(match_id, old_index, new_index, ordered_items)
             return JsonResponse(
                 {
                     "status": "success",
