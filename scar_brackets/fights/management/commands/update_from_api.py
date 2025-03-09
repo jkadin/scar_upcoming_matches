@@ -101,8 +101,8 @@ def process_tournaments(challonge_tournament_list):
         print("bot loading complete")
 
 
-def update_or_create_matches(t1, challonge_matches):
-    for i, challonge_match in enumerate(challonge_matches):
+def update_or_create_matches(t1: Tournament, challonge_matches: list):
+    for challonge_match in challonge_matches:
         bot_id = challonge_match.get("player1_id")
         player1_id = Bot.objects.get(bot_id=bot_id, tournament_id=t1)
         player2_id = Bot.objects.get(
