@@ -6,6 +6,11 @@ from django.utils import timezone
 import pytest_mock
 import pickle
 from pathlib import Path
+from fights.management.commands.update_from_api import (
+    get_tournament_list_from_challonge,
+    process_tournaments,
+    load_all_bots,
+)
 
 now = timezone.now()
 
@@ -25,25 +30,10 @@ def authenticated_user(client):
 
 
 @pytest.fixture
-def tournament(url):
-    return [
-        Tournament.objects.create(
-            tournament_name="Tournament 1",
-            tournament_id="1",
-            tournament_state="underway",
-            tournament_url=url[0],
-            tournament_needs_interleave=True,
-            tournament_repair_time=30,
-        ),
-        Tournament.objects.create(
-            tournament_name="Tournament 2",
-            tournament_id="2",
-            tournament_state="underway",
-            tournament_url=url[1],
-            tournament_needs_interleave=True,
-            tournament_repair_time=20,
-        ),
-    ]
+def tournament(url, mock_challonge_tournaments):
+    challonge_tournament_list = get_tournament_list_from_challonge()
+    process_tournaments(challonge_tournament_list)
+    return Tournament.objects.all()
 
 
 @pytest.fixture
@@ -55,7 +45,14 @@ def url():
 
 
 @pytest.fixture
-def bots(tournament, authenticated_user):
+def bots(
+    tournament,
+    authenticated_user,
+    mock_challonge_participants,
+    mock_challonge_matches,
+    mock_challonge_tournaments,
+):
+    # load_all_bots()
     bot1 = (
         Bot.objects.create(
             bot_id=1,
@@ -81,7 +78,7 @@ def profile(authenticated_user):
 
 
 @pytest.fixture
-def match(bots, tournament):
+def match(bots, tournament, mock_challonge_matches):
     bot1 = bots[0][0]
     bot2 = bots[1][0]
     return Match.objects.create(

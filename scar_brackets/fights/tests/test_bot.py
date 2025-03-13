@@ -8,7 +8,7 @@ def test_bot(bots, client):
     bot1 = bots[0][0]
     assert bot1.id == 1
     assert bot1.bot_name == "Player 1"
-    assert bot1.tournament_id.tournament_name == "Tournament 1"
+    assert bot1.tournament_id.tournament_name == "Api Tournament 2"
     assert bot1.user.username == "testuser"
     assert bot1.last_updated == timezone.make_aware(
         datetime.min, timezone.get_default_timezone()
@@ -19,7 +19,7 @@ def test_bot(bots, client):
     bot2 = bots[1][0]
     assert bot2.id == 2
     assert bot2.bot_name == "Player 2"
-    assert bot1.tournament_id.tournament_name == "Tournament 1"
+    assert bot1.tournament_id.tournament_name == "Api Tournament 2"
     assert bot1.user.username == "testuser"
     assert bot1.last_updated == timezone.make_aware(
         datetime.min, timezone.get_default_timezone()
