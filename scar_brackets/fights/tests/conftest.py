@@ -9,7 +9,7 @@ from pathlib import Path
 from fights.management.commands.update_from_api import (
     get_tournament_list_from_challonge,
     process_tournaments,
-    load_all_bots,
+    load_bots_from_challonge,
 )
 
 now = timezone.now()
@@ -48,39 +48,36 @@ def url():
 def bots(
     tournament,
     authenticated_user,
-    mock_challonge_participants,
-    mock_challonge_matches,
-    mock_challonge_tournaments,
 ):
-    # load_all_bots()
-    bot1 = (
-        Bot.objects.create(
-            bot_id=1,
-            bot_name="Player 1",
-            tournament_id=tournament[0],
-            user=authenticated_user,
-        ),
+    # participants = load_participants_from_pickle(tournament_urls)
+    bot1 = Bot.objects.create(
+        bot_id=1,
+        bot_name="Player 1",
+        tournament_id=tournament[0],
+        user=authenticated_user,
     )
-    bot2 = (
-        Bot.objects.create(
-            bot_id=2,
-            bot_name="Player 2",
-            tournament_id=tournament[1],
-            user=authenticated_user,
-        ),
+
+    bot1.save()
+    bot2 = Bot.objects.create(
+        bot_id=2,
+        bot_name="Player 2",
+        tournament_id=tournament[1],
+        user=authenticated_user,
     )
-    return [bot1, bot2]
+    bot2.save()
+    bots = Bot.objects.all()
+    return bots
 
 
 @pytest.fixture
 def profile(authenticated_user):
-    return Profile.objects.create(user=authenticated_user)
+    return Profile.objects.get(user=authenticated_user)
 
 
 @pytest.fixture
 def match(bots, tournament, mock_challonge_matches):
-    bot1 = bots[0][0]
-    bot2 = bots[1][0]
+    bot1 = bots[0]
+    bot2 = bots[1]
     return Match.objects.create(
         match_id="test match",
         tournament_id=tournament[0],

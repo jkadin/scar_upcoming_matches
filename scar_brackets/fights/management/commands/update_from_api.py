@@ -25,6 +25,7 @@ def update_database():
     challonge_tournament_list = get_tournament_list_from_challonge()
 
     process_tournaments(challonge_tournament_list)
+    load_all_bots()
 
     load_matches_from_challonge(challonge_tournament_list)
 
@@ -75,7 +76,7 @@ def load_matches_from_challonge(challonge_tournament_list):
 
 
 def process_tournaments(challonge_tournament_list):
-    for x, t in enumerate(challonge_tournament_list):
+    for t in challonge_tournament_list:
         exists = Tournament.objects.filter(tournament_id=t.get("id"))
         print("state", t.get("state"))
         if t.get("state") != "underway":
@@ -95,10 +96,14 @@ def process_tournaments(challonge_tournament_list):
         t1.save()
         print(f"{t1.tournament_needs_interleave=}")
         print(f"Tournament_id= - {t1.tournament_id}")
-        print("Loading bots")
+
+
+def load_all_bots():
+    print("Loading bots")
+    for t1 in Tournament.objects.all():
         load_bots_from_challonge(t1)
         create_null_bot(t1)
-        print("bot loading complete")
+    print("bot loading complete")
 
 
 def update_or_create_matches(t1: Tournament, challonge_matches: list):
