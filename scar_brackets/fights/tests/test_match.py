@@ -6,8 +6,8 @@ from fights.views import match_by_tournament
 @pytest.mark.django_db
 def test_match(match):
 
-    assert match.player1_id.bot_name == "Player 1"
-    assert match.player2_id.bot_name == "Player 2"
+    assert match.player1_id.bot_name == "rnrdsyj"
+    assert match.player2_id.bot_name == "srth5h3g"
     assert match.tournament_id.tournament_name == "Api Tournament 2"
     assert match.match_state == "open"
     assert match.updated_at is None

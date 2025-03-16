@@ -5,9 +5,10 @@ import pytest
 def test_claim_user(client, authenticated_user, bots):
     bot1 = bots[0]
     # Case 1: Valid claim with "true"
-    url = "/fights/claim_bot/Player 1/"
+    url = f"/fights/claim_bot/{bot1}/"
     response = client.post(url, {"claim": "true"})
     assert response.status_code == 200
+    bot1.refresh_from_db()
     assert bot1.user.username == "testuser"
 
     # Case 2: Valid claim with "false"
