@@ -9,7 +9,6 @@ from pathlib import Path
 from fights.management.commands.update_from_api import (
     get_tournament_list_from_challonge,
     process_tournaments,
-    load_bots_from_challonge,
 )
 
 now = timezone.now()
@@ -45,28 +44,38 @@ def url():
 
 
 @pytest.fixture
-def bots(
-    tournament,
-    authenticated_user,
-):
-    # participants = load_participants_from_pickle(tournament_urls)
-    bot1 = Bot.objects.create(
-        bot_id=1,
-        bot_name="Player 1",
-        tournament_id=tournament[0],
-        user=authenticated_user,
-    )
+def bots(tournament, authenticated_user, tournament_urls):
+    # bot1 = Bot.objects.create(
+    #     bot_id=1,
+    #     bot_name="Player 1",
+    #     tournament_id=tournament[0],
+    #     user=authenticated_user,
+    # )
 
-    bot1.save()
-    bot2 = Bot.objects.create(
-        bot_id=2,
-        bot_name="Player 2",
-        tournament_id=tournament[1],
-        user=authenticated_user,
-    )
-    bot2.save()
-    bots = Bot.objects.all()
-    return bots
+    # bot1.save()
+    # bot2 = Bot.objects.create(
+    #     bot_id=2,
+    #     bot_name="Player 2",
+    #     tournament_id=tournament[1],
+    #     user=authenticated_user,
+    # )
+    # bot2.save()
+    # bots = Bot.objects.all()
+    participants = []
+    for tournament_url in tournament_urls:
+        tournament_id = Tournament.objects.get(tournament_url=tournament_url)
+        pickle_file_path = (
+            Path(__file__).parent.parent / f"participants{tournament_url}.pkl"
+        )
+        with open(pickle_file_path, "rb") as f:
+            participants = pickle.load(f)
+        for bot in participants:
+            Bot.objects.update_or_create(
+                bot_id=bot["id"],  # type: ignore
+                bot_name=bot["name"],  # type: ignore
+                tournament_id=tournament_id,
+            )
+    return Bot.objects.all()
 
 
 @pytest.fixture
