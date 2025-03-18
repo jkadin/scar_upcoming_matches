@@ -45,22 +45,6 @@ def url():
 
 @pytest.fixture
 def bots(tournament, authenticated_user, tournament_urls):
-    # bot1 = Bot.objects.create(
-    #     bot_id=1,
-    #     bot_name="Player 1",
-    #     tournament_id=tournament[0],
-    #     user=authenticated_user,
-    # )
-
-    # bot1.save()
-    # bot2 = Bot.objects.create(
-    #     bot_id=2,
-    #     bot_name="Player 2",
-    #     tournament_id=tournament[1],
-    #     user=authenticated_user,
-    # )
-    # bot2.save()
-    # bots = Bot.objects.all()
     participants = []
     for tournament_url in tournament_urls:
         tournament_id = Tournament.objects.get(tournament_url=tournament_url)
