@@ -9,6 +9,7 @@ from pathlib import Path
 from fights.management.commands.update_from_api import (
     get_tournament_list_from_challonge,
     process_tournaments,
+    create_null_bot,
 )
 
 now = timezone.now()
@@ -59,6 +60,8 @@ def bots(tournament, authenticated_user, tournament_urls):
                 bot_name=bot["name"],  # type: ignore
                 tournament_id=tournament_id,
             )
+        create_null_bot(tournament_id)
+
     return Bot.objects.all()
 
 
@@ -68,19 +71,42 @@ def profile(authenticated_user):
 
 
 @pytest.fixture
-def match(bots, tournament, mock_challonge_matches):
-    bot1 = bots[0]
-    bot2 = bots[1]
-    return Match.objects.create(
-        match_id="test match",
-        tournament_id=tournament[0],
-        player1_id=bot1,
-        player2_id=bot2,
-        suggested_play_order=1,
-        calculated_play_order=1,
-        match_state="open",
-        started_at=now,
-    )
+def matches(bots, tournament):
+    for tournament_ in tournament:
+        tournament_url = tournament_.tournament_url
+        tournament_id = tournament_.tournament_id
+        pickle_file_path = Path(__file__).parent.parent / f"matches{tournament_url}.pkl"
+        with open(pickle_file_path, "rb") as f:
+            matches = pickle.load(f)
+
+        for match in matches:
+            bot_id = match.get("player1_id")
+            player1_id = Bot.objects.get(
+                bot_id=bot_id, tournament_id=tournament_.tournament_id
+            )
+            player2_id = Bot.objects.get(
+                bot_id=match.get("player2_id"), tournament_id=tournament_id
+            )
+            Match.objects.update_or_create(
+                match_id=match.get("id"),
+                defaults={
+                    "player1_id": player1_id,
+                    "player2_id": player2_id,
+                    "tournament_id": tournament_,
+                    "match_state": match.get("state"),
+                    "updated_at": match.get("updated_at"),
+                    "suggested_play_order": match.get("suggested_play_order"),
+                    "started_at": match.get("started_at"),
+                    "underway_at": match.get("underway_at"),
+                    "player1_is_prereq_match_loser": match.get(
+                        "player1_is_prereq_match_loser"
+                    ),
+                    "player2_is_prereq_match_loser": match.get(
+                        "player2_is_prereq_match_loser"
+                    ),
+                },
+            )
+    return Match.objects.all()
 
 
 @pytest.fixture
