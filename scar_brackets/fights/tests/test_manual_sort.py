@@ -3,7 +3,7 @@ import json
 
 
 @pytest.mark.django_db
-def test_manual_order(client, authenticated_user, url, tournament, bots):
+def test_manual_order(client, authenticated_user, url, tournament, bots, matches):
     orderedItems = [
         {"id": "387469591", "order": 0},
         {"id": "387469583", "order": 1},
@@ -17,4 +17,4 @@ def test_manual_order(client, authenticated_user, url, tournament, bots):
 
     url = "/fights/manual_sort"
     response = client.post(url, data=json.dumps(data), content_type="application/json")
-    assert response.status_code == 500
+    assert response.status_code == 200
