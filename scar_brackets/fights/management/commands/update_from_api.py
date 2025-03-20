@@ -59,11 +59,13 @@ def interleave():
 
 def remove_fill(list_of_tuples):
     fill = [x for x in list_of_tuples if x is not None]
-    print(remove_fill)
+    # print(remove_fill)
     for i, m in enumerate(fill):
-        print(m.tournament_id.tournament_name, m.suggested_play_order)
+        print(
+            f"{m.match_id=},{m.tournament_id.tournament_name=}, {m.suggested_play_order=},{m.match_state=}"
+        )
         m.calculated_play_order = i + 1
-        print(m.calculated_play_order)
+        print(f"{m.calculated_play_order=}")
         m.save()
 
 
