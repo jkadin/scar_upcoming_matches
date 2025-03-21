@@ -17,7 +17,16 @@ for tournament_url in tournament_urls:
     pickle_file_path = Path(__file__).parent / f"matches{tournament_url}.pkl"
     with open(pickle_file_path, "rb") as f:
         matches = pickle.load(f)
-    print(len(matches), type(matches))
+    print(len(matches))
+    for match in matches:
+        print(
+            match.get("id"),
+            match.get("state"),
+            match.get("player1_id"),
+            match.get("player2_id"),
+            match.get("suggested_play_order"),
+            match.get("calculated_play_order"),
+        )
     print("*****************************")
 
 print("#################################################################")
