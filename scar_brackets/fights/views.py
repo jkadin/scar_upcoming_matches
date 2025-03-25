@@ -4,6 +4,8 @@ from .models import Match, Tournament, Url, Bot, Profile
 from django.views.decorators.csrf import csrf_exempt
 from itertools import chain, zip_longest
 from datetime import datetime, timedelta
+from django.contrib.auth.models import User
+from django.db import IntegrityError
 
 import json
 from django.utils import timezone
@@ -177,6 +179,26 @@ def claim_bot(request, bot_name):
     )
 
 
+@login_required
+@csrf_exempt
+def create_user(request):
+    if not request.user.is_staff:
+        return render(request, "fights/index.html")
+    if request.method == "GET":
+        return render(request, "fights/create_user.html")
+
+    if request.method == "POST":
+        username = request.POST.get("username")
+        try:
+            User.objects.create(username=username)
+            return JsonResponse(
+                {"status": "success", "message": "User created successfully!"}
+            )
+        except IntegrityError as e:
+            return JsonResponse({"status": "error", "errors": "errors"}, status=400)
+
+
+@login_required
 @csrf_exempt
 def end_match(ordered_matches, new_index):
     return ordered_matches[new_index].get("id")

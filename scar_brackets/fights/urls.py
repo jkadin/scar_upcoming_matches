@@ -21,5 +21,6 @@ urlpatterns = [
         views.claim_bot,
         name="claim_bot",
     ),
+    path("create_user/", views.create_user, name="create_user"),
     path("user/<int:user_id>/", views.user, name="user"),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

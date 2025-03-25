@@ -1,0 +1,14 @@
+<body>
+    <h1>Create User</h1>
+    <form method="post" hx-post="{% url 'create_user' %}" hx-target="#message" hx-swap="innerHTML">
+        {% csrf_token %}
+        <div>
+            <label for="id_username">Username:</label>
+            <input type="text" name="username" id="id_username" required>
+        </div>
+        <button type="submit">Create User</button>
+    </form>
+    <div id="message"></div>
+</body>
+
+</html>
