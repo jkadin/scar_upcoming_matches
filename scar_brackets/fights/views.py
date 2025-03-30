@@ -7,6 +7,9 @@ from datetime import datetime, timedelta
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 
+
+# from django.db.models import Q
+
 import json
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
@@ -78,8 +81,10 @@ def no_background_index(request):
 
 @login_required
 @csrf_exempt
-def time_out(request):  # Take a timeout if one is available
-    user = request.user
+def time_out(request, user=None):  # Take a timeout if one is available
+    print(user)
+    if not user:
+        user = request.user
     now = timezone.now()
     profile = Profile.objects.get(user=user)
     if now.date() != profile.last_timeout.date():
@@ -155,20 +160,22 @@ def bot(request, bot_name):
 
 @login_required
 @csrf_exempt
+def claim_multiple_bots(request):
+    bot_names = request.POST.getlist("bots")
+    username = request.POST.get("username")
+    claim = True
+    for bot_name in bot_names:
+        claim_one_bot(username, bot_name, claim)
+    return JsonResponse({"status": "success"})
+
+
+@login_required
+@csrf_exempt
 def claim_bot(request, bot_name):
     users_match = False
     claim = request.POST.get("claim", False)
-    try:
-        bot = Bot.objects.get(bot_name__iexact=bot_name)
-        if claim != "true":
-            bot.user = None
-            users_match = False
-        else:
-            bot.user = request.user
-            users_match = True
-        bot.save()
-    except Bot.DoesNotExist:
-        bot = None
+    username = request.user
+    users_match, bot = claim_one_bot(username, bot_name, claim)
     return render(
         request,
         "fights/claim_bot.html",
@@ -177,6 +184,23 @@ def claim_bot(request, bot_name):
             "users_match": users_match,
         },
     )
+
+
+def claim_one_bot(username, bot_name, claim):
+    users_match = False
+    user = User.objects.get(username=username)
+    try:
+        bot = Bot.objects.get(bot_name__iexact=bot_name)
+        if not claim:
+            bot.user = None
+            users_match = False
+        else:
+            bot.user = user
+            users_match = True
+        bot.save()
+    except Bot.DoesNotExist:
+        bot = None
+    return users_match, bot
 
 
 @login_required
@@ -190,12 +214,26 @@ def create_user(request):
     if request.method == "POST":
         username = request.POST.get("username")
         try:
-            User.objects.create(username=username)
-            return JsonResponse(
-                {"status": "success", "message": "User created successfully!"}
-            )
+            user = User.objects.create(username=username)
+            user.save()
         except IntegrityError as e:
-            return JsonResponse({"status": "error", "errors": "errors"}, status=400)
+            user = User.objects.get(username=username)
+        assigned_bots = Bot.objects.filter(user=user)
+        unassigned_bots = Bot.objects.filter(user=None)
+        profile = Profile.objects.get(user=user)
+        users_match = False
+        if user == profile.user:
+            users_match = True
+        return render(
+            request,
+            "fights/bot_claim_list.html",
+            {
+                "assigned_bots": assigned_bots,
+                "unassigned_bots": unassigned_bots,
+                "users_match": users_match,
+                "username": username,
+            },
+        )
 
 
 @login_required

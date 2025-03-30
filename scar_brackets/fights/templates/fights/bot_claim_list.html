@@ -1,0 +1,16 @@
+<div id="bots">
+    <h1>Bots</h1>
+    <form method="post" hx-post="{% url 'claim_multiple_bots' %}" hx-target="#bots" hx-swap="innerHTML">
+        {% csrf_token %}
+        <input type="hidden" name="username" value="{{ username }}">
+        <select name="bots" id="id_bots" multiple>
+            {% for bot in assigned_bots %}
+            <option value="{{ bot.bot_name }}" selected>{{ bot.bot_name }}</option>
+            {% endfor %}
+            {% for bot in unassigned_bots %}
+            <option value="{{ bot.bot_name }}">{{ bot.bot_name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Submit</button>
+    </form>
+</div>
