@@ -239,7 +239,6 @@ def create_user(request):
         )
 
 
-@login_required
 @csrf_exempt
 def end_match(ordered_matches, new_index):
     return ordered_matches[new_index].get("id")
