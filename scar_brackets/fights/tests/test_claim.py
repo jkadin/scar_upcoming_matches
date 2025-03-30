@@ -6,13 +6,13 @@ def test_claim_user(client, authenticated_user, bots):
     bot1 = bots[0]
     # Case 1: Valid claim with "true"
     url = f"/fights/claim_bot/{bot1}/"
-    response = client.post(url, {"claim": "true"})
+    response = client.post(url, {"claim": True})
     assert response.status_code == 200
     bot1.refresh_from_db()
     assert bot1.user.username == "testuser"
 
     # Case 2: Valid claim with "false"
-    response = client.post(url, {"claim": "false"})
+    response = client.post(url, {"claim": False})
 
     bot1.refresh_from_db()
     assert response.status_code == 200
@@ -23,7 +23,7 @@ def test_claim_user(client, authenticated_user, bots):
 
     # Case 3: bot does not exist
     url = "/fights/claim_bot/invalid/"
-    response = client.post(url, {"claim": "true"})
+    response = client.post(url, {"claim": True})
 
     assert response.status_code == 200
     assert response.context["bot"] is None

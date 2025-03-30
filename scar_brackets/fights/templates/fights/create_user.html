@@ -1,4 +1,5 @@
-{% include './htmx_generic.html' %}
+{% extends "fights/base_template.html" %}
+{% block content %}
 <h1>Create / Update User</h1>
 <form method="post" hx-post="{% url 'create_user' %}" hx-target="#bot_list" hx-swap="innerHTML">
     {% csrf_token %}
@@ -9,3 +10,4 @@
     <button type="submit">Update</button>
 </form>
 <div id="bot_list"></div>
+{% endblock %}

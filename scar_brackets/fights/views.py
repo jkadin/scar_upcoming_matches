@@ -81,10 +81,12 @@ def no_background_index(request):
 
 @login_required
 @csrf_exempt
-def time_out(request, user=None):  # Take a timeout if one is available
-    print(user)
-    if not user:
+def time_out(request, username=None):  # Take a timeout if one is available
+    username = request.POST.get("username")
+    if not username:
         user = request.user
+    else:
+        user = User.objects.get(username=username)
     now = timezone.now()
     profile = Profile.objects.get(user=user)
     if now.date() != profile.last_timeout.date():
@@ -173,7 +175,7 @@ def claim_multiple_bots(request):
 @csrf_exempt
 def claim_bot(request, bot_name):
     users_match = False
-    claim = request.POST.get("claim", False)
+    claim = request.POST.get("claim", "false").lower() == "true"  # Convert to boolean
     username = request.user
     users_match, bot = claim_one_bot(username, bot_name, claim)
     return render(
@@ -232,6 +234,7 @@ def create_user(request):
                 "unassigned_bots": unassigned_bots,
                 "users_match": users_match,
                 "username": username,
+                "profile": profile,
             },
         )
 

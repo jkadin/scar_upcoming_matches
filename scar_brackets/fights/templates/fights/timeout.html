@@ -1,9 +1,12 @@
 <div id="timeout">
     <br>
-    BOT {{ user.user_id }}
     {% if profile.time_out_available %}
     {% if users_match %}
-    <button class="btn btn-success" hx-post="/fights/time_out" hx-target="#timeout" hx-swap="innerHTML">Timeout</button>
+    <form method="post" hx-post="/fights/time_out" hx-target="#timeout" hx-swap="innerHTML">
+        {% csrf_token %}
+        <input type="hidden" name="username" value="{{ username }}">
+        <button class="btn btn-success" type="submit">Timeout</button>
+    </form>
     {% else %}
     <button class="btn btn-success" disabled>Timeout Available</button>
     {% endif %}

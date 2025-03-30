@@ -1,4 +1,3 @@
-# from django.test import TestCase
 import pytest
 from django.utils import timezone
 
