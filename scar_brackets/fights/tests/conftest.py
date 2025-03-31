@@ -1,7 +1,7 @@
 import pytest
 from django.contrib.auth.models import User
 from django.test import Client
-from fights.models import Match, Tournament, Url, Bot, Profile, MyPreferences
+from fights.models import Match, Tournament, Url, Bot, Profile
 from django.utils import timezone
 import pytest_mock
 import pickle
@@ -11,6 +11,7 @@ from fights.management.commands.update_from_api import (
     process_tournaments,
     create_null_bot,
 )
+from preferences import preferences
 
 now = timezone.now()
 
@@ -111,7 +112,15 @@ def matches(bots, tournament):
 
 @pytest.fixture
 def my_preferences():
+    INTERLEAVE_METHOD = preferences.MyPreferences.interleave_method  # type: ignore
     return MyPreferences.objects.create()
+
+
+@pytest.fixture
+def my_preferences_interleave():
+    INTERLEAVE_METHOD = preferences.MyPreferences.interleave_method  # type: ignore
+    preferences.MyPreferences.interleave_method = "Interleave"  # type: ignore
+    return MyPreferences.objects.create(interleave_method="Interleave")
 
 
 @pytest.fixture
