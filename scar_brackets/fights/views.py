@@ -156,7 +156,7 @@ def bot(request, bot_name):
     return render(
         request,
         "fights/bot.html",
-        {"bot": bot, "users_match": users_match},
+        {"bot": bot, "users_match": users_match, "staff": request.user.is_staff},
     )
 
 
@@ -181,10 +181,7 @@ def claim_bot(request, bot_name):
     return render(
         request,
         "fights/claim_bot.html",
-        {
-            "bot": bot,
-            "users_match": users_match,
-        },
+        {"bot": bot, "users_match": users_match, "staff": request.user.is_staff},
     )
 
 
