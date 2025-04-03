@@ -26,6 +26,7 @@ def authenticated_user(client):
     user = User.objects.create_user(
         username="testuser", email="email.gmail.com", password="password"
     )
+    user.is_staff = True
     client.force_login(user)
     return user
 
