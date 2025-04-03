@@ -27,6 +27,7 @@ def authenticated_user(client):
         username="testuser", email="email.gmail.com", password="password"
     )
     user.is_staff = True
+    user.save()
     client.force_login(user)
     return user
 
