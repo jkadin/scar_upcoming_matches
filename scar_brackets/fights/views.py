@@ -202,7 +202,7 @@ def claim_one_bot(username, bot_name, claim):
     return users_match, bot
 
 
-@login_required
+@login_required  # type: ignore
 @csrf_exempt
 def create_user(request):
     if not request.user.is_staff:
