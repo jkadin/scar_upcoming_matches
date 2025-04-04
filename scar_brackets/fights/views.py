@@ -94,9 +94,10 @@ def time_out(
     now = timezone.now()
     profile = Profile.objects.get(user=user)
     if cancel:
-        profile.last_timeout = now - timedelta(
-            days=1
-        )  # Example: Set timeout to yesterday
+        last_timeout = timezone.make_aware(
+            datetime.min, timezone.get_default_timezone()
+        )
+        profile.last_timeout = last_timeout
         profile.save()
     else:
         if now.date() != profile.last_timeout.date():

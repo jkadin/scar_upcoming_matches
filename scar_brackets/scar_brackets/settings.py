@@ -34,6 +34,7 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "[::1]",
     "fights.socalattackrobots.com",
+    "192.168.86.203",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
