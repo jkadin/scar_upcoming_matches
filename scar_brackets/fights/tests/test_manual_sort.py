@@ -63,3 +63,9 @@ def test_manual_order(client, authenticated_user, url, tournament, bots, matches
     assert match_list[4].match_id == "387469595"
     assert match_list[4].suggested_play_order == 8
     assert match_list[4].calculated_play_order == 4
+
+    # test with bad data for dail
+    movedItem = {"matchID": "387469591", "newIndex": 1, "oldIndex": 0}
+    data = {"orderedItems": orderedItems, "movedItem": movedItem}
+    response = client.post(url, data=json.dumps(data), content_type="application/json")
+    assert response.status_code == 500
