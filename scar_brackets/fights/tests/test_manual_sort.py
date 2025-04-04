@@ -69,3 +69,8 @@ def test_manual_order(client, authenticated_user, url, tournament, bots, matches
     data = {"orderedItems": orderedItems, "movedItem": movedItem}
     response = client.post(url, data=json.dumps(data), content_type="application/json")
     assert response.status_code == 500
+    # test old index = new_index
+    movedItem = {"matchID": "387469591", "newIndex": 1, "oldIndex": 1}
+    data = {"orderedItems": orderedItems, "movedItem": movedItem}
+    response = client.post(url, data=json.dumps(data), content_type="application/json")
+    assert response.status_code == 200
