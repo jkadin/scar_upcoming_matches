@@ -81,17 +81,27 @@ def no_background_index(request):
 
 @login_required
 @csrf_exempt
-def time_out(request, username=None):  # Take a timeout if one is available
+def time_out(
+    request, username=None, cancel=False
+):  # Take a timeout if one is available
     username = request.POST.get("username")
+    cancel = request.POST.get("cancel")
+    print(cancel)
     if not username:
         user = request.user
     else:
         user = User.objects.get(username=username)
     now = timezone.now()
     profile = Profile.objects.get(user=user)
-    if now.date() != profile.last_timeout.date():
-        profile.last_timeout = now
+    if cancel:
+        profile.last_timeout = now - timedelta(
+            days=1
+        )  # Example: Set timeout to yesterday
         profile.save()
+    else:
+        if now.date() != profile.last_timeout.date():
+            profile.last_timeout = now
+            profile.save()
 
     return render(
         request,
