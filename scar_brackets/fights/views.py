@@ -85,7 +85,7 @@ def time_out(
     request, username=None, cancel=False
 ):  # Take a timeout if one is available
     username = request.POST.get("username")
-    cancel = request.POST.get("cancel")
+    cancel = request.POST.get("cancel", "false").lower() == "true"  # Convert to boolean
     print(cancel)
     if not username:
         user = request.user
