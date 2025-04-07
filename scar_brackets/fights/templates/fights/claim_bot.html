@@ -5,7 +5,7 @@
         class="text-reset text-decoration-none">{{bot.user.profile.display_name}}</a>
     <br>
     {% if users_match or staff %}
-    <button class="btn btn-info" hx-post="/fights/claim_bot/{{bot.bot_name}}/" hx-vals='{"claim":False}'
+    <button class="btn btn-info" hx-post="/fights/claim_bot/{{bot.bot_name}}/" hx-vals='{"claim":false}'
         hx-target="#User" hx-swap="innerHTML">This is not my bot</button>
     {% endif %}
     {% endif %}
@@ -14,7 +14,7 @@
     No builder assigned
     <br>
     {% if user.is_authenticated %}
-    <button class="btn btn-primary" hx-post="/fights/claim_bot/{{bot.bot_name}}/" hx-vals='{"claim":True}'
+    <button class="btn btn-primary" hx-post="/fights/claim_bot/{{bot.bot_name}}/" hx-vals='{"claim":true}'
         hx-target="#User" hx-swap="innerHTML">Claim Bot</button>
     {% endif %}
     {% endif %}
