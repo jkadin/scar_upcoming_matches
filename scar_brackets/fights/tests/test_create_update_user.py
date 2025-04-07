@@ -40,3 +40,18 @@ def test_staff(client, authenticated_user, my_preferences, bots):
     assert "Lonx" in str(response.content)
     assert "Elephants Gerald" in str(response.content)
     assert "Moose and Squirrel" in str(response.content)
+
+
+@pytest.mark.django_db
+def test_staff_exists(client, authenticated_user, my_preferences, bots):
+    url = "/fights/create_user/"
+    response = client.post(url, {"username": "Testuser"})
+    assert response.status_code == 200
+    assert "hw45yhw" in str(response.content)
+    assert "hw46h4" in str(response.content)
+    assert "rnrdsyj" in str(response.content)
+    assert "Small Sharp Object" in str(response.content)
+    assert "Thagclonizer" in str(response.content)
+    assert "Lonx" in str(response.content)
+    assert "Elephants Gerald" in str(response.content)
+    assert "Moose and Squirrel" in str(response.content)
