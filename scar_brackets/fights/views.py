@@ -5,7 +5,6 @@ from django.views.decorators.csrf import csrf_exempt
 from itertools import chain, zip_longest
 from datetime import datetime, timedelta
 from django.contrib.auth.models import User
-from django.db import IntegrityError
 
 
 # from django.db.models import Q
