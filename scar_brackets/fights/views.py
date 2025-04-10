@@ -86,7 +86,6 @@ def time_out(
 ):  # Take a timeout if one is available
     username = request.POST.get("username")
     cancel = request.POST.get("cancel", "false").lower() == "true"  # Convert to boolean
-    print(cancel)
     if not username:
         user = request.user
     else:
@@ -232,11 +231,10 @@ def create_user(request):
 
     if request.method == "POST":
         username = request.POST.get("username")
-        try:
-            user = User.objects.create(username=username)
-            user.save()
-        except IntegrityError as e:
-            user = User.objects.get(username=username)
+
+        user,created=User.objects.get_or_create(username=username)
+
+
         assigned_bots = Bot.objects.filter(user=user)
         unassigned_bots = Bot.objects.filter(user=None)
         profile = Profile.objects.get(user=user)
