@@ -18,6 +18,11 @@ urlpatterns = [
         name="time_remaining_inner",
     ),
     path("bot/<str:bot_name>/", views.bot, name="bot"),
+    path(
+        "time_remaining_bot/<str:bot_name>/",
+        views.time_remaining_bot,
+        name="time_remaining_bot",
+    ),
     path("time_out", views.time_out, name="time_out"),
     path(
         "claim_bot/<str:bot_name>/",
