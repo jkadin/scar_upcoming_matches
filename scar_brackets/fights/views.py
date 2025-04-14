@@ -16,6 +16,7 @@ from preferences import preferences
 
 NEXT_MATCH_START = timedelta(minutes=1)
 MATCH_DELAY = timedelta(minutes=3)
+DEFAULT_BACKGROUND_COLOR = "#ff1a1a"
 
 
 def output():
@@ -49,11 +50,16 @@ def output():
 
 def index(request):
     output_matches = output()
+    bgcolor = request.GET.get("bgcolor")
+    if not bgcolor:
+        bgcolor=DEFAULT_BACKGROUND_COLOR
     return render(
         request,
         "fights/index.html",
         {
             "output_matches": output_matches,
+            "lee": "lee",
+            "bgcolor": bgcolor,
         },
     )
 
@@ -118,6 +124,9 @@ def user(request, user_id):
             request,
             "fights/user.html",
         )
+    bgcolor = request.GET.get("bgcolor")
+    if not bgcolor:
+        bgcolor=DEFAULT_BACKGROUND_COLOR
     bots = Bot.objects.filter(user=profile.user)
     users_match = False
     if request.user == profile.user:
@@ -125,18 +134,21 @@ def user(request, user_id):
     return render(
         request,
         "fights/user.html",
-        {"profile": profile, "bots": bots, "users_match": users_match},
+        {"profile": profile, "bots": bots, "users_match": users_match,"bgcolor":bgcolor},
     )
 
 
 def time_remaining(request):
+    bgcolor = request.GET.get("bgcolor")
+    if not bgcolor:
+        bgcolor=DEFAULT_BACKGROUND_COLOR
     tournaments = Tournament.objects.filter(tournament_state="underway").order_by(
         "tournament_name"
     )
     return render(
         request,
         "fights/time_remaining.html",
-        {"tournaments": tournaments},
+        {"tournaments": tournaments, "bgcolor":bgcolor},
     )
 
 
@@ -161,6 +173,9 @@ def time_remaining_bot(request, bot_name):
 
 
 def bot(request, bot_name):
+    bgcolor = request.GET.get("bgcolor")
+    if not bgcolor:
+        bgcolor=DEFAULT_BACKGROUND_COLOR
     users_match = False
     try:
         bot = Bot.objects.get(bot_name__iexact=bot_name)
@@ -174,7 +189,7 @@ def bot(request, bot_name):
     return render(
         request,
         "fights/bot.html",
-        {"bot": bot, "users_match": users_match, "staff": request.user.is_staff},
+        {"bot": bot, "users_match": users_match, "staff": request.user.is_staff,"bgcolor":bgcolor},
     )
 
 
