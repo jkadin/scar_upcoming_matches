@@ -26,6 +26,10 @@ for tournament_url in tournament_urls:
             match.get("player2_id"),
             match.get("suggested_play_order"),
             match.get("calculated_play_order"),
+            match.get("player1_is_prereq_match_loser"),
+            match.get("player1_prereq_match_id"),
+            match.get("player2_is_prereq_match_loser"),
+            match.get("player2_prereq_match_id"),
         )
     print("*****************************")
 
