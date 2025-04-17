@@ -134,6 +134,12 @@ def update_or_create_matches(t1: Tournament, challonge_matches: list):
                 "player2_is_prereq_match_loser": challonge_match.get(
                     "player2_is_prereq_match_loser"
                 ),
+                "player1_prereq_match_id": challonge_match.get(
+                    "player1_prereq_match_id"
+                ),
+                "player2_prereq_match_id": challonge_match.get(
+                    "player2_prereq_match_id"
+                ),
             },
         )
 

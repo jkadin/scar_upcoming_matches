@@ -39,11 +39,7 @@ class Bot(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=["tournament_id", "bot_id"], name="unique-in-field"
-            )
-        ]
+        constraints = [models.UniqueConstraint(fields=["tournament_id", "bot_id"], name="unique-in-field")]
 
     def __str__(self) -> str:
         return f"{self.bot_name}"
@@ -52,9 +48,7 @@ class Bot(models.Model):
     def last_updated(self):
         # Get the most recent match where the bot is either player1 or player2
         recent_match = (
-            Match.objects.filter(
-                Q(player1_id=self) | Q(player2_id=self), match_state="complete"
-            )
+            Match.objects.filter(Q(player1_id=self) | Q(player2_id=self), match_state="complete")
             .order_by("-updated_at")
             .first()
         )
@@ -74,9 +68,7 @@ class Bot(models.Model):
             profile = Profile.objects.get(user=self.user)
             last_timeout = profile.last_timeout
         except Profile.DoesNotExist:
-            last_timeout = timezone.make_aware(
-                datetime.min, timezone.get_default_timezone()
-            )
+            last_timeout = timezone.make_aware(datetime.min, timezone.get_default_timezone())
         time_out_remaining = timedelta(minutes=minutes) - (now - last_timeout)  # type: ignore
         time_remaining = timedelta(minutes=minutes) - (now - self.last_updated)  # type: ignore
         if time_out_remaining > time_remaining:
@@ -96,20 +88,16 @@ class Bot(models.Model):
 
     @property
     def upcoming_matches(self):
-        matches = Match.objects.filter(
-            Q(player1_id=self) | Q(player2_id=self), ~Q(match_state="complete")
-        ).order_by("calculated_play_order")
+        matches = Match.objects.filter(Q(player1_id=self) | Q(player2_id=self), ~Q(match_state="complete")).order_by(
+            "calculated_play_order"
+        )
         return matches
 
 
 class Match(models.Model):
     match_id = models.CharField(max_length=100, primary_key=True)
-    player1_id = models.ForeignKey(
-        Bot, on_delete=models.DO_NOTHING, related_name="player1_id", null=True
-    )
-    player2_id = models.ForeignKey(
-        Bot, on_delete=models.DO_NOTHING, related_name="player2_id", null=True
-    )
+    player1_id = models.ForeignKey(Bot, on_delete=models.DO_NOTHING, related_name="player1_id", null=True)
+    player2_id = models.ForeignKey(Bot, on_delete=models.DO_NOTHING, related_name="player2_id", null=True)
     tournament_id = models.ForeignKey(Tournament, on_delete=models.CASCADE)
     match_state = models.CharField(max_length=100, null=True)
     updated_at = models.DateTimeField(null=True)
@@ -120,6 +108,20 @@ class Match(models.Model):
     underway_at = models.DateTimeField(null=True, blank=True)
     player1_is_prereq_match_loser = models.BooleanField(default=False)
     player2_is_prereq_match_loser = models.BooleanField(default=False)
+    player1_prereq_match_id = models.CharField(max_length=100, null=True, blank=True)
+    player2_prereq_match_id = models.CharField(max_length=100, null=True, blank=True)
+
+    @property
+    def unassigned_matches(self):
+        player1_matches=''
+        player2_matches=''
+        if not self.player1_id.bot_id:  # type: ignore
+            prereq_match = Match.objects.get(match_id=self.player1_prereq_match_id)
+            player1_matches = f"winner of {prereq_match.player1_id.bot_name} vs {prereq_match.player2_id.bot_name} " # type: ignore
+        if not self.player2_id.bot_id:  # type: ignore
+            prereq_match = Match.objects.get(match_id=self.player2_prereq_match_id)
+            player2_matches = f"winner of {prereq_match.player1_id.bot_name} vs {prereq_match.player2_id.bot_name} " # type: ignore
+        return player1_matches, player2_matches
 
     def __str__(self) -> str:
         return self.match_id
@@ -136,9 +138,7 @@ class Profile(models.Model):
         try:
             display_name = self.user.socialaccount_set.filter(provider="discord")[  # type: ignore
                 0
-            ].extra_data[
-                "global_name"
-            ]
+            ].extra_data["global_name"]
         except IndexError:
             display_name = self.user.username
         return display_name
