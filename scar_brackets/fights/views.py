@@ -16,7 +16,7 @@ from preferences import preferences
 
 NEXT_MATCH_START = timedelta(minutes=1)
 MATCH_DELAY = timedelta(minutes=3)
-DEFAULT_BACKGROUND_COLOR = "#ff1a1a"
+DEFAULT_BACKGROUND_COLOR = "ff1a1a"
 
 
 def output():
@@ -42,6 +42,7 @@ def output():
                 "losers_bracket": match.player1_is_prereq_match_loser
                 or match.player2_is_prereq_match_loser,
                 "match_id": match.match_id,
+                "unassigned_matches":match.unassigned_matches
             }
         )
         match_start += MATCH_DELAY
@@ -50,9 +51,7 @@ def output():
 
 def index(request):
     output_matches = output()
-    bgcolor = request.GET.get("bgcolor")
-    if not bgcolor:
-        bgcolor=DEFAULT_BACKGROUND_COLOR
+    bgcolor = bg_color(request)
     return render(
         request,
         "fights/index.html",
@@ -62,6 +61,13 @@ def index(request):
             "bgcolor": bgcolor,
         },
     )
+
+def bg_color(request):
+    bgcolor = request.GET.get("bgcolor",'')
+    if not bgcolor:
+        bgcolor=DEFAULT_BACKGROUND_COLOR
+    bgcolor="#"+bgcolor
+    return bgcolor
 
 
 def challonge_index(request):
@@ -124,9 +130,7 @@ def user(request, user_id):
             request,
             "fights/user.html",
         )
-    bgcolor = request.GET.get("bgcolor")
-    if not bgcolor:
-        bgcolor=DEFAULT_BACKGROUND_COLOR
+    bgcolor = bg_color(request)
     bots = Bot.objects.filter(user=profile.user)
     users_match = False
     if request.user == profile.user:
@@ -139,9 +143,7 @@ def user(request, user_id):
 
 
 def time_remaining(request):
-    bgcolor = request.GET.get("bgcolor")
-    if not bgcolor:
-        bgcolor=DEFAULT_BACKGROUND_COLOR
+    bgcolor = bg_color(request)
     tournaments = Tournament.objects.filter(tournament_state="underway").order_by(
         "tournament_name"
     )
@@ -173,9 +175,7 @@ def time_remaining_bot(request, bot_name):
 
 
 def bot(request, bot_name):
-    bgcolor = request.GET.get("bgcolor")
-    if not bgcolor:
-        bgcolor=DEFAULT_BACKGROUND_COLOR
+    bgcolor = bg_color(request)
     users_match = False
     try:
         bot = Bot.objects.get(bot_name__iexact=bot_name)
