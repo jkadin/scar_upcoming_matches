@@ -117,10 +117,10 @@ class Match(models.Model):
         player2_matches=''
         if not self.player1_id.bot_id:  # type: ignore
             prereq_match = Match.objects.get(match_id=self.player1_prereq_match_id)
-            player1_matches = f"winner of {prereq_match.player1_id.bot_name} vs {prereq_match.player2_id.bot_name} " # type: ignore
+            player1_matches = [prereq_match.player1_id.bot_name,prereq_match.player2_id.bot_name] # type: ignore
         if not self.player2_id.bot_id:  # type: ignore
             prereq_match = Match.objects.get(match_id=self.player2_prereq_match_id)
-            player2_matches = f"winner of {prereq_match.player1_id.bot_name} vs {prereq_match.player2_id.bot_name} " # type: ignore
+            player2_matches = [prereq_match.player1_id.bot_name,prereq_match.player2_id.bot_name] # type: ignore
         return player1_matches, player2_matches
 
     def __str__(self) -> str:

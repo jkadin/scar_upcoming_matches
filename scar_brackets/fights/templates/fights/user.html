@@ -21,7 +21,10 @@
                              <a class="text-reset text-decoration-none" href="/fights/bot/{{bot.upcoming_matches.0.player2_id}}">{{bot.upcoming_matches.0.player2_id}}</a>
                 {% endif %}
                 {% if bot.upcoming_matches.0.player2_id.bot_name == 'Not assigned' %}
-                    {{ bot.upcoming_matches.0.unassigned_matches.1 }}
+            <div class="fs-6">Winner of</div>
+                    <a class="text-reset text-decoration-none" href="/fights/bot/{{ bot.upcoming_matches.0.unassigned_matches.1.0 }}"">{{bot.upcoming_matches.0.unassigned_matches.1.0}}</a>
+                    vs
+                    <a class="text-reset text-decoration-none" href="/fights/bot/{{ bot.upcoming_matches.0.unassigned_matches.1.1 }}"">{{bot.upcoming_matches.0.unassigned_matches.1.1}}</a>
                 {% endif %}
             <br>
                         </div>
