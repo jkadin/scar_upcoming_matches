@@ -16,7 +16,7 @@ from preferences import preferences
 
 NEXT_MATCH_START = timedelta(minutes=1)
 MATCH_DELAY = timedelta(minutes=3)
-DEFAULT_BACKGROUND_COLOR = "ff1a1a"
+DEFAULT_BACKGROUND_COLOR = "DC3545"
 
 
 def output():

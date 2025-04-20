@@ -4,8 +4,6 @@ from django.contrib.auth.models import User
 from django.dispatch import receiver
 from .models import Profile
 
-print("Signals is running!")
-
 
 @receiver(user_logged_in)
 def after_login(sender, request, user, **kwargs):

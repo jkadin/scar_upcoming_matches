@@ -1,7 +1,6 @@
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from debug_toolbar.toolbar import debug_toolbar_urls
 
 from . import views
 
@@ -37,9 +36,6 @@ urlpatterns = [
     path("create_user/", views.create_user, name="create_user"),  # type: ignore
     path("user/<int:user_id>/", views.user, name="user"),
 ]
-
-# Add debug toolbar URLs
-urlpatterns += debug_toolbar_urls()
 
 # Add static file serving during development
 if settings.DEBUG:
