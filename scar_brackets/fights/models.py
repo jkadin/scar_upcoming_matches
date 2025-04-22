@@ -36,7 +36,7 @@ class Bot(models.Model):
     bot_id = models.CharField(max_length=100, null=True, blank=True)
     bot_name = models.CharField(max_length=100, null=True)
     tournament_id = models.ForeignKey(Tournament, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=["tournament_id", "bot_id"], name="unique-in-field")]
