@@ -19,15 +19,16 @@ MATCH_DELAY = timedelta(minutes=3)
 DEFAULT_BACKGROUND_COLOR = "DC3545"
 
 
-def output():
+def output(tournaments=[]):
     match_start = datetime.now() + NEXT_MATCH_START
     INTERLEAVE_METHOD = preferences.MyPreferences.interleave_method  # type: ignore
     if INTERLEAVE_METHOD.lower() == "fixed":  # type: ignore
-        match_list = Match.objects.filter(match_state="open").order_by(
-            "calculated_play_order"
-        )
+        match_list = Match.objects.filter(match_state="open")
+        if tournaments:
+            match_list = match_list.filter(tournament_id__tournament_url__in=tournaments)
+        match_list = match_list.order_by("calculated_play_order")
     else:
-        match_list = match_by_tournament()
+        match_list = match_by_tournament(tournaments)
     output_match = []
     for i, match in enumerate(match_list[:15]):
         output_match.append(
@@ -49,28 +50,28 @@ def output():
 
 
 def index(request):
-    output_matches = output()
+    tournaments = request.GET.getlist("tournaments")
+    output_matches = output(tournaments=tournaments)
     bgcolor = bg_color(request)
     return render(
         request,
         "fights/index.html",
         {
             "output_matches": output_matches,
-            "lee": "lee",
             "bgcolor": bgcolor,
+            "tournaments": tournaments
         },
     )
 
 def bg_color(request):
-    bgcolor = request.GET.get("bgcolor",'')
-    if not bgcolor:
-        bgcolor=DEFAULT_BACKGROUND_COLOR
-    bgcolor="#"+bgcolor
+    bgcolor = request.GET.get("bgcolor", DEFAULT_BACKGROUND_COLOR)
+    bgcolor="#" + bgcolor
     return bgcolor
 
 
 def challonge_index(request):
-    output_matches = output()
+    tournaments = request.GET.getlist("tournaments")
+    output_matches = output(tournaments=tournaments)
     return render(
         request,
         "fights/challonge_index.html",
@@ -79,7 +80,8 @@ def challonge_index(request):
 
 
 def no_background_index(request):
-    output_matches = output()
+    tournaments = request.GET.getlist("tournaments")
+    output_matches = output(tournaments=tournaments)
     return render(
         request,
         "fights/no_background_index.html",
@@ -142,10 +144,16 @@ def user(request, user_id):
 
 
 def time_remaining(request):
+    tournament_filter = request.GET.getlist("tournaments")
     bgcolor = bg_color(request)
-    tournaments = Tournament.objects.filter(tournament_state="underway").order_by(
+    if tournament_filter:
+        tournaments = Tournament.objects.filter(tournament_state="underway").filter(tournament_url__in=tournament_filter).order_by(
         "tournament_name"
     )
+    else:
+        tournaments = Tournament.objects.filter(tournament_state="underway").order_by(
+            "tournament_name"
+        )
     return render(
         request,
         "fights/time_remaining.html",
@@ -346,9 +354,12 @@ def display_matches(request):
     )
 
 
-def match_by_tournament():
+def match_by_tournament(tournament_urls=[]):
     matches_list = []
-    for tournament in Tournament.objects.all():
+    tournaments = Tournament.objects.all()
+    if tournament_urls:
+        tournaments = tournaments.objects.filter(tournament_url__in=tournament_urls)
+    for tournament in tournaments:
         matches_list.append(
             Match.objects.filter(tournament_id=tournament, match_state="open").order_by(
                 "calculated_play_order"

@@ -1,7 +1,7 @@
 {% extends "fights/base_template.html" %}
 {% block content %}
 <div class="row text-center justify-content-center py-4">
-    <div class="col-md-3 bg-warning rounded-3 text-black">
+    <div class="col-md-5 bg-warning rounded-3 text-black">
         <div class="display-5"><strong>{{ profile.display_name }}</strong></div>
     </div>
     <div>
@@ -22,9 +22,9 @@
                 {% endif %}
                 {% if bot.upcoming_matches.0.player2_id.bot_name == 'Not assigned' %}
             <div class="fs-6">Winner of</div>
-                    <a class="text-reset text-decoration-none" href="/fights/bot/{{ bot.upcoming_matches.0.unassigned_matches.1.0 }}"">{{bot.upcoming_matches.0.unassigned_matches.1.0}}</a>
+                    <a class="text-reset text-decoration-none" href="/fights/bot/{{ bot.upcoming_matches.0.unassigned_matches.1.0 }}">{{bot.upcoming_matches.0.unassigned_matches.1.0}}</a>
                     vs
-                    <a class="text-reset text-decoration-none" href="/fights/bot/{{ bot.upcoming_matches.0.unassigned_matches.1.1 }}"">{{bot.upcoming_matches.0.unassigned_matches.1.1}}</a>
+                    <a class="text-reset text-decoration-none" href="/fights/bot/{{ bot.upcoming_matches.0.unassigned_matches.1.1 }}">{{bot.upcoming_matches.0.unassigned_matches.1.1}}</a>
                 {% endif %}
             <br>
                         </div>

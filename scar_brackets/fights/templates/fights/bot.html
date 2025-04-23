@@ -19,12 +19,10 @@
                 {% if bot.upcoming_matches.0.player1_id.bot_name == 'Not assigned' %}
                 <div class="fs-4">Winner of</div>
                 <a class="text-reset text-decoration-none"
-                    href="/fights/bot/{{bot.upcoming_matches.0.unassigned_matches.0.0}}">{{
-                    bot.upcoming_matches.0.unassigned_matches.1.0 }}</a>
+                    href="/fights/bot/{{bot.upcoming_matches.0.unassigned_matches.0.0}}">{{ bot.upcoming_matches.0.unassigned_matches.1.0 }}</a>
                 vs
                 <a class="text-reset text-decoration-none"
-                    href="/fights/bot/{{bot.upcoming_matches.0.unassigned_matches.0.1}}">{{
-                    bot.upcoming_matches.0.unassigned_matches.0.1 }}</a>
+                    href="/fights/bot/{{bot.upcoming_matches.0.unassigned_matches.0.1}}">{{ bot.upcoming_matches.0.unassigned_matches.0.1 }}</a>
                 {% endif %}
 
                 vs
@@ -36,12 +34,10 @@
                 {% if bot.upcoming_matches.0.player2_id.bot_name == 'Not assigned' %}
                 <div class="fs-4">Winner of</div>
                 <a class="text-reset text-decoration-none"
-                    href="/fights/bot/{{bot.upcoming_matches.0.unassigned_matches.1.0}}">{{
-                    bot.upcoming_matches.0.unassigned_matches.1.0 }}</a>
+                    href="/fights/bot/{{bot.upcoming_matches.0.unassigned_matches.1.0}}">{{ bot.upcoming_matches.0.unassigned_matches.1.0 }}</a>
                 vs
                 <a class="text-reset text-decoration-none"
-                    href="/fights/bot/{{bot.upcoming_matches.0.unassigned_matches.1.1}}">{{
-                    bot.upcoming_matches.0.unassigned_matches.1.1 }}</a>
+                    href="/fights/bot/{{bot.upcoming_matches.0.unassigned_matches.1.1}}">{{ bot.upcoming_matches.0.unassigned_matches.1.1 }}</a>
                 {% endif %}
             </div>
         </div>
