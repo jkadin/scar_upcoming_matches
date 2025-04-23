@@ -16,10 +16,18 @@
         {% include './time_remaining_bot.html' %}
                         <br>
                         <div class="fs-4">Next match:<br>
-                            <a class="text-reset text-decoration-none" href="/fights/bot/{{bot.upcoming_matches.0.player1_id}}">{{bot.upcoming_matches.0.player1_id}}</a> vs
+                {% if bot.upcoming_matches.0.player1_id.bot_name != 'Not assigned' %}
+                            <a class="text-reset text-decoration-none" href="/fights/bot/{{bot.upcoming_matches.0.player1_id}}">{{bot.upcoming_matches.0.player1_id}}</a> 
+                {% endif %}
+                {% if bot.upcoming_matches.0.player1_id.bot_name == 'Not assigned' %}
+                             <a class="text-reset text-decoration-none" href="/fights/bot/{{bot.upcoming_matches.0.player1_id}}">{{bot.upcoming_matches.0.player1_id}}</a>
+                {% endif %}
+                            vs
+
                 {% if bot.upcoming_matches.0.player2_id.bot_name != 'Not assigned' %}
                              <a class="text-reset text-decoration-none" href="/fights/bot/{{bot.upcoming_matches.0.player2_id}}">{{bot.upcoming_matches.0.player2_id}}</a>
                 {% endif %}
+
                 {% if bot.upcoming_matches.0.player2_id.bot_name == 'Not assigned' %}
             <div class="fs-6">Winner of</div>
                     <a class="text-reset text-decoration-none" href="/fights/bot/{{ bot.upcoming_matches.0.unassigned_matches.1.0 }}">{{bot.upcoming_matches.0.unassigned_matches.1.0}}</a>
