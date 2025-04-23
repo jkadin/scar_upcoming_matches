@@ -59,7 +59,7 @@ def index(request):
         {
             "output_matches": output_matches,
             "bgcolor": bgcolor,
-            "tournaments": tournaments
+            "tournaments": tournaments,
         },
     )
 
@@ -75,7 +75,11 @@ def challonge_index(request):
     return render(
         request,
         "fights/challonge_index.html",
-        {"output_matches": output_matches, "urls": Url.objects.all()},
+        {   "output_matches": output_matches,
+            "urls": Url.objects.all(),
+            "tournaments": tournaments,
+        },
+        
     )
 
 
@@ -87,6 +91,7 @@ def no_background_index(request):
         "fights/no_background_index.html",
         {
             "output_matches": output_matches,
+            "tournaments": tournaments,
         },
     )
 
@@ -146,25 +151,25 @@ def user(request, user_id):
 def time_remaining(request):
     tournament_filter = request.GET.getlist("tournaments")
     bgcolor = bg_color(request)
+    tournaments = Tournament.objects.filter(tournament_state="underway")
     if tournament_filter:
-        tournaments = Tournament.objects.filter(tournament_state="underway").filter(tournament_url__in=tournament_filter).order_by(
-        "tournament_name"
-    )
-    else:
-        tournaments = Tournament.objects.filter(tournament_state="underway").order_by(
-            "tournament_name"
-        )
+        tournaments = tournaments.filter(tournament_url__in=tournament_filter)
+    tournaments.order_by("tournament_name")
+
     return render(
         request,
         "fights/time_remaining.html",
-        {"tournaments": tournaments, "bgcolor":bgcolor},
+        {"tournaments": tournaments, "bgcolor":bgcolor, "tournament_filter": tournament_filter},
     )
 
 
 def time_remaining_inner(request):
-    tournaments = Tournament.objects.filter(tournament_state="underway").order_by(
-        "tournament_name"
-    )
+    tournament_filter = request.GET.getlist("tournaments")
+    tournaments = Tournament.objects.filter(tournament_state="underway")
+    if tournament_filter:
+        tournaments = tournaments.filter(tournament_url__in=tournament_filter)
+    tournaments.order_by("tournament_name")
+
     return render(
         request,
         "fights/time_remaining_inner.html",
@@ -344,7 +349,8 @@ def manual_sort(request):
 
 
 def display_matches(request):
-    output_matches = output()
+    tournaments = request.GET.getlist("tournaments")
+    output_matches = output(tournaments=tournaments)
     return render(
         request,
         "fights/matches.html",

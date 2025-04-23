@@ -6,7 +6,13 @@
         <div class="display-5"><strong>Upcoming Matches</strong></div>
     </div>
 </div>
+
+
+{% if tournaments %}
+<div hx-get="display_matches?tournaments={{ tournaments|join:"&tournaments=" }}" hx-trigger="every 10s [document.currentlyDragging != true]" hx-swap="innerHTML" hx-on::after-request="initSortable()">
+    {% else %}
 <div hx-get="display_matches" hx-trigger="every 10s [document.currentlyDragging != true]" hx-swap="innerHTML" hx-on::after-request="initSortable()">
+{% endif %}
     {% include './matches.html' %}
 </div>
 </style>

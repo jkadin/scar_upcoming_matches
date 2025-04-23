@@ -6,7 +6,11 @@
             </div>
         </div>
         <div class="justify-content-center align-items-center h-50 display-3 lh-sm px-8">
+            {% if tournament_filter %}
+            <div hx-get="time_remaining_inner?tournaments={{ tournament_filter|join:"&tournaments=" }}" hx-trigger="every 10s" hx-swap="innerHTML">
+            {% else %}
             <div hx-get="time_remaining_inner" hx-trigger="every 10s" hx-swap="innerHTML">
+            {% endif %}
                 {% include './time_remaining_inner.html' %}
             </div>
         </div>
