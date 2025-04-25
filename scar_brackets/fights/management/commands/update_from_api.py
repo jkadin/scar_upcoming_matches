@@ -77,7 +77,7 @@ def load_matches_from_challonge(challonge_tournament_list):
         update_or_create_matches(t1, challonge_matches)
 
 
-def process_tournaments(challonge_tournament_list):
+def process_tournaments(challonge_tournament_list:list):
     for t in challonge_tournament_list:
         exists = Tournament.objects.filter(tournament_id=t.get("id"))
         print("state", t.get("state"))
@@ -144,7 +144,7 @@ def update_or_create_matches(t1: Tournament, challonge_matches: list):
         )
 
 
-def get_tournament_list_from_challonge():
+def get_tournament_list_from_challonge()->list:
     tournament_list = []
     for tournament_url in Url.objects.all():
         challonge_tournament = challonge.tournaments.show(
