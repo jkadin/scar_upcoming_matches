@@ -59,7 +59,6 @@ def interleave():
 
 def remove_fill(list_of_tuples):
     fill = [x for x in list_of_tuples if x is not None]
-    # print(remove_fill)
     for i, m in enumerate(fill):
         print(
             f"{m.match_id=},{m.tournament_id.tournament_name=}, {m.suggested_play_order=},{m.match_state=}"
@@ -73,29 +72,25 @@ def load_matches_from_challonge(challonge_tournament_list):
     print("Loading Matches")
     for t in challonge_tournament_list:
         t1 = Tournament(t.get("id"), t.get("name"), t.get("state"), t.get("url"))
-        challonge_matches: list = challonge.matches.index(t1.tournament_id, state="all")  # type: ignore
+        challonge_matches: list = challonge.matches.index(t1.tournament_id)  # type: ignore
         update_or_create_matches(t1, challonge_matches)
 
 
 def process_tournaments(challonge_tournament_list:list):
     for t in challonge_tournament_list:
-        exists = Tournament.objects.filter(tournament_id=t.get("id"))
-        print("state", t.get("state"))
-        if t.get("state") != "underway":
-            if exists:
-                exists.delete()
-            continue
-        needs_interleave = True
-        if exists:
-            needs_interleave = False
-        t1 = Tournament(
-            t.get("id"),
-            t.get("name"),
-            t.get("state"),
-            t.get("url"),
-            needs_interleave,
+        print(t.get('id'),"state", t.get("state"))
+        url=Url.objects.get(url=t.get("url"))
+        t1,created=Tournament.objects.update_or_create(
+            tournament_id=t.get('id'),
+            defaults={"tournament_name":t.get("name"),
+            "tournament_state":t.get("state"),
+            "tournament_url":url,
+            },
         )
-        t1.save()
+        if created:
+            t1.tournament_needs_interleave=True
+            t1.save()
+
         print(f"{t1.tournament_needs_interleave=}")
         print(f"Tournament_id= - {t1.tournament_id}")
 
@@ -151,7 +146,7 @@ def get_tournament_list_from_challonge()->list:
             tournament=f"/{tournament_url.url}"
         )
         tournament_list.append(challonge_tournament)
-    tournament_list = [t for t in tournament_list if t.get("state") == "underway"]
+    tournament_list = [t for t in tournament_list ]
     return tournament_list
 
 
