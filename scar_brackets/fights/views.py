@@ -364,7 +364,7 @@ def match_by_tournament(tournament_urls=[]):
     matches_list = []
     tournaments = Tournament.objects.all()
     if tournament_urls:
-        tournaments = tournaments.objects.filter(tournament_url__in=tournament_urls)
+        tournaments = tournaments.objects.filter(tournament_url__in=tournament_urls) # type: ignore
     for tournament in tournaments:
         matches_list.append(
             Match.objects.filter(tournament_id=tournament, match_state="open").order_by(
