@@ -23,15 +23,15 @@
                 vs
                 <a class="text-reset text-decoration-none"
                     href="/fights/bot/{{bot.upcoming_matches.0.unassigned_matches.0.1}}">{{ bot.upcoming_matches.0.unassigned_matches.0.1 }}</a>
+                <br>
                 {% endif %}
-
                 vs
                 {% if bot.upcoming_matches.0.player2_id.bot_name != 'Not assigned' %}
                 <a class="text-reset text-decoration-none"
                     href="/fights/bot/{{bot.upcoming_matches.0.player2_id}}">{{bot.upcoming_matches.0.player2_id}}</a>
                 {% endif %}
-                <br>
                 {% if bot.upcoming_matches.0.player2_id.bot_name == 'Not assigned' %}
+                <br>
                 <div class="fs-4">Winner of</div>
                 <a class="text-reset text-decoration-none"
                     href="/fights/bot/{{bot.upcoming_matches.0.unassigned_matches.1.0}}">{{ bot.upcoming_matches.0.unassigned_matches.1.0 }}</a>
