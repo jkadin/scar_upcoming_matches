@@ -11,7 +11,7 @@
                 <div class="row">
                     {% for tournament in tournaments %}
                     <div class="col">
-                        <div class="h1 text-dark bg-warning rounded-start rounded-end">{{ tournament.tournament_name }}</div>
+                        <div class="h1 text-dark bg-warning rounded-start rounded-end">{{ tournament.tournament_name|cut:"RCL_Championship_"|cut:"_2025" }}</div>
                         {% for bot in tournament.bot_set.all|dictsort:"bot_name" %}
                         {% if bot.bot_id != None %}
                         <div class="h1">
