@@ -1,0 +1,33 @@
+{% extends "fights/base_template.html" %}
+{% block content %}
+        <div class="row text-center justify-content-center py-4">
+            <div class="col-md-3 bg-primary rounded-3" style="text-shadow: 3px 3px 0px black;">
+                <div class="display-5"><strong>All Bots</strong></div>
+            </div>
+        </div>
+        <div class="justify-content-center align-items-center h-50 display-3 lh-sm px-8">
+            {% if tournaments %}
+            <div class="text-center container">
+                <div class="row">
+                    {% for tournament in tournaments %}
+                    <div class="col">
+                        <div class="h1 text-dark bg-warning rounded-start rounded-end">{{ tournament.tournament_name }}</div>
+                        {% for bot in tournament.bot_set.all|dictsort:"bot_name" %}
+                        {% if bot.bot_id != None %}
+                        <div class="h1">
+                            <a class="text-reset text-decoration-none" href="/fights/bot/{{bot.bot_name}}">{{bot.bot_name}}</a>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center">
+                <br>
+                <strong>No bots available</strong>
+            </div>
+            {% endif %}
+        </div>
+{% endblock %}

@@ -20,11 +20,12 @@
     }
 </style>
 
-<body style="background-color: {{ bgcolor }}"">
+<body style="background-color: {{ bgcolor|default:"#DC3545" }}">
     <div class="container-fluid text-white scar_logo text_style" style="user-select: none">
         <div class="float-start text-white fs-2 pe-2">
             <a href="/fights" class="link-light">Home</a> |
-            <a href="/fights/time_remaining" class="link-light">Time Remaining</a>
+            <a href="/fights/time_remaining" class="link-light">Time Remaining</a> |
+            <a href="/fights/bots" class="link-light">All Bots</a>
         </div>
         <div class="float-end text-white fs-2 pe-2">
             {% if user.is_authenticated %}

@@ -147,6 +147,15 @@ def user(request, user_id):
         {"profile": profile, "bots": bots, "users_match": users_match,"bgcolor":bgcolor},
     )
 
+def bots(request):
+    tournaments = Tournament.objects.all()
+    tournaments.order_by("tournament_name")
+
+    return render(
+        request,
+        "fights/bots.html",
+        {"tournaments": tournaments},
+    )
 
 def time_remaining(request):
     tournament_filter = request.GET.getlist("tournaments")
