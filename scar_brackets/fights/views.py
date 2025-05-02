@@ -157,6 +157,18 @@ def bots(request):
         {"tournaments": tournaments},
     )
 
+def users(request):
+    users = User.objects.all()
+    for user in users:
+        print(user.profile.display_name)
+    # users.order_by("user_name")
+
+    return render(
+        request,
+        "fights/users.html",
+        {"users": users},
+    )
+
 def time_remaining(request):
     tournament_filter = request.GET.getlist("tournaments")
     bgcolor = bg_color(request)
@@ -262,7 +274,8 @@ def create_user(request):
     if not request.user.is_staff:
         return render(request, "fights/index.html")
     if request.method == "GET":
-        return render(request, "fights/create_user.html")
+        username = request.GET.get("username")
+        return render(request, "fights/create_user.html",{"username":username})
 
     if request.method == "POST":
         username = request.POST.get("username")
@@ -271,7 +284,7 @@ def create_user(request):
 
 
         assigned_bots = Bot.objects.filter(user=user)
-        unassigned_bots = Bot.objects.filter(user=None)
+        unassigned_bots = Bot.objects.filter(user=None,bot_id__isnull=False)
         profile = Profile.objects.get(user=user)
         users_match = False
         if user == profile.user:
@@ -359,6 +372,7 @@ def manual_sort(request):
 
 def display_matches(request):
     tournaments = request.GET.getlist("tournaments")
+    print(tournaments)
     output_matches = output(tournaments=tournaments)
     return render(
         request,

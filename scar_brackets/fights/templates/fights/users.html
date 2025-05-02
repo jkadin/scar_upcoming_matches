@@ -1,0 +1,22 @@
+{% extends "fights/base_template.html" %}
+{% block content %}
+        <div class="row text-center justify-content-center py-4">
+            <div class="col-md-3 bg-primary rounded-3" style="text-shadow: 3px 3px 0px black;">
+                <div class="display-5"><strong>All Users</strong></div>
+            </div>
+        </div>
+        <div class="justify-content-center align-items-center h-50 display-3 lh-sm px-8">
+            <div class="text-center container">
+                <div class="row">
+                    {% for user in users %}
+                    <div class="col">
+                        <div class="h1 text-dark bg-warning rounded-start rounded-end">{{ tournament.tournament_name|cut:"RCL_Championship_"|cut:"_2025" }}</div>
+                        <div class="h1">
+                            t <a class="text-reset text-decoration-none" href="/fights/create_user?username={{ user.profile.display_name }}">{{ user.profile.display_name}}</a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}
