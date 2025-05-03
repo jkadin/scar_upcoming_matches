@@ -12,7 +12,7 @@
                     <div class="col">
                         <div class="h1 text-dark bg-warning rounded-start rounded-end">{{ tournament.tournament_name|cut:"RCL_Championship_"|cut:"_2025" }}</div>
                         <div class="h1">
-                            t <a class="text-reset text-decoration-none" href="/fights/create_user?username={{ user.profile.display_name }}">{{ user.profile.display_name}}</a>
+                             <a class="text-reset text-decoration-none" href="/fights/create_user?username={{ user.profile.display_name }}">{{ user.profile.display_name}}</a>
                         </div>
                         {% endfor %}
                     </div>
