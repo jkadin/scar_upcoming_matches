@@ -109,7 +109,13 @@ def matches(bots, tournament):
                     ),
                 },
             )
-    return Match.objects.all()
+    match_list = Match.objects.filter().order_by(
+        "tournament_id", "suggested_play_order"
+    )
+    for cnt,match in enumerate(match_list):
+        match.calculated_play_order=cnt
+        match.save()
+    return match_list
 
 
 @pytest.fixture
