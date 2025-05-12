@@ -158,12 +158,12 @@ def load_bots_from_challonge(t1):
             bot_name=bot["name"],  # type: ignore
             tournament_id=t1,
         )
+    print(f"Finished loading bots for{t1=}")
 
 
 def create_null_bot(t1):
     try:
         p1 = Bot.objects.get(bot_id=None, tournament_id=t1)
-        print(p1)
     except Exception as E:
         print("Exception", E)
         p1 = Bot(
