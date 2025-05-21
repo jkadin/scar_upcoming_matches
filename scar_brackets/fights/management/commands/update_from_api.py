@@ -150,20 +150,23 @@ def get_tournament_list_from_challonge()->list:
     return tournament_list
 
 
+
 def load_bots_from_challonge(t1):
     participants = challonge.participants.index(t1.tournament_id)
     for bot in participants:
+        bot_name=bot["name"],  # type: ignore
+        bot_name=bot_name[0]
         Bot.objects.update_or_create(
             bot_id=bot["id"],  # type: ignore
-            bot_name=bot["name"],  # type: ignore
             tournament_id=t1,
+    defaults={'bot_name': bot_name}
         )
-    print(f"Finished loading bots for{t1=}")
 
 
 def create_null_bot(t1):
     try:
         p1 = Bot.objects.get(bot_id=None, tournament_id=t1)
+        print(p1)
     except Exception as E:
         print("Exception", E)
         p1 = Bot(
