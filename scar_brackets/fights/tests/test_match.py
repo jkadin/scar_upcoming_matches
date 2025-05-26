@@ -16,6 +16,9 @@ def test_match(matches):
     assert match.suggested_play_order == 1
     assert match.calculated_play_order == 0
     assert str(match) == "387469590"
+    assert match.updated_at == datetime.datetime(
+        2024, 10, 20, 23, 40, 55, 220000, tzinfo=datetime.timezone.utc
+    )
 
 
 @pytest.mark.django_db
