@@ -159,9 +159,6 @@ def bots(request):
 
 def users(request):
     users = User.objects.all()
-    for user in users:
-        print(user.profile.display_name)
-    # users.order_by("user_name")
 
     return render(
         request,
@@ -372,7 +369,6 @@ def manual_sort(request):
 
 def display_matches(request):
     tournaments = request.GET.getlist("tournaments")
-    print(tournaments)
     output_matches = output(tournaments=tournaments)
     return render(
         request,
