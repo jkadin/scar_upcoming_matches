@@ -1,10 +1,11 @@
-from django.shortcuts import render
-from django.http import JsonResponse
+from django.shortcuts import render,redirect
+from django.http import JsonResponse,HttpResponse
 from .models import Match, Tournament, Url, Bot, Profile
 from django.views.decorators.csrf import csrf_exempt
 from itertools import chain, zip_longest
 from datetime import datetime, timedelta
 from django.contrib.auth.models import User
+from django.urls import reverse
 
 
 # from django.db.models import Q
@@ -231,7 +232,12 @@ def claim_multiple_bots(request):
     claim = True
     for bot_name in bot_names:
         claim_one_bot(username, bot_name, claim)
-    return JsonResponse({"status": "success"})
+    user = User.objects.get(username=username)
+    user_id=user.id
+    response=HttpResponse()
+    url=reverse('user',args=[user_id])
+    response['HX-Redirect']=url
+    return response
 
 
 @login_required
