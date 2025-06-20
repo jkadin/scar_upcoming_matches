@@ -1,10 +1,11 @@
-from django.shortcuts import render
-from django.http import JsonResponse
+from django.shortcuts import render,redirect
+from django.http import JsonResponse,HttpResponse
 from .models import Match, Tournament, Url, Bot, Profile
 from django.views.decorators.csrf import csrf_exempt
 from itertools import chain, zip_longest
 from datetime import datetime, timedelta
 from django.contrib.auth.models import User
+from django.urls import reverse
 
 
 # from django.db.models import Q
@@ -157,6 +158,15 @@ def bots(request):
         {"tournaments": tournaments},
     )
 
+def users(request):
+    users = User.objects.all()
+
+    return render(
+        request,
+        "fights/users.html",
+        {"users": users},
+    )
+
 def time_remaining(request):
     tournament_filter = request.GET.getlist("tournaments")
     bgcolor = bg_color(request)
@@ -222,7 +232,12 @@ def claim_multiple_bots(request):
     claim = True
     for bot_name in bot_names:
         claim_one_bot(username, bot_name, claim)
-    return JsonResponse({"status": "success"})
+    user = User.objects.get(username=username)
+    user_id=user.id
+    response=HttpResponse()
+    url=reverse('user',args=[user_id])
+    response['HX-Redirect']=url
+    return response
 
 
 @login_required
@@ -262,7 +277,8 @@ def create_user(request):
     if not request.user.is_staff:
         return render(request, "fights/index.html")
     if request.method == "GET":
-        return render(request, "fights/create_user.html")
+        username = request.GET.get("username")
+        return render(request, "fights/create_user.html",{"username":username})
 
     if request.method == "POST":
         username = request.POST.get("username")
@@ -271,7 +287,7 @@ def create_user(request):
 
 
         assigned_bots = Bot.objects.filter(user=user)
-        unassigned_bots = Bot.objects.filter(user=None)
+        unassigned_bots = Bot.objects.filter(user=None,bot_id__isnull=False)
         profile = Profile.objects.get(user=user)
         users_match = False
         if user == profile.user:

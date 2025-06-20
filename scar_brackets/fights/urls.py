@@ -12,6 +12,7 @@ urlpatterns = [
     path("manual_sort", views.manual_sort, name="manual_sort"),
     path("time_remaining", views.time_remaining, name="time_remaining"),
     path("bots", views.bots, name="bots"),
+    path("users", views.users, name="users"),
     path(
         "time_remaining_inner",
         views.time_remaining_inner,
