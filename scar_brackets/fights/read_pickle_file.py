@@ -20,6 +20,7 @@ for tournament_url in tournament_urls:
     print(len(matches))
     for match in matches:
         print(
+            match.get("tournament_id"),
             match.get("id"),
             match.get("state"),
             match.get("player1_id"),

@@ -9,16 +9,16 @@ def test_match(matches):
 
     match = matches[0]
 
-    assert match.player1_id.bot_name == "hw45jdtum"
-    assert match.player2_id.bot_name == "hw46h4"
-    assert match.tournament_id.tournament_name == "Api Tournament 2"
+    assert match.player1_id.bot_name == "Small Sharp Object"
+    assert match.player2_id.bot_name == "Moose and Squirrel"
+    assert match.tournament_id.tournament_name == "Api Testing Tournament"
     assert match.match_state == "complete"
-    assert match.updated_at == datetime.datetime(
-        2024, 10, 20, 23, 41, 5, 634000, tzinfo=datetime.timezone.utc
-    )
     assert match.suggested_play_order == 1
     assert match.calculated_play_order == 0
-    assert str(match) == "387469581"
+    assert str(match) == "387469590"
+    assert match.updated_at == datetime.datetime(
+        2024, 10, 20, 23, 40, 55, 220000, tzinfo=datetime.timezone.utc
+    )
 
 
 @pytest.mark.django_db

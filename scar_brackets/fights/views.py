@@ -325,7 +325,7 @@ def update_manual_play_order(start_match_id, old_index, new_index, ordered_items
     screen_distance = new_index - old_index
     direction = int(screen_distance / abs(screen_distance))
     end_match_id = end_match(ordered_items, new_index)
-    match_list = Match.objects.filter(match_state="open").order_by(
+    match_list = Match.objects.all().order_by(
         "calculated_play_order"
     )
     match_start_index, match_end_index = match_indexes(
