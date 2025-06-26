@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render
 from django.http import JsonResponse,HttpResponse
 from .models import Match, Tournament, Url, Bot, Profile
 from django.views.decorators.csrf import csrf_exempt
@@ -227,17 +227,27 @@ def bot(request, bot_name):
 @login_required
 @csrf_exempt
 def claim_multiple_bots(request):
-    bot_names = request.POST.getlist("bots")
-    username = request.POST.get("username")
-    claim = True
-    for bot_name in bot_names:
-        claim_one_bot(username, bot_name, claim)
-    user = User.objects.get(username=username)
-    user_id=user.id
-    response=HttpResponse()
-    url=reverse('user',args=[user_id])
-    response['HX-Redirect']=url
-    return response
+    users = User.objects.all()  # Get all users for the dropdown
+    if request.method == "POST":
+        bot_names = request.POST.getlist("bots")
+        username = request.POST.get("username")
+        claim = True
+        for bot_name in bot_names:
+            claim_one_bot(username, bot_name, claim)
+        user = User.objects.get(username=username)
+        user_id=user.id # type: ignore
+        response=HttpResponse()
+        url=reverse('user',args=[user_id])
+        response['HX-Redirect']=url
+        return response
+# For GET or other methods, just show the dropdown
+    return render(
+         request,
+         "fights/bot_claim_list.html",
+         {
+             "users": users,
+         },
+    )
 
 
 @login_required
@@ -277,32 +287,46 @@ def create_user(request):
     if not request.user.is_staff:
         return render(request, "fights/index.html")
     if request.method == "GET":
-        username = request.GET.get("username")
-        return render(request, "fights/create_user.html",{"username":username})
-
+        return render(request, "fights/create_user.html",)
     if request.method == "POST":
         username = request.POST.get("username")
-
+        ######################fix validate inline
+        if not username:
+            print("Username cannot be blank")
+            return render(request, "fights/create_user.html",)
         user,created=User.objects.get_or_create(username=username)
+        user_id=user.id # type: ignore
+        response=HttpResponse()
+        url=reverse('user',args=[user_id])
+        response['HX-Redirect']=url
+        return response
+# def assign_multiple_bots(request):
+#     from django.contrib.auth.models import User  # Ensure import at the top if not present
 
+#     users = User.objects.all()  # Get all users for the dropdown
 
-        assigned_bots = Bot.objects.filter(user=user)
-        unassigned_bots = Bot.objects.filter(user=None,bot_id__isnull=False)
-        profile = Profile.objects.get(user=user)
-        users_match = False
-        if user == profile.user:
-            users_match = True
-        return render(
-            request,
-            "fights/bot_claim_list.html",
-            {
-                "assigned_bots": assigned_bots,
-                "unassigned_bots": unassigned_bots,
-                "users_match": users_match,
-                "username": username,
-                "profile": profile,
-            },
-        )
+#     if request.method == "POST":
+#         username = request.POST.get("username")
+#         user = User.objects.get(username=username)
+#         assigned_bots = Bot.objects.filter(user=user)
+#         unassigned_bots = Bot.objects.filter(user=None, bot_id__isnull=False)
+#         profile = Profile.objects.get(user=user)
+#         users_match = False
+#         if user == profile.user:
+#             users_match = True
+#         return render(
+#             request,
+#             "fights/bot_claim_list.html",
+#             {
+#                 "assigned_bots": assigned_bots,
+#                 "unassigned_bots": unassigned_bots,
+#                 "users_match": users_match,
+#                 "username": username,
+#                 "profile": profile,
+#                 "users": users,  # Pass users to the template
+#             },
+#         )
+#     )
 
 
 @csrf_exempt

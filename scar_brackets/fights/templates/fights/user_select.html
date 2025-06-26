@@ -1,0 +1,12 @@
+<div id="user_select">
+    <form method="post">
+      {% csrf_token %}
+      <label for="username">Select User:</label>
+      <select name="username" id="username">
+        {% for user in users %}
+          <option value="{{ user.username }}">{{ user.username }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit">Assign Bots</button>
+    </form>
+</div>
