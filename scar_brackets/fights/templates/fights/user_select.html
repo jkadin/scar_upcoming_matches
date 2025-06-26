@@ -1,3 +1,5 @@
+{% extends "fights/base_template.html" %}
+{% block content %}
 <div id="user_select">
     <form method="post">
       {% csrf_token %}
@@ -10,3 +12,4 @@
       <button type="submit">Assign Bots</button>
     </form>
 </div>
+{% endblock %}
