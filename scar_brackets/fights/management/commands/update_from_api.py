@@ -30,23 +30,18 @@ def update_database():
     load_matches_from_challonge(challonge_tournament_list)
 
     # assign calculated_play_order
-    print("Check interleave")
     needs_interleave = Tournament.objects.filter(tournament_needs_interleave=True)
     if not needs_interleave:
-        print("No interleave needed")
         return
     interleaved_matches = interleave()
     interleaved = zip_longest(*interleaved_matches)
     list_of_tuples = chain.from_iterable(interleaved)
-    print("list of tuples - ", list_of_tuples)
     remove_fill(list_of_tuples)
 
 
 def interleave():
     matches_list = []
-    print("Interleave needed")
     for tournament in Tournament.objects.all():
-        print(tournament.tournament_name)
         tournament.tournament_needs_interleave = False
         tournament.save()
         matches_list.append(
@@ -60,16 +55,11 @@ def interleave():
 def remove_fill(list_of_tuples):
     fill = [x for x in list_of_tuples if x is not None]
     for i, m in enumerate(fill):
-        print(
-            f"{m.match_id=},{m.tournament_id.tournament_name=}, {m.suggested_play_order=},{m.match_state=}"
-        )
         m.calculated_play_order = i + 1
-        print(f"{m.calculated_play_order=}")
         m.save()
 
 
 def load_matches_from_challonge(challonge_tournament_list):
-    print("Loading Matches")
     for t in challonge_tournament_list:
         t1 = Tournament(t.get("id"), t.get("name"), t.get("state"), t.get("url"))
         challonge_matches: list = challonge.matches.index(t1.tournament_id)  # type: ignore
@@ -94,6 +84,8 @@ def process_tournaments(challonge_tournament_list:list):
         if (t_state == 'underway' and (t_old_state != t_state)):
             t1.tournament_needs_interleave=True
             t1.save()
+        if (t_state == 'pending' and (t_old_state != t_state)):
+            t1.match_set.all().delete()
 
 
 def load_all_bots():
@@ -164,9 +156,7 @@ def load_bots_from_challonge(t1):
 def create_null_bot(t1):
     try:
         p1 = Bot.objects.get(bot_id=None, tournament_id=t1)
-        print(p1)
     except Exception as E:
-        print("Exception", E)
         p1 = Bot(
             bot_id=None,
             bot_name="Not assigned",

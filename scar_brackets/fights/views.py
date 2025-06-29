@@ -32,6 +32,8 @@ def output(tournaments=[]):
         match_list = match_by_tournament(tournaments)
     output_match = []
     for i, match in enumerate(match_list[:15]):
+        if match.tournament_id.tournament_state != "underway":
+            continue
         output_match.append(
             {
                 "index": i + 1,
