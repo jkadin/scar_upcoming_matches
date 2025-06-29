@@ -25,7 +25,7 @@ class Tournament(models.Model):
     tournament_name = models.CharField(max_length=100)
     tournament_state = models.CharField(max_length=100)
     tournament_url = models.ForeignKey(Url, on_delete=models.CASCADE)
-    tournament_needs_interleave = models.BooleanField(default=True)
+    tournament_needs_interleave = models.BooleanField(default=False)
     tournament_repair_time = models.IntegerField(default=20)
 
     def __str__(self) -> str:
