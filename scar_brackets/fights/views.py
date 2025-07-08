@@ -251,6 +251,19 @@ def claim_multiple_bots(request):
             )
 
 
+# For GET or other methods, just show the dropdown
+    users = User.objects.all()  # Get all users for the dropdown
+    return render(
+         request,
+         "fights/user_select.html",
+         {
+             "users": users,
+         },
+    )
+
+# @login_required
+@csrf_exempt
+def select_multiple_bots(request):
     if request.method == "POST":
         bot_names = request.POST.getlist("bots")
         username = request.POST.get("username")
@@ -263,15 +276,7 @@ def claim_multiple_bots(request):
         url=reverse('user',args=[user_id])
         response['HX-Redirect']=url
         return response
-# For GET or other methods, just show the dropdown
-    users = User.objects.all()  # Get all users for the dropdown
-    return render(
-         request,
-         "fights/user_select.html",
-         {
-             "users": users,
-         },
-    )
+    return
 
 
 @login_required
@@ -324,33 +329,6 @@ def create_user(request):
         url=reverse('user',args=[user_id])
         response['HX-Redirect']=url
         return response
-# def assign_multiple_bots(request):
-#     from django.contrib.auth.models import User  # Ensure import at the top if not present
-
-#     users = User.objects.all()  # Get all users for the dropdown
-
-#     if request.method == "POST":
-#         username = request.POST.get("username")
-#         user = User.objects.get(username=username)
-#         assigned_bots = Bot.objects.filter(user=user)
-#         unassigned_bots = Bot.objects.filter(user=None, bot_id__isnull=False)
-#         profile = Profile.objects.get(user=user)
-#         users_match = False
-#         if user == profile.user:
-#             users_match = True
-#         return render(
-#             request,
-#             "fights/bot_claim_list.html",
-#             {
-#                 "assigned_bots": assigned_bots,
-#                 "unassigned_bots": unassigned_bots,
-#                 "users_match": users_match,
-#                 "username": username,
-#                 "profile": profile,
-#                 "users": users,  # Pass users to the template
-#             },
-#         )
-#     )
 
 
 @csrf_exempt

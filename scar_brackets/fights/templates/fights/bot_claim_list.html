@@ -1,7 +1,7 @@
 <!-- {% include './timeout.html' %} -->
 <div id="bots">
     <h1>Bots</h1>
-    <form method="post" hx-post="{% url 'claim_multiple_bots' %}" >
+    <form method="post" hx-post="{% url 'select_multiple_bots' %}" >
         {% csrf_token %}
         <input type="hidden" name="username" value="{{ username }}">
         <select name="bots" id="id_bots" multiple>
