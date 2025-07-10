@@ -319,7 +319,6 @@ def create_user(request):
         return render(request, "fights/create_user.html",)
     if request.method == "POST":
         username = request.POST.get("username")
-        ######################fix validate inline
         if not username:
             print("Username cannot be blank")
             return render(request, "fights/create_user.html",)
