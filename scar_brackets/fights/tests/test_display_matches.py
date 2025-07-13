@@ -5,5 +5,5 @@ import pytest
 def test_display_matches(client, my_preferences):
     url = "/fights/display_matches"
     response = client.get(url)
-    print(response.content)
     assert response.status_code == 200
+    assert 'No active tournaments' in str(response.content)
