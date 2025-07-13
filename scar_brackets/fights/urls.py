@@ -45,5 +45,5 @@ urlpatterns = [
 ]
 
 # Add static file serving during development
-if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+if settings.DEBUG: # pragma: no cover
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) 
