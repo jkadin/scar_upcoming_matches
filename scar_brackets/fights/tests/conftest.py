@@ -151,7 +151,7 @@ def load_participants_from_pickle(tournament_urls):
 @pytest.fixture
 def mock_challonge_participants(mocker: pytest_mock.MockerFixture, tournament_urls):
     participants = load_participants_from_pickle(tournament_urls)
-    return mocker.patch("challonge.participants.show", side_effect=participants)
+    return mocker.patch("challonge.participants.index", side_effect=participants)
 
 
 def load_tournaments_from_pickle(tournament_urls):
