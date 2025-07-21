@@ -6,7 +6,7 @@
             <div class="row justify-content-md-center text-dark text_style">
                 <div class="col-md-4 bg-warning rounded-start">
                     <a class="text-reset text-decoration-none"
-                        href="/fights/bot/{{match.player1_name}}">{{match.player1_name}}</a>
+                        href="/fights/bot/{{match.player1_name}}">{{match.player1_name|truncatechars:18 }}</a>
                     <br>
                     <div class="text-muted fs-2">Time remaining: {{match.player1_name.time_remaining}}</div>
                 </div>
@@ -15,7 +15,7 @@
                 </div>
                 <div class="col-md-4 bg-warning rounded-end">
                     <a class="text-reset text-decoration-none"
-                        href="/fights/bot/{{match.player2_name}}">{{match.player2_name}}</a>
+                        href="/fights/bot/{{match.player2_name}}">{{match.player2_name|truncatechars:18 }}</a>
                     <br>
                     <div class="text-muted fs-2">Time remaining: {{match.player2_name.time_remaining}}</div>
                 </div>
