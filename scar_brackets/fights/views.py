@@ -197,7 +197,7 @@ def time_remaining_inner(request):
 
 
 def time_remaining_bot(request, bot_name):
-    bot = Bot.objects.get(bot_name=bot_name)
+    bot = Bot.objects.get(bot_name__iexact=bot_name)
     return render(
         request,
         "fights/time_remaining_bot.html",
@@ -246,7 +246,6 @@ def claim_multiple_bots(request):
                 "users_match": users_match,
                 "username": username,
                 "profile": profile,
-                # "users": users,  # Pass users to the template
             },
             )
 
@@ -276,7 +275,7 @@ def select_multiple_bots(request):
         url=reverse('user',args=[user_id])
         response['HX-Redirect']=url
         return response
-    return
+    return render(request, "fights/index.html")
 
 
 @login_required

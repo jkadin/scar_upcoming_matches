@@ -114,7 +114,7 @@ def matches(bots, tournament):
 
 @pytest.fixture
 def my_preferences():
-    return MyPreferences.objects.create()
+    return MyPreferences.objects.create(interleave_method="Fixed")
 
 
 @pytest.fixture
