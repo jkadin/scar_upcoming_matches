@@ -6,9 +6,8 @@ from itertools import chain, zip_longest
 from datetime import datetime, timedelta
 from django.contrib.auth.models import User
 from django.urls import reverse
+from django.db.models.query import QuerySet
 
-
-# from django.db.models import Q
 
 import json
 from django.utils import timezone
@@ -409,14 +408,14 @@ def display_matches(request):
     )
 
 
-def match_by_tournament(tournament_urls=[]):
-    matches_list = []
-    tournaments = Tournament.objects.all()
+def match_by_tournament(tournament_urls:list=[]):
+    matches_list:list = []
+    tournaments:QuerySet = Tournament.objects.all()
     if tournament_urls:
-        tournaments = tournaments.objects.filter(tournament_url__in=tournament_urls) # type: ignore
+        tournaments = tournaments.filter(tournament_url__in=tournament_urls) # type: ignore
     for tournament in tournaments:
         matches_list.append(
-            Match.objects.filter(tournament_id=tournament, match_state="open").order_by(
+            Match.objects.filter(tournament_id=tournament.tournament_id, match_state="open").order_by(
                 "calculated_play_order"
             )
         )

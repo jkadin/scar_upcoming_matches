@@ -1,8 +1,8 @@
 import pytest
 from django.contrib.auth.models import User
 from django.test import Client
-from fights.models import Match, Tournament, Url, Bot, Profile, MyPreferences
-
+from fights.models import Match, Tournament, Url, Bot, Profile
+from preferences import preferences
 from django.utils import timezone
 import pytest_mock
 import pickle
@@ -33,7 +33,7 @@ def authenticated_user(client):
 
 
 @pytest.fixture
-def tournament(url, mock_challonge_tournaments):
+def tournaments(url, mock_challonge_tournaments):
     challonge_tournament_list = get_tournament_list_from_challonge()
     process_tournaments(challonge_tournament_list)
     return Tournament.objects.all()
@@ -48,7 +48,7 @@ def url():
 
 
 @pytest.fixture
-def bots(tournament, authenticated_user, tournament_urls):
+def bots(tournaments, authenticated_user, tournament_urls):
     participants = []
     for tournament_url in tournament_urls:
         tournament_id = Tournament.objects.get(tournament_url=tournament_url)
@@ -74,8 +74,8 @@ def profile(authenticated_user):
 
 
 @pytest.fixture
-def matches(bots, tournament):
-    for tournament_ in tournament:
+def matches(bots, tournaments):
+    for tournament_ in tournaments:
         tournament_url = tournament_.tournament_url
         tournament_id = tournament_.tournament_id
         pickle_file_path = Path(__file__).parent.parent / f"matches{tournament_url}.pkl"
@@ -114,7 +114,17 @@ def matches(bots, tournament):
 
 @pytest.fixture
 def my_preferences():
-    return MyPreferences.objects.create(interleave_method="Fixed")
+    prefs = preferences.MyPreferences # type: ignore
+    prefs.interleave_method = "fixed"
+    prefs.save()
+    return prefs
+
+@pytest.fixture
+def my_preferences_interleave():
+    prefs = preferences.MyPreferences # type: ignore
+    prefs.interleave_method = "interleave"
+    prefs.save()
+    return prefs
 
 
 @pytest.fixture

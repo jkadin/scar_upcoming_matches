@@ -4,7 +4,7 @@ from fights.models import Match
 
 
 @pytest.mark.django_db
-def test_manual_order(client, authenticated_user, url, tournament, bots, matches):
+def test_manual_order(client, authenticated_user, url,   matches):
     match_list = Match.objects.filter(match_state="open").order_by(
         "suggested_play_order"
     )
