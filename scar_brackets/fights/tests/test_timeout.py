@@ -13,6 +13,7 @@ def test_time_out(authenticated_user, client, profile):
     assert profile.last_timeout.date() == now.date()
     # Test cancel timeout
     response = client.post(url, {"cancel": "true"})
+    assert response.status_code==200
     profile.refresh_from_db()
     assert profile.last_timeout == timezone.make_aware(
         datetime.min, timezone.get_default_timezone()
