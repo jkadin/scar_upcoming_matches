@@ -12,6 +12,7 @@ load_dotenv()
 class Command(BaseCommand):
     help = "Updates the data from the API"
 
+    # pragma: no cover
     def handle(self, *args, **options):
         update_database()
 
