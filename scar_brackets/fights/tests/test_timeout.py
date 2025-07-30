@@ -6,9 +6,11 @@ now = timezone.now()
 
 
 @pytest.mark.django_db
-def test_time_out(authenticated_user, client, profile):
+# def test_time_out(authenticated_user, client, profile):
+def test_time_out( client, profile):
+    data = {"username": "testuser"}
     url = "/fights/time_out"
-    response = client.post(url)
+    response = client.post(url, data=data)
     profile.refresh_from_db()
     assert profile.last_timeout.date() == now.date()
     # Test cancel timeout
