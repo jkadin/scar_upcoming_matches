@@ -30,3 +30,4 @@ def test_update_database(
     assert match_list[4].match_id == "387469595"
     assert match_list[4].suggested_play_order == 8
     assert match_list[3].calculated_play_order == 12
+    

@@ -62,6 +62,7 @@ def bots(tournaments, authenticated_user, tournament_urls):
                 bot_id=bot["id"],  # type: ignore
                 bot_name=bot["name"],  # type: ignore
                 tournament_id=tournament_id,
+                user=authenticated_user
             )
         create_null_bot(tournament_id)
 
