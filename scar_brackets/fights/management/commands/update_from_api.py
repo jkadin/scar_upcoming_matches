@@ -162,14 +162,9 @@ def load_bots_from_challonge(t1):
 
 
 def create_null_bot(t1):
-    try:
-        p1 = Bot.objects.get(bot_id=None, tournament_id=t1)
-        print(p1)
-    except Exception as E:
-        print("Exception", E)
-        p1 = Bot(
-            bot_id=None,
-            bot_name="Not assigned",
-            tournament_id=t1,
-        )
-        p1.save()
+    Bot.objects.update_or_create(
+        bot_id=None,
+        bot_name="Not assigned",
+        tournament_id=t1,
+    )
+
