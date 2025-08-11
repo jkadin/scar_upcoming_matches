@@ -8,7 +8,11 @@
                     <a class="text-reset text-decoration-none"
                         href="/fights/bot/{{match.player1_name}}">{{match.player1_name|truncatechars:18 }}</a>
                     <br>
+                    {%if match.player1_name.time_remaining != "00:00" %}
+                    <div class="text-danger fs-2">Time remaining: {{match.player1_name.time_remaining}}</div>
+                    {%else%}
                     <div class="text-muted fs-2">Time remaining: {{match.player1_name.time_remaining}}</div>
+                    {% endif %}
                 </div>
                 <div class="col-md-auto bg-secondary text-white drag-handle">
                     VS
@@ -17,7 +21,11 @@
                     <a class="text-reset text-decoration-none"
                         href="/fights/bot/{{match.player2_name}}">{{match.player2_name|truncatechars:18 }}</a>
                     <br>
+                    {%if match.player2_name.time_remaining != "00:00" %}
+                    <div class="text-danger fs-2">Time remaining: {{match.player2_name.time_remaining}}</div>
+                    {%else%}
                     <div class="text-muted fs-2">Time remaining: {{match.player2_name.time_remaining}}</div>
+                    {% endif %}
                 </div>
             </div>
             <div class="row display-6">

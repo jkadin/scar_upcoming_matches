@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render
 from django.http import JsonResponse,HttpResponse
 from .models import Match, Tournament, Url, Bot, Profile
 from django.views.decorators.csrf import csrf_exempt
@@ -34,6 +34,9 @@ def output(tournaments=[]):
     for i, match in enumerate(match_list[:15]):
         if match.tournament_id.tournament_state != "underway":
             continue
+        # Get time_remaining for both players, default to "00:00" if not present
+        time_remaining_p1 = getattr(match.player1_id, "time_remaining", "00:00")
+        time_remaining_p2 = getattr(match.player2_id, "time_remaining", "00:00")
         output_match.append(
             {
                 "index": i + 1,
@@ -45,10 +48,18 @@ def output(tournaments=[]):
                 "losers_bracket": match.player1_is_prereq_match_loser
                 or match.player2_is_prereq_match_loser,
                 "match_id": match.match_id,
-                "unassigned_matches":match.unassigned_matches
+                "unassigned_matches": match.unassigned_matches,
+                "time_remaining_p1": time_remaining_p1,
+                "time_remaining_p2": time_remaining_p2,
             }
         )
         match_start += MATCH_DELAY
+    # Sort: matches with either player's time_remaining != "00:00" go last
+    output_match.sort(
+        key=lambda m: (
+            m["time_remaining_p1"] != "00:00" or m["time_remaining_p2"] != "00:00"
+        )
+    )
     return output_match
 
 
