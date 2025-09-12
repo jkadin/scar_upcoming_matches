@@ -23,7 +23,6 @@ def update_database():
         os.getenv("CHALLONGE_USERNAME"), os.getenv("CHALLONGE_API_KEY")
     )
     challonge_tournament_list = get_tournament_list_from_challonge()
-
     process_tournaments(challonge_tournament_list)
     load_all_bots()
 
