@@ -32,6 +32,11 @@ def output(tournaments=[]):
         match_list = match_by_tournament(tournaments)
     output_match = []
     for i, match in enumerate(match_list[:15]):
+        if match.tournament_id.tournament_state != "underway":
+            continue
+        # Get time_remaining for both players, default to "00:00" if not present
+        time_remaining_p1 = getattr(match.player1_id, "time_remaining", "00:00")
+        time_remaining_p2 = getattr(match.player2_id, "time_remaining", "00:00")
         output_match.append(
             {
                 "index": i + 1,
@@ -43,10 +48,18 @@ def output(tournaments=[]):
                 "losers_bracket": match.player1_is_prereq_match_loser
                 or match.player2_is_prereq_match_loser,
                 "match_id": match.match_id,
-                "unassigned_matches":match.unassigned_matches
+                "unassigned_matches": match.unassigned_matches,
+                "time_remaining_p1": time_remaining_p1,
+                "time_remaining_p2": time_remaining_p2,
             }
         )
         match_start += MATCH_DELAY
+    # Sort: matches with either player's time_remaining != "00:00" go last
+    output_match.sort(
+        key=lambda m: (
+            m["time_remaining_p1"] != "00:00" or m["time_remaining_p2"] != "00:00"
+        )
+    )
     return output_match
 
 
@@ -349,7 +362,7 @@ def update_manual_play_order(start_match_id, old_index, new_index, ordered_items
     screen_distance = new_index - old_index
     direction = int(screen_distance / abs(screen_distance))
     end_match_id = end_match(ordered_items, new_index)
-    match_list = Match.objects.filter(match_state="open").order_by(
+    match_list = Match.objects.all().order_by(
         "calculated_play_order"
     )
     match_start_index, match_end_index = match_indexes(

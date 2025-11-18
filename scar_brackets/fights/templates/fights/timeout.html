@@ -1,10 +1,10 @@
 <div id="timeout">
     <br>
     {% if profile.time_out_available %}
-    {% if users_match %}
+    {% if users_match or request.user.is_staff%}
     <form method="post" hx-post="/fights/time_out" hx-target="#timeout" hx-swap="innerHTML">
         {% csrf_token %}
-        <input type="hidden" name="username" value="{{ username }}">
+        <input type="hidden" name="username" value="{{ profile.user }}">
         <button class="btn btn-success" type="submit">Timeout</button>
     </form>
     {% else %}
@@ -14,7 +14,7 @@
     {% if request.user.is_staff %}
     <form method="post" hx-post="/fights/time_out" hx-target="#timeout" hx-swap="innerHTML">
         {% csrf_token %}
-        <input type="hidden" name="username" value="{{ username }}">
+        <input type="hidden" name="username" value="{{ profile.user }}">
         <input type="hidden" name="cancel" value="True">
         <button class="btn btn-success" type="submit">Cancel Timeout</button>
     </form>
