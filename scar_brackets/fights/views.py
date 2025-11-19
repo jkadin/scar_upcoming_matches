@@ -210,7 +210,7 @@ def time_remaining_inner(request):
 
 
 def time_remaining_bot(request, bot_name):
-    bot = Bot.objects.get(bot_name__iexact=bot_name)
+    bot = Bot.objects.get(bot_name=bot_name)
     return render(
         request,
         "fights/time_remaining_bot.html",
@@ -222,7 +222,7 @@ def bot(request, bot_name):
     bgcolor = bg_color(request)
     users_match = False
     try:
-        bot = Bot.objects.get(bot_name__iexact=bot_name)
+        bot = Bot.objects.get(bot_name=bot_name)
         try:
             if request.user == bot.user:
                 users_match = True
@@ -273,7 +273,7 @@ def claim_multiple_bots(request):
          },
     )
 
-# @login_required
+@login_required
 @csrf_exempt
 def select_multiple_bots(request):
     if request.method == "POST":
@@ -309,7 +309,7 @@ def claim_one_bot(username, bot_name, claim):
     users_match = False
     user = User.objects.get(username=username)
     try:
-        bot = Bot.objects.get(bot_name__iexact=bot_name)
+        bot = Bot.objects.get(bot_name=bot_name)
         if not claim:
             bot.user = None
             users_match = False
