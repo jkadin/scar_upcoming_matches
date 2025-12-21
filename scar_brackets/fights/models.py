@@ -7,8 +7,16 @@ from django.contrib.auth.models import User
 
 
 class MyPreferences(Preferences):
+    INTERLEAVE_CHOICES = [
+        ("Fixed", "Fixed"),
+        ("Interleave", "Interleave"),
+        ("Fixed_multiple", "Fixed_multiple"),
+        ("Interleave_multiple", "Interleave_multiple"),
+    ]
+
     interleave_method = models.CharField(
         max_length=100,
+        choices=INTERLEAVE_CHOICES,
         default="Fixed",
     )
 
