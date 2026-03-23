@@ -210,8 +210,11 @@ def time_remaining_inner(request):
     )
 
 
-def time_remaining_bot(request, bot_name):
-    bot = Bot.objects.get(bot_name=bot_name)
+def time_remaining_bot(request, bot_id):
+    try:
+        bot = Bot.objects.get(bot_id=bot_id)
+    except Bot.DoesNotExist:
+        bot = None
     return render(
         request,
         "fights/time_remaining_bot.html",
@@ -219,11 +222,11 @@ def time_remaining_bot(request, bot_name):
     )
 
 
-def bot(request, bot_name):
+def bot(request, bot_id):
     bgcolor = bg_color(request)
     users_match = False
     try:
-        bot = Bot.objects.get(bot_name=bot_name)
+        bot = Bot.objects.get(bot_id=bot_id)
         try:
             if request.user == bot.user:
                 users_match = True
@@ -294,11 +297,11 @@ def select_multiple_bots(request):
 
 @login_required
 @csrf_exempt
-def claim_bot(request, bot_name):
+def claim_bot(request, bot_id):
     users_match = False
     claim = request.POST.get("claim", "false").lower() == "true"  # Convert to boolean
     username = request.user
-    users_match, bot = claim_one_bot(username, bot_name, claim)
+    users_match, bot = claim_one_bot(username, bot_id, claim)
     return render(
         request,
         "fights/claim_bot.html",
@@ -306,11 +309,11 @@ def claim_bot(request, bot_name):
     )
 
 
-def claim_one_bot(username, bot_name, claim):
+def claim_one_bot(username, bot_id, claim):
     users_match = False
     user = User.objects.get(username=username)
     try:
-        bot = Bot.objects.get(bot_name=bot_name)
+        bot = Bot.objects.get(bot_id=bot_id)
         if not claim:
             bot.user = None
             users_match = False

@@ -29,7 +29,7 @@ def test_bot(bots, client):
     assert str(bot1) == "rnrdsyj"
     assert bot1.still_in_tournament is False
 
-    url = f"/fights/bot/{bot1.bot_name}/"
+    url = f"/fights/bot/{bot1.bot_id}/"
     response = client.get(url)
     assert response.status_code == 200
 

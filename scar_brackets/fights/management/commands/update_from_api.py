@@ -31,19 +31,14 @@ def update_database():
 
     load_matches_from_challonge(challonge_tournament_list)
 
-    # assign calculated_play_order
     needs_interleave = Tournament.objects.filter(tournament_needs_interleave=True)
     interleave_method = preferences.MyPreferences.interleave_method  # type: ignore
     if not needs_interleave and "Fixed" in interleave_method:
         return
     interleave()
-    # interleaved = zip_longest(*interleaved_matches)
-    # list_of_tuples = chain.from_iterable(interleaved)
-    # remove_fill(interleaved_matches)
 
 
 def interleave()->None:
-    # Pop different amounts based on flag and calculations
     matches_list:list[list[Match]] = []
     for tournament in Tournament.objects.all():
         tournament.tournament_needs_interleave = False
@@ -60,16 +55,6 @@ def interleave()->None:
     for i, m in enumerate(adjustments):
         m.calculated_play_order = i + 1
         m.save()
-    # if INTERLEAVE_METHOD in ('Fixed_multiple','Interleave_multiple'):
-    #     interleaved_matches:list[Match]=[] #new list to replace remove_fill
-    #     while any(matches_list):
-    #         for i,tournament in enumerate(matches_list):
-    #             for _ in range(adjustments[i]):
-    #                 try:
-    #                     interleaved_matches.append(tournament.pop(0))
-    #                 except IndexError:
-    #                     continue
-
 
 def even_distribution(groups:list[list[Match]]) ->list[Match]:
     remaining = [list(g) for g in groups]
@@ -101,11 +86,6 @@ def even_distribution(groups:list[list[Match]]) ->list[Match]:
 
     return pattern
 
-
-# def remove_fill(list_of_matches:list[Match])->None:
-#     for i, m in enumerate(list_of_matches):
-#         m.calculated_play_order = i + 1
-#         m.save()
 
 
 def load_matches_from_challonge(challonge_tournament_list):
