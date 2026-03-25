@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse,HttpResponse
 from .models import Match, Tournament, Url, Bot, Profile
 from django.views.decorators.csrf import csrf_exempt
-from itertools import chain, zip_longest
+# from itertools import chain, zip_longest
 from datetime import datetime, timedelta
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -13,7 +13,7 @@ from django.urls import reverse
 import json
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
-from preferences import preferences
+# from preferences import preferences
 
 NEXT_MATCH_START = timedelta(minutes=1)
 MATCH_DELAY = timedelta(minutes=3)
@@ -22,14 +22,13 @@ DEFAULT_BACKGROUND_COLOR = "DC3545"
 
 def output(tournaments=[]):
     match_start = datetime.now() + NEXT_MATCH_START
-    INTERLEAVE_METHOD = preferences.MyPreferences.interleave_method  # type: ignore
-    if INTERLEAVE_METHOD.lower() == "fixed":  # type: ignore
-        match_list = Match.objects.filter(match_state="open")
-        if tournaments:
-            match_list = match_list.filter(tournament_id__tournament_url__in=tournaments)
+    # INTERLEAVE_METHOD = preferences.MyPreferences.interleave_method  # type: ignore
+    # if INTERLEAVE_METHOD.lower() == "fixed":  # type: ignore
+    match_list = Match.objects.filter(match_state="open")
+    if tournaments:
+        match_list = match_list.filter(tournament_id__tournament_url__in=tournaments)
         match_list = match_list.order_by("calculated_play_order")
-    else:
-        match_list = match_by_tournament(tournaments)
+
     output_match = []
     for i, match in enumerate(match_list[:15]):
         if match.tournament_id.tournament_state != "underway":
@@ -422,18 +421,18 @@ def display_matches(request):
     )
 
 
-def match_by_tournament(tournament_urls=[]):
-    matches_list = []
-    tournaments = Tournament.objects.all()
-    if tournament_urls:
-        tournaments = tournaments.objects.filter(tournament_url__in=tournament_urls) # type: ignore
-    for tournament in tournaments:
-        matches_list.append(
-            Match.objects.filter(tournament_id=tournament, match_state="open").order_by(
-                "calculated_play_order"
-            )
-        )
-    interleaved = zip_longest(*matches_list)
-    list_of_tuples = chain.from_iterable(interleaved)
-    remove_fill = [x for x in list_of_tuples if x is not None]
-    return remove_fill
+# def match_by_tournament(tournament_urls=[]):
+#     matches_list = []
+#     tournaments = Tournament.objects.all()
+#     if tournament_urls:
+#         tournaments = tournaments.objects.filter(tournament_url__in=tournament_urls) # type: ignore
+#     # for tournament in tournaments:
+#     matches_list=(
+#             Match.objects.filter( match_state="open").order_by(
+#                 "calculated_play_order"
+#             )
+#         )
+#     # interleaved = zip_longest(*matches_list)
+    # list_of_tuples = chain.from_iterable(interleaved)
+    # remove_fill = [x for x in list_of_tuples if x is not None]
+    # return list(matches_list)
