@@ -8,7 +8,6 @@ from preferences import preferences
 # from math import gcd
 # from functools import reduce
 
-# Read interleave method lazily to avoid DB access at import time
 load_dotenv()
 
 
@@ -36,13 +35,13 @@ def update_database():
     interleave_method = preferences.MyPreferences.interleave_method  # type: ignore
     if not needs_interleave and "Fixed" in interleave_method:
         return
-    interleave()
+    interleave_matches_in_db(interleave_method)
     # interleaved = zip_longest(*interleaved_matches)
     # list_of_tuples = chain.from_iterable(interleaved)
     # remove_fill(interleaved_matches)
 
 
-def interleave()->None:
+def interleave_matches_in_db(interleave_method)->None:
     # Pop different amounts based on flag and calculations
     matches_list:list[list[Match]] = []
     for tournament in Tournament.objects.all():
@@ -56,7 +55,7 @@ def interleave()->None:
             )
         )
 
-    adjustments=even_distribution(matches_list)
+    adjustments=even_distribution(matches_list,interleave_method)
     for i, m in enumerate(adjustments):
         m.calculated_play_order = i + 1
         m.save()
@@ -71,7 +70,7 @@ def interleave()->None:
     #                     continue
 
 
-def even_distribution(groups:list[list[Match]]) ->list[Match]:
+def even_distribution(groups:list[list[Match]],interleave_method:str) ->list[Match]:
     remaining = [list(g) for g in groups]
     pattern = []
 
@@ -94,7 +93,7 @@ def even_distribution(groups:list[list[Match]]) ->list[Match]:
             # Determine proportion relative to the smallest group
             proportion = len(groups[i]) // max(len(groups[min_group_idx]), 1)
             take = min(proportion, len(remaining[i]))
-            if preferences.MyPreferences.interleave_method in ("Fixed","Interleave"):
+            if interleave_method in ("Fixed","Interleave"):
                 take=1
             for _ in range(take):
                 pattern.append(remaining[i].pop(0))
