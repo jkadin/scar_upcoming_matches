@@ -28,8 +28,6 @@ def output(tournaments=[]):
     if tournaments:
         match_list = match_list.filter(tournament_id__tournament_url__in=tournaments)
         match_list = match_list.order_by("calculated_play_order")
-    else:
-        match_list = match_by_tournament(tournaments)
 
     output_match = []
     for i, match in enumerate(match_list[:15]):
@@ -423,18 +421,18 @@ def display_matches(request):
     )
 
 
-def match_by_tournament(tournament_urls=[]):
-    matches_list = []
-    tournaments = Tournament.objects.all()
-    if tournament_urls:
-        tournaments = tournaments.objects.filter(tournament_url__in=tournament_urls) # type: ignore
-    # for tournament in tournaments:
-    matches_list=(
-            Match.objects.filter( match_state="open").order_by(
-                "calculated_play_order"
-            )
-        )
-    # interleaved = zip_longest(*matches_list)
+# def match_by_tournament(tournament_urls=[]):
+#     matches_list = []
+#     tournaments = Tournament.objects.all()
+#     if tournament_urls:
+#         tournaments = tournaments.objects.filter(tournament_url__in=tournament_urls) # type: ignore
+#     # for tournament in tournaments:
+#     matches_list=(
+#             Match.objects.filter( match_state="open").order_by(
+#                 "calculated_play_order"
+#             )
+#         )
+#     # interleaved = zip_longest(*matches_list)
     # list_of_tuples = chain.from_iterable(interleaved)
     # remove_fill = [x for x in list_of_tuples if x is not None]
-    return list(matches_list)
+    # return list(matches_list)
