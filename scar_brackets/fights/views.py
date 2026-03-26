@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse,HttpResponse
 from .models import Match, Tournament, Url, Bot, Profile
 from django.views.decorators.csrf import csrf_exempt
-from itertools import chain, zip_longest
+# from itertools import chain, zip_longest
 from datetime import datetime, timedelta
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -13,7 +13,7 @@ from django.urls import reverse
 import json
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
-from preferences import preferences
+# from preferences import preferences
 
 NEXT_MATCH_START = timedelta(minutes=1)
 MATCH_DELAY = timedelta(minutes=3)
@@ -22,14 +22,15 @@ DEFAULT_BACKGROUND_COLOR = "DC3545"
 
 def output(tournaments=[]):
     match_start = datetime.now() + NEXT_MATCH_START
-    INTERLEAVE_METHOD = preferences.MyPreferences.interleave_method  # type: ignore
-    if INTERLEAVE_METHOD.lower() == "fixed":  # type: ignore
-        match_list = Match.objects.filter(match_state="open")
-        if tournaments:
-            match_list = match_list.filter(tournament_id__tournament_url__in=tournaments)
+    # INTERLEAVE_METHOD = preferences.MyPreferences.interleave_method  # type: ignore
+    # if INTERLEAVE_METHOD.lower() == "fixed":  # type: ignore
+    match_list = Match.objects.filter(match_state="open")
+    if tournaments:
+        match_list = match_list.filter(tournament_id__tournament_url__in=tournaments)
         match_list = match_list.order_by("calculated_play_order")
     else:
         match_list = match_by_tournament(tournaments)
+
     output_match = []
     for i, match in enumerate(match_list[:15]):
         if match.tournament_id.tournament_state != "underway":
@@ -209,8 +210,11 @@ def time_remaining_inner(request):
     )
 
 
-def time_remaining_bot(request, bot_name):
-    bot = Bot.objects.get(bot_name=bot_name)
+def time_remaining_bot(request, bot_id):
+    try:
+        bot = Bot.objects.get(bot_id=bot_id)
+    except Bot.DoesNotExist:
+        bot = None
     return render(
         request,
         "fights/time_remaining_bot.html",
@@ -218,11 +222,11 @@ def time_remaining_bot(request, bot_name):
     )
 
 
-def bot(request, bot_name):
+def bot(request, bot_id):
     bgcolor = bg_color(request)
     users_match = False
     try:
-        bot = Bot.objects.get(bot_name=bot_name)
+        bot = Bot.objects.get(bot_id=bot_id)
         try:
             if request.user == bot.user:
                 users_match = True
@@ -293,11 +297,11 @@ def select_multiple_bots(request):
 
 @login_required
 @csrf_exempt
-def claim_bot(request, bot_name):
+def claim_bot(request, bot_id):
     users_match = False
     claim = request.POST.get("claim", "false").lower() == "true"  # Convert to boolean
     username = request.user
-    users_match, bot = claim_one_bot(username, bot_name, claim)
+    users_match, bot = claim_one_bot(username, bot_id, claim)
     return render(
         request,
         "fights/claim_bot.html",
@@ -305,11 +309,11 @@ def claim_bot(request, bot_name):
     )
 
 
-def claim_one_bot(username, bot_name, claim):
+def claim_one_bot(username, bot_id, claim):
     users_match = False
     user = User.objects.get(username=username)
     try:
-        bot = Bot.objects.get(bot_name=bot_name)
+        bot = Bot.objects.get(bot_id=bot_id)
         if not claim:
             bot.user = None
             users_match = False
@@ -427,13 +431,13 @@ def match_by_tournament(tournament_urls=[]):
     tournaments = Tournament.objects.all()
     if tournament_urls:
         tournaments = tournaments.objects.filter(tournament_url__in=tournament_urls) # type: ignore
-    for tournament in tournaments:
-        matches_list.append(
-            Match.objects.filter(tournament_id=tournament, match_state="open").order_by(
+    # for tournament in tournaments:
+    matches_list=(
+            Match.objects.filter( match_state="open").order_by(
                 "calculated_play_order"
             )
         )
-    interleaved = zip_longest(*matches_list)
-    list_of_tuples = chain.from_iterable(interleaved)
-    remove_fill = [x for x in list_of_tuples if x is not None]
-    return remove_fill
+    # interleaved = zip_longest(*matches_list)
+    # list_of_tuples = chain.from_iterable(interleaved)
+    # remove_fill = [x for x in list_of_tuples if x is not None]
+    return list(matches_list)
