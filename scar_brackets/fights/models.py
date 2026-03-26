@@ -121,14 +121,14 @@ class Match(models.Model):
 
     @property
     def unassigned_matches(self):
-        player1_matches=''
-        player2_matches=''
+        player1_matches = []
+        player2_matches = []
         if not self.player1_id.bot_id:  # type: ignore
             prereq_match = Match.objects.get(match_id=self.player1_prereq_match_id)
-            player1_matches = [prereq_match.player1_id.bot_id,prereq_match.player2_id.bot_id] # type: ignore
+            player1_matches = [prereq_match.player1_id, prereq_match.player2_id]
         if not self.player2_id.bot_id:  # type: ignore
             prereq_match = Match.objects.get(match_id=self.player2_prereq_match_id)
-            player2_matches = [prereq_match.player1_id.bot_id,prereq_match.player2_id.bot_id] # type: ignore
+            player2_matches = [prereq_match.player1_id, prereq_match.player2_id]
         return player1_matches, player2_matches
 
     def __str__(self) -> str:
