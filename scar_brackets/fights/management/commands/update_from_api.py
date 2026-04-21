@@ -85,6 +85,9 @@ def process_tournaments(challonge_tournament_list:list):
             t1.save()
         if (t_state == 'pending' and (t_old_state != t_state)):
             t1.match_set.all().delete()
+        if (t_state == 'complete' ):
+            url.delete()
+
 
 
 def load_all_bots():
