@@ -10,7 +10,6 @@ def test_authenticated_user(
     url = "/fights/user/1/"
 
     response = client.get(url)
-    # print(response.context)
     assert response.status_code == 200
 
     assert "Logout" in str(response.content)

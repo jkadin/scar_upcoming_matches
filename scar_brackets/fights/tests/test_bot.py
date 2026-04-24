@@ -31,11 +31,9 @@ def test_bot(bots, client):
 
     url = f"/fights/bot/{bot1.bot_name}/"
     response = client.get(url)
-    print(response.content)
     assert response.status_code == 200
 
     bot_name = "invalid"
     url = f"/fights/bot/{bot_name}/"
     response = client.get(url)
-    print(response.content)
     assert response.status_code == 200

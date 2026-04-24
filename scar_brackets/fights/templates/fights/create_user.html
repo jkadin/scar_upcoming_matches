@@ -1,13 +1,13 @@
 {% extends "fights/base_template.html" %}
 {% block content %}
-<h1>Create / Update User</h1>
+<h1>Create User</h1>
 <form method="post" hx-post="{% url 'create_user' %}" hx-target="#bot_list" hx-swap="innerHTML">
     {% csrf_token %}
     <div>
         <label for="id_username">Username:</label>
-        <input type="text" name="username" id="id_username" value="{{ username }}">
+        <input type="text" name="username" id="id_username" value="{{ username }}" required>
     </div>
-    <button type="submit">Update</button>
+    <button type="submit">Create</button>
 </form>
 <div id="bot_list"></div>
 {% endblock %}

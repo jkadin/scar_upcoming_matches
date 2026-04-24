@@ -10,5 +10,4 @@ def test_no_background_index(
 ):
     url = "/fights/stream"
     response = client.get(url)
-    print(response.content)
     assert response.status_code == 200

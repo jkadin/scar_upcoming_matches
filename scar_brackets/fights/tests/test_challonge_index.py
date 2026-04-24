@@ -10,5 +10,4 @@ def test_challonge_index(
 ):
     url = "/fights/challonge"
     response = client.get(url)
-    print(response.content)
     assert response.status_code == 200

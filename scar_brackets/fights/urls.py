@@ -35,10 +35,15 @@ urlpatterns = [
         views.claim_multiple_bots,  # type: ignore
         name="claim_multiple_bots",
     ),  # type: ignore
+    path(
+        "select_multiple_bots/",
+        views.select_multiple_bots,  # type: ignore
+        name="select_multiple_bots",
+    ),  # type: ignore
     path("create_user/", views.create_user, name="create_user"),  # type: ignore
     path("user/<int:user_id>/", views.user, name="user"),
 ]
 
 # Add static file serving during development
-if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+if settings.DEBUG: # pragma: no cover
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) 
