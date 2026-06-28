@@ -35,10 +35,14 @@ def update_database():
     interleave_method = preferences.MyPreferences.interleave_method  # type: ignore
     if not needs_interleave and "Fixed" in interleave_method:
         return
-    interleave()
+    interleave_matches_in_db(interleave_method)
+    # interleaved = zip_longest(*interleaved_matches)
+    # list_of_tuples = chain.from_iterable(interleaved)
+    # remove_fill(interleaved_matches)
 
 
-def interleave()->None:
+def interleave_matches_in_db(interleave_method)->None:
+    # Pop different amounts based on flag and calculations
     matches_list:list[list[Match]] = []
     for tournament in Tournament.objects.all():
         tournament.tournament_needs_interleave = False
@@ -51,10 +55,56 @@ def interleave()->None:
             )
         )
 
-    adjustments=even_distribution(matches_list)
+    adjustments=even_distribution(matches_list,interleave_method)
     for i, m in enumerate(adjustments):
         m.calculated_play_order = i + 1
         m.save()
+    # if INTERLEAVE_METHOD in ('Fixed_multiple','Interleave_multiple'):
+    #     interleaved_matches:list[Match]=[] #new list to replace remove_fill
+    #     while any(matches_list):
+    #         for i,tournament in enumerate(matches_list):
+    #             for _ in range(adjustments[i]):
+    #                 try:
+    #                     interleaved_matches.append(tournament.pop(0))
+    #                 except IndexError:
+    #                     continue
+
+
+def even_distribution(groups:list[list[Match]],interleave_method:str) ->list[Match]:
+    remaining = [list(g) for g in groups]
+    pattern = []
+
+    # Sort group indices by length (ascending)
+    sorted_indices = sorted(range(len(groups)), key=lambda i: len(groups[i]))
+
+    while any(remaining):
+        # Find the smallest remaining group
+        min_group_idx = min(
+            (i for i in range(len(remaining)) if remaining[i]),
+            key=lambda i: len(remaining[i]),
+        )
+        # Always take 1 from the smallest group
+        pattern.append(remaining[min_group_idx].pop(0))
+
+        # Take proportional items from other groups
+        for i in sorted_indices:
+            if i == min_group_idx or not remaining[i]:
+                continue
+            # Determine proportion relative to the smallest group
+            proportion = len(groups[i]) // max(len(groups[min_group_idx]), 1)
+            take = min(proportion, len(remaining[i]))
+            if interleave_method in ("Fixed","Interleave"):
+                take=1
+            for _ in range(take):
+                pattern.append(remaining[i].pop(0))
+
+    return pattern
+
+
+# def remove_fill(list_of_matches:list[Match])->None:
+#     for i, m in enumerate(list_of_matches):
+#         m.calculated_play_order = i + 1
+#         m.save()
 
 def even_distribution(groups:list[list[Match]]) ->list[Match]:
     remaining = [list(g) for g in groups]
@@ -115,6 +165,9 @@ def process_tournaments(challonge_tournament_list:list):
             t1.save()
         if (t_state == 'pending' and (t_old_state != t_state)):
             t1.match_set.all().delete()
+        if (t_state == 'complete' ):
+            url.delete()
+
 
 
 def load_all_bots():
