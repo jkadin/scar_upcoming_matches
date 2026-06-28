@@ -22,7 +22,7 @@ def client():
 
 
 @pytest.fixture
-def authenticated_user(client):
+def authenticated_user(client, db):
     user = User.objects.create_user(
         username="testuser", email="email.gmail.com", password="password"
     )
@@ -33,14 +33,14 @@ def authenticated_user(client):
 
 
 @pytest.fixture
-def tournament(url, mock_challonge_tournaments):
+def tournament(url, mock_challonge_tournaments, db):
     challonge_tournament_list = get_tournament_list_from_challonge()
     process_tournaments(challonge_tournament_list)
     return Tournament.objects.all()
 
 
 @pytest.fixture
-def url():
+def url(db):
     return [
         Url.objects.create(url="4vljhp3k"),
         Url.objects.create(url="r5vq4p1l"),
@@ -48,7 +48,7 @@ def url():
 
 
 @pytest.fixture
-def bots(tournament, authenticated_user, tournament_urls):
+def bots(tournament, authenticated_user, tournament_urls, db):
     participants = []
     for tournament_url in tournament_urls:
         tournament_id = Tournament.objects.get(tournament_url=tournament_url)
@@ -69,12 +69,12 @@ def bots(tournament, authenticated_user, tournament_urls):
 
 
 @pytest.fixture
-def profile(authenticated_user):
+def profile(authenticated_user, db):
     return Profile.objects.get(user=authenticated_user)
 
 
 @pytest.fixture
-def matches(bots, tournament):
+def matches(bots, tournament, db):
     for tournament_ in tournament:
         tournament_url = tournament_.tournament_url
         tournament_id = tournament_.tournament_id
@@ -119,7 +119,7 @@ def matches(bots, tournament):
 
 
 @pytest.fixture
-def my_preferences():
+def my_preferences(db):
     return MyPreferences.objects.create(interleave_method="Fixed")
 
 
