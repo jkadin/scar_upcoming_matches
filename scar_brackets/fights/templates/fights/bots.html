@@ -15,7 +15,7 @@
                         {% for bot in tournament.bot_set.all|dictsort:"bot_name" %}
                         {% if bot.bot_id != None %}
                         <div class="h1">
-                            <a class="text-reset text-decoration-none" href="/fights/bot/{{bot.bot_name}}">{{bot.bot_name}}</a>
+                            <a class="text-reset text-decoration-none" href="/fights/bot/{{bot.bot_id}}">{{bot.bot_name}}</a>
                         </div>
                         {% endif %}
                         {% endfor %}

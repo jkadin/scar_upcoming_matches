@@ -8,6 +8,7 @@ from preferences import preferences
 # from math import gcd
 # from functools import reduce
 
+# Read interleave method lazily to avoid DB access at import time
 load_dotenv()
 
 
@@ -30,7 +31,6 @@ def update_database():
 
     load_matches_from_challonge(challonge_tournament_list)
 
-    # assign calculated_play_order
     needs_interleave = Tournament.objects.filter(tournament_needs_interleave=True)
     interleave_method = preferences.MyPreferences.interleave_method  # type: ignore
     if not needs_interleave and "Fixed" in interleave_method:
@@ -105,6 +105,37 @@ def even_distribution(groups:list[list[Match]],interleave_method:str) ->list[Mat
 #     for i, m in enumerate(list_of_matches):
 #         m.calculated_play_order = i + 1
 #         m.save()
+
+def even_distribution(groups:list[list[Match]]) ->list[Match]:
+    remaining = [list(g) for g in groups]
+    pattern = []
+
+    # Sort group indices by length (ascending)
+    sorted_indices = sorted(range(len(groups)), key=lambda i: len(groups[i]))
+
+    while any(remaining):
+        # Find the smallest remaining group
+        min_group_idx = min(
+            (i for i in range(len(remaining)) if remaining[i]),
+            key=lambda i: len(remaining[i]),
+        )
+        # Always take 1 from the smallest group
+        pattern.append(remaining[min_group_idx].pop(0))
+
+        # Take proportional items from other groups
+        for i in sorted_indices:
+            if i == min_group_idx or not remaining[i]:
+                continue
+            # Determine proportion relative to the smallest group
+            proportion = len(groups[i]) // max(len(groups[min_group_idx]), 1)
+            take = min(proportion, len(remaining[i]))
+            if preferences.MyPreferences.interleave_method in ("Fixed","Interleave"):
+                take=1
+            for _ in range(take):
+                pattern.append(remaining[i].pop(0))
+
+    return pattern
+
 
 
 def load_matches_from_challonge(challonge_tournament_list):
