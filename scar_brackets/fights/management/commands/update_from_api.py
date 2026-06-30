@@ -1,4 +1,4 @@
-from django.core.management.base import BaseCommand
+tn difffrom django.core.management.base import BaseCommand
 import challonge
 import os
 from fights.models import Url, Tournament, Match, Bot
@@ -106,7 +106,16 @@ def even_distribution(groups:list[list[Match]],interleave_method:str) ->list[Mat
 #         m.calculated_play_order = i + 1
 #         m.save()
 
-def even_distribution(groups:list[list[Match]]) ->list[Match]:
+def even_distribution(groups:list[list[Match]], interleave_method: str | None = None) ->list[Match]:
+    """
+    Evenly distribute matches across groups. If `interleave_method` is provided it is used,
+    otherwise the value is read from `preferences.MyPreferences.interleave_method`.
+    """
+    if interleave_method is None:
+        interleave = preferences.MyPreferences.interleave_method
+    else:
+        interleave = interleave_method
+
     remaining = [list(g) for g in groups]
     pattern = []
 
@@ -129,8 +138,8 @@ def even_distribution(groups:list[list[Match]]) ->list[Match]:
             # Determine proportion relative to the smallest group
             proportion = len(groups[i]) // max(len(groups[min_group_idx]), 1)
             take = min(proportion, len(remaining[i]))
-            if preferences.MyPreferences.interleave_method in ("Fixed","Interleave"):
-                take=1
+            if interleave in ("Fixed","Interleave"):
+                take = 1
             for _ in range(take):
                 pattern.append(remaining[i].pop(0))
 
