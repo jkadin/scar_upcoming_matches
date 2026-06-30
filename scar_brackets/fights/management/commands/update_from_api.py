@@ -1,4 +1,4 @@
-tn difffrom django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand
 import challonge
 import os
 from fights.models import Url, Tournament, Match, Bot
