@@ -13,6 +13,7 @@ from django.urls import reverse
 import json
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 # from preferences import preferences
 
 NEXT_MATCH_START = timedelta(minutes=1)
@@ -349,13 +350,18 @@ def end_match(ordered_matches, new_index):
     return ordered_matches[new_index].get("id")
 
 
-def match_indexes(start_match_id, end_match_id, match_list):
-    for index, match in enumerate(match_list):
-        if start_match_id == match.match_id:
-            match_start_index = index
-        if end_match_id == match.match_id:
-            match_end_index = index
-    return match_start_index, match_end_index
+def match_indexes(start_match_id: str, end_match_id: str, match_list) -> tuple[int, int]:
+    """
+    Return the indices of `start_match_id` and `end_match_id` within `match_list`.
+
+    Raises:
+        ValueError: if either match id is not found.
+    """
+    id_to_index = {m.match_id: i for i, m in enumerate(match_list)}
+    try:
+        return id_to_index[start_match_id], id_to_index[end_match_id]
+    except KeyError as ke:
+        raise ValueError(f"Match id not found: {ke.args[0]}") from None
 
 
 def update_manual_play_order(start_match_id, old_index, new_index, ordered_items):
@@ -372,18 +378,20 @@ def update_manual_play_order(start_match_id, old_index, new_index, ordered_items
     )
     distance = match_end_index - match_start_index
 
-    for index, match in enumerate(match_list):
-        if match.match_id == start_match_id:
-            match.calculated_play_order += distance
-            match.save()
-            break
+    # Perform updates inside an atomic transaction to avoid partial writes
+    with transaction.atomic():
+        for index, match in enumerate(match_list):
+            if match.match_id == start_match_id:
+                match.calculated_play_order += distance
+                match.save()
+                break
 
-    ##move the rest
-    direction = int(distance / abs(distance))
-    for i in range(index + direction, index + distance + direction, direction):
-        match = match_list[i]
-        match.calculated_play_order -= direction
-        match.save()
+        # move the rest
+        direction = int(distance / abs(distance))
+        for i in range(index + direction, index + distance + direction, direction):
+            match = match_list[i]
+            match.calculated_play_order -= direction
+            match.save()
 
 
 @csrf_exempt
