@@ -28,7 +28,7 @@ def output(tournaments=[]):
     match_list = Match.objects.filter(match_state="open")
     if tournaments:
         match_list = match_list.filter(tournament_id__tournament_url__in=tournaments)
-        match_list = match_list.order_by("calculated_play_order")
+    match_list = match_list.order_by("calculated_play_order")
 
     output_match = []
     for i, match in enumerate(match_list[:15]):
@@ -346,7 +346,7 @@ def create_user(request):
 
 
 @csrf_exempt
-def end_match(ordered_matches, new_index):
+def end_match(ordered_matches:list, new_index:int):
     return ordered_matches[new_index].get("id")
 
 
@@ -364,31 +364,31 @@ def match_indexes(start_match_id: str, end_match_id: str, match_list) -> tuple[i
         raise ValueError(f"Match id not found: {ke.args[0]}") from None
 
 
-def update_manual_play_order(start_match_id, old_index, new_index, ordered_items):
+def update_manual_play_order(start_match_id:str, old_index:int, new_index:int, ordered_items:list):
     if old_index == new_index:
         return
-    screen_distance = new_index - old_index
-    direction = int(screen_distance / abs(screen_distance))
-    end_match_id = end_match(ordered_items, new_index)
-    match_list = Match.objects.all().order_by(
+    screen_distance :int = new_index - old_index
+    # direction:int = int(screen_distance / abs(screen_distance))
+    end_match_id:str = end_match(ordered_items, new_index)
+    match_list:list= Match.objects.all().order_by(
         "calculated_play_order"
     )
     match_start_index, match_end_index = match_indexes(
         start_match_id, end_match_id, match_list
     )
-    distance = match_end_index - match_start_index
+    match_list_distance :int = match_end_index - match_start_index
 
     # Perform updates inside an atomic transaction to avoid partial writes
     with transaction.atomic():
         for index, match in enumerate(match_list):
             if match.match_id == start_match_id:
-                match.calculated_play_order += distance
+                match.calculated_play_order += match_list_distance
                 match.save()
                 break
 
         # move the rest
-        direction = int(distance / abs(distance))
-        for i in range(index + direction, index + distance + direction, direction):
+        direction = int(match_list_distance / abs(match_list_distance))
+        for i in range(index + direction, index + match_list_distance + direction, direction):
             match = match_list[i]
             match.calculated_play_order -= direction
             match.save()
@@ -400,9 +400,9 @@ def manual_sort(request):
         try:
             data = json.loads(request.body)
             ordered_items = data.get("orderedItems")
-            match_id = data.get("movedItem").get("matchID")
-            old_index = data.get("movedItem").get("oldIndex")
-            new_index = data.get("movedItem").get("newIndex")
+            match_id:str = data.get("movedItem").get("matchID")
+            old_index:int = data.get("movedItem").get("oldIndex")
+            new_index:int = data.get("movedItem").get("newIndex")
             update_manual_play_order(match_id, old_index, new_index, ordered_items)
             return JsonResponse(
                 {
