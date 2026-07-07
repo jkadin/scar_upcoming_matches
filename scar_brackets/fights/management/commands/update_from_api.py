@@ -36,6 +36,9 @@ def update_database():
     if not needs_interleave and "Fixed" in interleave_method:
         return
     interleave_matches_in_db(interleave_method)
+    # interleaved = zip_longest(*interleaved_matches)
+    # list_of_tuples = chain.from_iterable(interleaved)
+    # remove_fill(interleaved_matches)
 
 
 def interleave_matches_in_db(interleave_method)->None:
@@ -56,6 +59,15 @@ def interleave_matches_in_db(interleave_method)->None:
     for i, m in enumerate(adjustments):
         m.calculated_play_order = i + 1
         m.save()
+    # if INTERLEAVE_METHOD in ('Fixed_multiple','Interleave_multiple'):
+    #     interleaved_matches:list[Match]=[] #new list to replace remove_fill
+    #     while any(matches_list):
+    #         for i,tournament in enumerate(matches_list):
+    #             for _ in range(adjustments[i]):
+    #                 try:
+    #                     interleaved_matches.append(tournament.pop(0))
+    #                 except IndexError:
+    #                     continue
 
 
 def even_distribution(groups:list[list[Match]],interleave_method:str) ->list[Match]:
@@ -88,6 +100,11 @@ def even_distribution(groups:list[list[Match]],interleave_method:str) ->list[Mat
 
     return pattern
 
+
+# def remove_fill(list_of_matches:list[Match])->None:
+#     for i, m in enumerate(list_of_matches):
+#         m.calculated_play_order = i + 1
+#         m.save()
 
 def even_distribution(groups:list[list[Match]], interleave_method: str | None = None) ->list[Match]:
     """
