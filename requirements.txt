@@ -7,3 +7,4 @@ gunicorn==22.0.0
 django-preferences==1.0.0
 pytest-django==4.9.0
 pytest-mock==3.14.0
+discord.py>=2.6.0
