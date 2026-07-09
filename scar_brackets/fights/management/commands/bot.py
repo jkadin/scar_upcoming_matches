@@ -39,6 +39,32 @@ async def send_dm_to_user(user_id: int, message: str):
     return user
 
 @sync_to_async
+def get_next_match_info(player):
+    """Get the next upcoming match for a player."""
+    from django.db.models import Q
+    
+    upcoming_matches = Match.objects.filter(
+        Q(player1_id=player) | Q(player2_id=player),
+        ~Q(match_state="complete")
+    ).order_by("calculated_play_order")
+    
+    if not upcoming_matches.exists():
+        return None
+    
+    next_match = upcoming_matches.first()
+    opponent = next_match.player2_id if next_match.player1_id == player else next_match.player1_id
+    
+    match_info = f"\n**Next Match:**\n"
+    match_info += f"Match ID: {next_match.match_id}\n"
+    if opponent:
+        match_info += f"Opponent: {opponent.bot_name}\n"
+    if next_match.estimated_start_time:
+        match_info += f"Estimated Start: {next_match.estimated_start_time.strftime('%Y-%m-%d %H:%M:%S')}\n"
+    
+    return match_info
+
+
+@sync_to_async
 def get_matches_to_notify():
     recent_matches = (
         Match.objects.filter(
@@ -53,6 +79,7 @@ def get_matches_to_notify():
     matches_to_notify = []
     for match in recent_matches:
         recipient_ids = []
+        players_info = []
         for player in (match.player1_id, match.player2_id):
             if player and getattr(player, "user_id", None):
                 user = player.user
@@ -61,13 +88,15 @@ def get_matches_to_notify():
                     continue
                 if getattr(social_account, "uid", None):
                     recipient_ids.append(int(social_account.uid))
+                    players_info.append(player)
                 else:
                     extra_data = getattr(social_account, "extra_data", {}) or {}
                     if extra_data.get("id"):
                         recipient_ids.append(int(extra_data["id"]))
+                        players_info.append(player)
 
         if recipient_ids:
-            matches_to_notify.append((match.match_id, recipient_ids))
+            matches_to_notify.append((match.match_id, recipient_ids, players_info))
 
     return matches_to_notify
 
@@ -77,11 +106,20 @@ async def monitor_completed_matches():
         try:
             matches_to_notify = await get_matches_to_notify()
 
-            for match_id, recipient_ids in matches_to_notify:
-                for discord_user_id in recipient_ids:
+            for match_id, recipient_ids, players_info in matches_to_notify:
+                for i, discord_user_id in enumerate(recipient_ids):
+                    player = players_info[i] if i < len(players_info) else None
+                    message = f"Your match {match_id} has just finished."
+                    
+                    # Add next match info if available
+                    if player:
+                        next_match_info = await get_next_match_info(player)
+                        if next_match_info:
+                            message += next_match_info
+                    
                     await send_dm_to_user(
                         user_id=discord_user_id,
-                        message=f"Your match {match_id} has just finished.",
+                        message=message,
                     )
                 notified_match_ids.add(match_id)
         except Exception as exc:
