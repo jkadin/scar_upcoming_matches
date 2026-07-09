@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 from dotenv import load_dotenv
 import os
+from tzlocal import get_localzone
 
 load_dotenv()
 
@@ -134,7 +135,8 @@ AUTHENTICATION_BACKENDS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "America/Los_Angeles"
+TIME_ZONE = str(get_localzone())
+
 
 USE_I18N = True
 
