@@ -25,7 +25,7 @@ class Url(models.Model):
     url = models.CharField(primary_key=True, max_length=100)
 
     def __str__(self) -> str:
-        return self.url
+        return str(self.url)
 
 
 class Tournament(models.Model):
@@ -37,7 +37,7 @@ class Tournament(models.Model):
     tournament_repair_time = models.IntegerField(default=20)
 
     def __str__(self) -> str:
-        return self.tournament_name
+        return str(self.tournament_name)
 
 
 class Bot(models.Model):
@@ -158,3 +158,13 @@ class Profile(models.Model):
             return False
         if (now - self.last_timeout).total_seconds() >= 0:
             return True
+
+
+class Notification(models.Model):
+    discord_id = models.BigIntegerField()
+    message = models.TextField()
+    sent = models.BooleanField(default=False)
+    attempts = models.PositiveSmallIntegerField(default=0)
+    error = models.TextField(blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+    sent_at = models.DateTimeField(null=True, blank=True)
