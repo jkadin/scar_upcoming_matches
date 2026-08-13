@@ -104,15 +104,17 @@ async def monitor_completed_matches():
             for match in matches_to_notify:
                 user1=await user_from_player(match.player1_id)
                 user2=await user_from_player(match.player2_id)
-                message = f"Your match {match.match_id} has just finished."
+                message = f"Your match {match.player1_id} vs {match.player2_id} has just finished."
+                next_match1=await get_next_match_info(user1)
+                next_match2=await get_next_match_info(user2)
 
                 if user1:
                     await send_dm_to_user(user1,
-                            message=message,
+                            message=message+(next_match1 or ""),
                         )
                 if user2:
                     await send_dm_to_user(user2,
-                            message=message,
+                            message=message+(next_match2 or ""),
                         )
                 notified_match_ids.add(match.match_id)
         except Exception as exc:
