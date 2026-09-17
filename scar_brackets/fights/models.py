@@ -119,6 +119,18 @@ class Match(models.Model):
     player1_prereq_match_id = models.CharField(max_length=100, null=True, blank=True)
     player2_prereq_match_id = models.CharField(max_length=100, null=True, blank=True)
 
+    class Meta:
+        indexes = [
+            models.Index(
+                fields=["player1_id", "match_state", "-updated_at"],
+                name="match_p1_state_updated_idx",
+            ),
+            models.Index(
+                fields=["player2_id", "match_state", "-updated_at"],
+                name="match_p2_state_updated_idx",
+            ),
+        ]
+
     @property
     def unassigned_matches(self):
         player1_matches = []
