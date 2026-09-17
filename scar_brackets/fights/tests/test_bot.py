@@ -1,6 +1,8 @@
 import pytest
 from django.utils import timezone
-from datetime import datetime
+from datetime import datetime, timedelta
+
+from fights.models import Match
 
 
 @pytest.mark.django_db
@@ -37,6 +39,48 @@ def test_bot(bots, client):
     url = f"/fights/bot/{bot_name}/"
     response = client.get(url)
     assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_time_remaining_uses_the_longer_cooldown(bots, profile, mocker):
+    bot = bots[0]
+    now = timezone.now()
+    mocker.patch("fights.models.timezone.now", return_value=now)
+
+    Match.objects.create(
+        match_id="completed-match",
+        player1_id=bot,
+        player2_id=bots[1],
+        tournament_id=bot.tournament_id,
+        match_state="complete",
+        updated_at=now - timedelta(minutes=5),
+        suggested_play_order=1,
+    )
+    profile.last_timeout = now - timedelta(minutes=2)
+    profile.save()
+
+    assert bot.time_remaining == "15:00"
+
+
+@pytest.mark.django_db
+def test_time_remaining_clamps_expired_cooldowns_to_zero(bots, profile, mocker):
+    bot = bots[0]
+    now = timezone.now()
+    mocker.patch("fights.models.timezone.now", return_value=now)
+
+    Match.objects.create(
+        match_id="expired-match",
+        player1_id=bot,
+        player2_id=bots[1],
+        tournament_id=bot.tournament_id,
+        match_state="complete",
+        updated_at=now - timedelta(minutes=21),
+        suggested_play_order=1,
+    )
+    profile.last_timeout = now - timedelta(minutes=21)
+    profile.save()
+
+    assert bot.time_remaining == "00:00"
 
 
 @pytest.mark.django_db

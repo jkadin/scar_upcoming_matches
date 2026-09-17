@@ -69,26 +69,26 @@ class Bot(models.Model):
         )
 
     @property
-    def time_remaining(self):
+    def time_remaining(self) -> str:
         now = timezone.now()
-        minutes = self.tournament_id.tournament_repair_time
+        repair_duration = timedelta(minutes=self.tournament_id.tournament_repair_time)
         try:
             profile = Profile.objects.get(user=self.user)
             last_timeout = profile.last_timeout
         except Profile.DoesNotExist:
             last_timeout = timezone.make_aware(datetime.min, timezone.get_default_timezone())
-        time_out_remaining = timedelta(minutes=minutes) - (now - last_timeout)  # type: ignore
-        time_remaining = timedelta(minutes=minutes) - (now - self.last_updated)  # type: ignore
-        if time_out_remaining > time_remaining:
-            time_remaining = time_out_remaining
-        if time_remaining < timedelta(minutes=0):
-            time_remaining = "00:00"
-        elif not time_remaining:
-            time_remaining = "00:00"
-        else:
-            time_remaining = ":".join(str(time_remaining).split(".")[0].split(":")[1:])
 
-        return time_remaining
+        last_updated = self.last_updated or timezone.make_aware(
+            datetime.min,
+            timezone.get_default_timezone(),
+        )
+        match_remaining = repair_duration - (now - last_updated)
+        timeout_remaining = repair_duration - (now - last_timeout)
+        remaining = max(match_remaining, timeout_remaining, timedelta(0))
+
+        total_seconds = int(remaining.total_seconds())
+        minutes, seconds = divmod(total_seconds, 60)
+        return f"{minutes:02d}:{seconds:02d}"
 
     @property
     def still_in_tournament(self):
