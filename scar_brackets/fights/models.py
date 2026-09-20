@@ -3,6 +3,7 @@ from preferences.models import Preferences
 from django.db.models import Q
 from django.utils import timezone
 from datetime import datetime, timedelta
+import math
 from django.contrib.auth.models import User
 
 
@@ -84,11 +85,25 @@ class Bot(models.Model):
         )
         match_remaining = repair_duration - (now - last_updated)
         timeout_remaining = repair_duration - (now - last_timeout)
-        remaining = max(match_remaining, timeout_remaining, timedelta(0))
+        default_datetime = timezone.make_aware(datetime.min, timezone.get_default_timezone())
+        cooldowns = []
+        if last_updated != default_datetime:
+            cooldowns.append(match_remaining)
+        if last_timeout != default_datetime:
+            cooldowns.append(timeout_remaining)
+        if not cooldowns:
+            return "00:00"
+        remaining = max(cooldowns)
 
-        total_seconds = int(remaining.total_seconds())
+        total_seconds_float = remaining.total_seconds()
+        sign = "-" if total_seconds_float < 0 else ""
+        total_seconds = (
+            math.ceil(abs(total_seconds_float))
+            if sign
+            else int(total_seconds_float)
+        )
         minutes, seconds = divmod(total_seconds, 60)
-        return f"{minutes:02d}:{seconds:02d}"
+        return f"{sign}{minutes:02d}:{seconds:02d}"
 
     @property
     def still_in_tournament(self):

@@ -63,7 +63,7 @@ def test_time_remaining_uses_the_longer_cooldown(bots, profile, mocker):
 
 
 @pytest.mark.django_db
-def test_time_remaining_clamps_expired_cooldowns_to_zero(bots, profile, mocker):
+def test_time_remaining_allows_expired_cooldowns_to_go_negative(bots, profile, mocker):
     bot = bots[0]
     now = timezone.now()
     mocker.patch("fights.models.timezone.now", return_value=now)
@@ -80,7 +80,26 @@ def test_time_remaining_clamps_expired_cooldowns_to_zero(bots, profile, mocker):
     profile.last_timeout = now - timedelta(minutes=21)
     profile.save()
 
-    assert bot.time_remaining == "00:00"
+    assert bot.time_remaining == "-01:00"
+
+
+@pytest.mark.django_db
+def test_time_remaining_does_not_round_initial_negative_second_to_zero(bots, mocker):
+    bot = bots[0]
+    now = timezone.now()
+    mocker.patch("fights.models.timezone.now", return_value=now)
+
+    Match.objects.create(
+        match_id="just-expired-match",
+        player1_id=bot,
+        player2_id=bots[1],
+        tournament_id=bot.tournament_id,
+        match_state="complete",
+        updated_at=now - timedelta(minutes=20, microseconds=1),
+        suggested_play_order=1,
+    )
+
+    assert bot.time_remaining == "-00:01"
 
 
 @pytest.mark.django_db

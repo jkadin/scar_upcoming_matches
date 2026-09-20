@@ -8,7 +8,7 @@
                     <a class="text-reset text-decoration-none"
                         href="/fights/bot/{{match.player1_name.bot_id}}">{{match.player1_name.bot_name|truncatechars:18 }}</a>
                     <br>
-                    {%if match.player1_name.time_remaining != "00:00" %}
+                    {%if match.player1_name.time_remaining|slice:":1" == "-" %}
                     <div class="text-danger fs-2">Time remaining: {{match.player1_name.time_remaining}}</div>
                     {%else%}
                     <div class="text-muted fs-2">Time remaining: {{match.player1_name.time_remaining}}</div>
@@ -21,7 +21,7 @@
                     <a class="text-reset text-decoration-none"
                         href="/fights/bot/{{match.player2_name.bot_id}}">{{match.player2_name.bot_name|truncatechars:18 }}</a>
                     <br>
-                    {%if match.player2_name.time_remaining != "00:00" %}
+                    {%if match.player2_name.time_remaining|slice:":1" == "-" %}
                     <div class="text-danger fs-2">Time remaining: {{match.player2_name.time_remaining}}</div>
                     {%else%}
                     <div class="text-muted fs-2">Time remaining: {{match.player2_name.time_remaining}}</div>
