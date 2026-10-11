@@ -50,7 +50,8 @@ def interleave_matches_in_db(interleave_method)->None:
         matches_list.append(
             list(
                 Match.objects.filter(
-                    tournament_id=tournament, 
+                    tournament_id=tournament,
+                    match_state="open",
                 ).order_by("suggested_play_order")
             )
         )
