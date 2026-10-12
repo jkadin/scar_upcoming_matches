@@ -12,6 +12,10 @@ import challonge
 # but on the live server you can either use your own .env file or just set env vars in the control panel or launcher
 load_dotenv()
 
+custom_url = os.getenv("CHALLONGE_CUSTOM_URL")
+if custom_url and custom_url.strip():
+    challonge.api.CHALLONGE_API_URL = custom_url.strip().rstrip("/")
+
 # I need your .env file
 
 NEXT_MATCH_START = timedelta(minutes=1)

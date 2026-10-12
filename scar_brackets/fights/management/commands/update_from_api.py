@@ -8,6 +8,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+custom_url = os.getenv("CHALLONGE_CUSTOM_URL")
+if custom_url and custom_url.strip():
+    challonge.api.CHALLONGE_API_URL = custom_url.strip().rstrip("/")
 
 class Command(BaseCommand):
     help = "Updates the data from the API"
@@ -133,7 +136,7 @@ def get_tournament_list_from_challonge()->list:
     tournament_list = []
     for tournament_url in Url.objects.all():
         challonge_tournament = challonge.tournaments.show(
-            tournament=f"/{tournament_url.url}"
+            tournament=f"{tournament_url.url}"
         )
         tournament_list.append(challonge_tournament)
     tournament_list = [t for t in tournament_list ]
