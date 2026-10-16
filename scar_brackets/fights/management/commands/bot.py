@@ -1,11 +1,13 @@
 import asyncio
 import os
+from datetime import timedelta
 
 import discord
 from asgiref.sync import sync_to_async
 from discord.ext import commands
 from dotenv import load_dotenv
 from django.core.management.base import BaseCommand
+from django.utils import timezone
 
 from fights.models import Match
 

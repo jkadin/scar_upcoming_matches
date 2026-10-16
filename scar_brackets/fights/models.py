@@ -3,6 +3,7 @@ from preferences.models import Preferences
 from django.db.models import Q
 from django.utils import timezone
 from datetime import datetime, timedelta
+import math
 from django.contrib.auth.models import User
 
 
@@ -69,26 +70,40 @@ class Bot(models.Model):
         )
 
     @property
-    def time_remaining(self):
+    def time_remaining(self) -> str:
         now = timezone.now()
-        minutes = self.tournament_id.tournament_repair_time
+        repair_duration = timedelta(minutes=self.tournament_id.tournament_repair_time)
         try:
             profile = Profile.objects.get(user=self.user)
             last_timeout = profile.last_timeout
         except Profile.DoesNotExist:
             last_timeout = timezone.make_aware(datetime.min, timezone.get_default_timezone())
-        time_out_remaining = timedelta(minutes=minutes) - (now - last_timeout)  # type: ignore
-        time_remaining = timedelta(minutes=minutes) - (now - self.last_updated)  # type: ignore
-        if time_out_remaining > time_remaining:
-            time_remaining = time_out_remaining
-        if time_remaining < timedelta(minutes=0):
-            time_remaining = "00:00"
-        elif not time_remaining:
-            time_remaining = "00:00"
-        else:
-            time_remaining = ":".join(str(time_remaining).split(".")[0].split(":")[1:])
 
-        return time_remaining
+        last_updated = self.last_updated or timezone.make_aware(
+            datetime.min,
+            timezone.get_default_timezone(),
+        )
+        match_remaining = repair_duration - (now - last_updated)
+        timeout_remaining = repair_duration - (now - last_timeout)
+        default_datetime = timezone.make_aware(datetime.min, timezone.get_default_timezone())
+        cooldowns = []
+        if last_updated != default_datetime:
+            cooldowns.append(match_remaining)
+        if last_timeout != default_datetime:
+            cooldowns.append(timeout_remaining)
+        if not cooldowns:
+            return "00:00"
+        remaining = max(cooldowns)
+
+        total_seconds_float = remaining.total_seconds()
+        sign = "-" if total_seconds_float < 0 else ""
+        total_seconds = (
+            math.ceil(abs(total_seconds_float))
+            if sign
+            else int(total_seconds_float)
+        )
+        minutes, seconds = divmod(total_seconds, 60)
+        return f"{sign}{minutes:02d}:{seconds:02d}"
 
     @property
     def still_in_tournament(self):
@@ -118,6 +133,18 @@ class Match(models.Model):
     player2_is_prereq_match_loser = models.BooleanField(default=False)
     player1_prereq_match_id = models.CharField(max_length=100, null=True, blank=True)
     player2_prereq_match_id = models.CharField(max_length=100, null=True, blank=True)
+
+    class Meta:
+        indexes = [
+            models.Index(
+                fields=["player1_id", "match_state", "-updated_at"],
+                name="match_p1_state_updated_idx",
+            ),
+            models.Index(
+                fields=["player2_id", "match_state", "-updated_at"],
+                name="match_p2_state_updated_idx",
+            ),
+        ]
 
     @property
     def unassigned_matches(self):

@@ -367,11 +367,11 @@ def match_indexes(start_match_id: str, end_match_id: str, match_list) -> tuple[i
 def update_manual_play_order(start_match_id:str, old_index:int, new_index:int, ordered_items:list):
     if old_index == new_index:
         return
-    screen_distance :int = new_index - old_index
+    # screen_distance :int = new_index - old_index
     # direction:int = int(screen_distance / abs(screen_distance))
     end_match_id:str = end_match(ordered_items, new_index)
-    match_list:list= Match.objects.all().order_by(
-        "calculated_play_order"
+    match_list: list[Match] = list(
+        Match.objects.all().order_by("calculated_play_order")
     )
     match_start_index, match_end_index = match_indexes(
         start_match_id, end_match_id, match_list
