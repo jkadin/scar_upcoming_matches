@@ -1,9 +1,43 @@
 import pytest
 from fights.management.commands.update_from_api import (
+    even_distribution,
     interleave_matches_in_db,
     update_database,
 )
 from fights.models import Tournament, Match, Bot
+
+
+def test_interleave_uses_fixed_distribution():
+    groups = [
+        ["first-1", "first-2"],
+        ["second-1", "second-2", "second-3", "second-4"],
+    ]
+
+    assert even_distribution(groups, "Interleave") == even_distribution(groups, "Fixed")
+    assert even_distribution(groups, "Interleave") == [
+        "first-1",
+        "second-1",
+        "first-2",
+        "second-2",
+        "second-3",
+        "second-4",
+    ]
+
+
+def test_interleave_multiple_keeps_proportional_distribution():
+    groups = [
+        ["first-1", "first-2"],
+        ["second-1", "second-2", "second-3", "second-4"],
+    ]
+
+    assert even_distribution(groups, "Interleave_multiple") == [
+        "first-1",
+        "second-1",
+        "second-2",
+        "first-2",
+        "second-3",
+        "second-4",
+    ]
 
 
 @pytest.mark.django_db
