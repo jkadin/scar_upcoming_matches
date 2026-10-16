@@ -11,6 +11,10 @@ challonge.set_credentials(
     os.getenv("CHALLONGE_USERNAME"), os.getenv("CHALLONGE_API_KEY")
 )
 
+custom_url = os.getenv("CHALLONGE_CUSTOM_URL")
+if custom_url and custom_url.strip():
+    challonge.api.CHALLONGE_API_URL = custom_url.strip().rstrip("/")
+
 tournament_urls = ["r5vq4p1l", "4vljhp3k"]
 for tournament_url in tournament_urls:
     tournaments = challonge.tournaments.show(tournament=f"/{tournament_url}")
