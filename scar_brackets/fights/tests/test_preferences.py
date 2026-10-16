@@ -6,7 +6,6 @@ from preferences import preferences
 def test_my_preferences(client):
     test_preferences = preferences.MyPreferences  # type: ignore
     assert test_preferences.interleave_method=='Fixed'
-    # Use the canonical choice string and persist it
     test_preferences.interleave_method = "Interleave"  # type: ignore
     test_preferences.save()
     test_preferences.refresh_from_db()
