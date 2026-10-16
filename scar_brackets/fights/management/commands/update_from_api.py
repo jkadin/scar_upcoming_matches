@@ -34,7 +34,7 @@ def update_database():
 
     needs_interleave = Tournament.objects.filter(tournament_needs_interleave=True)
     interleave_method = preferences.MyPreferences.interleave_method  # type: ignore
-    if not needs_interleave and interleave_method == "Fixed":
+    if not needs_interleave and "Fixed" in interleave_method :
         return
     interleave_matches_in_db(interleave_method)
     # interleaved = zip_longest(*interleaved_matches)
