@@ -37,9 +37,6 @@ def update_database():
     if not needs_interleave and "Fixed" in interleave_method :
         return
     interleave_matches_in_db(interleave_method)
-    # interleaved = zip_longest(*interleaved_matches)
-    # list_of_tuples = chain.from_iterable(interleaved)
-    # remove_fill(interleaved_matches)
 
 
 def interleave_matches_in_db(interleave_method)->None:
@@ -62,44 +59,6 @@ def interleave_matches_in_db(interleave_method)->None:
         m.calculated_play_order = i + 1
         m.save()
 
-def even_distribution(groups:list[list[Match]], interleave_method: str | None = None) ->list[Match]:
-    """
-    Evenly distribute matches across groups. If `interleave_method` is provided it is used,
-    otherwise the value is read from `preferences.MyPreferences.interleave_method`.
-    """
-    if interleave_method is None:
-        interleave = preferences.MyPreferences.interleave_method  # type: ignore[attr-defined]
-    else:
-        interleave = interleave_method
-
-    while any(remaining):
-        # Find the smallest remaining group
-        min_group_idx = min(
-            (i for i in range(len(remaining)) if remaining[i]),
-            key=lambda i: len(remaining[i]),
-        )
-        # Always take 1 from the smallest group
-        pattern.append(remaining[min_group_idx].pop(0))
-
-        # Take proportional items from other groups
-        for i in sorted_indices:
-            if i == min_group_idx or not remaining[i]:
-                continue
-            # Determine proportion relative to the smallest group
-            proportion = len(groups[i]) // max(len(groups[min_group_idx]), 1)
-            take = min(proportion, len(remaining[i]))
-            if interleave_method in ("Fixed","Interleave"):
-                take=1
-            for _ in range(take):
-                pattern.append(remaining[i].pop(0))
-
-    return pattern
-
-
-# def remove_fill(list_of_matches:list[Match])->None:
-#     for i, m in enumerate(list_of_matches):
-#         m.calculated_play_order = i + 1
-#         m.save()
 
 def even_distribution(groups:list[list[Match]], interleave_method: str | None = None) ->list[Match]:
     """
@@ -114,7 +73,7 @@ def even_distribution(groups:list[list[Match]], interleave_method: str | None = 
     remaining = [list(g) for g in groups]
     pattern = []
 
-    if interleave in ("Interleave", "Interleave_multiple"):
+    if interleave == "Interleave_multiple":
         scheduled = [0] * len(remaining)
         while any(remaining):
             index = min(
