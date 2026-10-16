@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 import challonge
 import os
+from fractions import Fraction
 from fights.models import Url, Tournament, Match, Bot
 # from itertools import chain, zip_longest
 from dotenv import load_dotenv
@@ -33,7 +34,7 @@ def update_database():
 
     needs_interleave = Tournament.objects.filter(tournament_needs_interleave=True)
     interleave_method = preferences.MyPreferences.interleave_method  # type: ignore
-    if not needs_interleave and "Fixed" in interleave_method:
+    if not needs_interleave and interleave_method == "Fixed":
         return
     interleave_matches_in_db(interleave_method)
     # interleaved = zip_longest(*interleaved_matches)
@@ -60,52 +61,6 @@ def interleave_matches_in_db(interleave_method)->None:
     for i, m in enumerate(adjustments):
         m.calculated_play_order = i + 1
         m.save()
-    # if INTERLEAVE_METHOD in ('Fixed_multiple','Interleave_multiple'):
-    #     interleaved_matches:list[Match]=[] #new list to replace remove_fill
-    #     while any(matches_list):
-    #         for i,tournament in enumerate(matches_list):
-    #             for _ in range(adjustments[i]):
-    #                 try:
-    #                     interleaved_matches.append(tournament.pop(0))
-    #                 except IndexError:
-    #                     continue
-
-
-def even_distribution(groups:list[list[Match]],interleave_method:str) ->list[Match]:
-    remaining = [list(g) for g in groups]
-    pattern = []
-
-    # Sort group indices by length (ascending)
-    sorted_indices = sorted(range(len(groups)), key=lambda i: len(groups[i]))
-
-    while any(remaining):
-        # Find the smallest remaining group
-        min_group_idx = min(
-            (i for i in range(len(remaining)) if remaining[i]),
-            key=lambda i: len(remaining[i]),
-        )
-        # Always take 1 from the smallest group
-        pattern.append(remaining[min_group_idx].pop(0))
-
-        # Take proportional items from other groups
-        for i in sorted_indices:
-            if i == min_group_idx or not remaining[i]:
-                continue
-            # Determine proportion relative to the smallest group
-            proportion = len(groups[i]) // max(len(groups[min_group_idx]), 1)
-            take = min(proportion, len(remaining[i]))
-            if interleave_method in ("Fixed","Interleave"):
-                take=1
-            for _ in range(take):
-                pattern.append(remaining[i].pop(0))
-
-    return pattern
-
-
-# def remove_fill(list_of_matches:list[Match])->None:
-#     for i, m in enumerate(list_of_matches):
-#         m.calculated_play_order = i + 1
-#         m.save()
 
 def even_distribution(groups:list[list[Match]], interleave_method: str | None = None) ->list[Match]:
     """
@@ -113,12 +68,23 @@ def even_distribution(groups:list[list[Match]], interleave_method: str | None = 
     otherwise the value is read from `preferences.MyPreferences.interleave_method`.
     """
     if interleave_method is None:
-        interleave = preferences.MyPreferences.interleave_method
+        interleave = preferences.MyPreferences.interleave_method  # type: ignore[attr-defined]
     else:
         interleave = interleave_method
 
     remaining = [list(g) for g in groups]
     pattern = []
+
+    if interleave in ("Interleave", "Interleave_multiple"):
+        scheduled = [0] * len(remaining)
+        while any(remaining):
+            index = min(
+                (i for i, group in enumerate(remaining) if group),
+                key=lambda i: Fraction(scheduled[i], len(groups[i])),
+            )
+            pattern.append(remaining[index].pop(0))
+            scheduled[index] += 1
+        return pattern
 
     # Sort group indices by length (ascending)
     sorted_indices = sorted(range(len(groups)), key=lambda i: len(groups[i]))
@@ -139,7 +105,7 @@ def even_distribution(groups:list[list[Match]], interleave_method: str | None = 
             # Determine proportion relative to the smallest group
             proportion = len(groups[i]) // max(len(groups[min_group_idx]), 1)
             take = min(proportion, len(remaining[i]))
-            if interleave in ("Fixed","Interleave"):
+            if interleave == "Fixed":
                 take = 1
             for _ in range(take):
                 pattern.append(remaining[i].pop(0))
@@ -236,6 +202,10 @@ def get_tournament_list_from_challonge()->list:
 def load_bots_from_challonge(t1):
     participants = challonge.participants.index(t1.tournament_id)
     for bot in participants:
+        if not isinstance(bot, dict):
+            raise TypeError(
+                f"Expected a participant object, got {type(bot).__name__}"
+            )
         bot_name=bot["name"]
         Bot.objects.update_or_create(
             bot_id=bot["id"],  # type: ignore
@@ -245,12 +215,8 @@ def load_bots_from_challonge(t1):
 
 
 def create_null_bot(t1):
-    try:
-        p1 = Bot.objects.get(bot_id=None, tournament_id=t1)
-    except Exception as E:
-        p1 = Bot(
-            bot_id=None,
-            bot_name="Not assigned",
-            tournament_id=t1,
-        )
-        p1.save()
+    Bot.objects.get_or_create(
+        bot_id=None,
+        tournament_id=t1,
+        defaults={"bot_name": "Not assigned"},
+    )

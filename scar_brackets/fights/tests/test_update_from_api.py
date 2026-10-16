@@ -10,7 +10,7 @@ from fights.models import Tournament, Match, Bot
 def test_update_database(
     url, mock_challonge_matches, mock_challonge_participants, mock_challonge_tournaments
 ):
-    update_database()
+    update_from_api.update_database()
     assert len(Tournament.objects.all()) == 2
     assert len(Match.objects.all()) == 24
     assert len(Bot.objects.all()) == 15
