@@ -57,7 +57,7 @@ def output(tournaments=[]):
     # Sort: matches with either player's time_remaining != "00:00" go last
     output_match.sort(
         key=lambda m: (
-            m["time_remaining_p1"] != "00:00" or m["time_remaining_p2"] != "00:00" or "-" not in m["time_remaining_p1"] or "-" not in m["time_remaining_p2"]
+            m["time_remaining_p1"] != "00:00" or m["time_remaining_p2"] != "00:00" or ("-" not in m["time_remaining_p1"] and "-" not in m["time_remaining_p2"])
         )
     )
     return output_match
